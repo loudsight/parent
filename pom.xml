@@ -5,7 +5,7 @@
 
 	<groupId>com.loudsight</groupId>
 	<artifactId>parent</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.3-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>Loudsight Parent Module</name>
@@ -43,7 +43,7 @@
 		<hibernate.version>5.2.11.Final</hibernate.version>
 		<jboss.resteasy.version>3.0.10.Final</jboss.resteasy.version>
 		<glassfish.tyrus.version>1.13</glassfish.tyrus.version>
-		<kotlin.version>1.2.10</kotlin.version>
+		<kotlin.version>1.2.50</kotlin.version>
 	</properties>
 	<dependencyManagement>
 		<dependencies>
@@ -401,8 +401,12 @@
 	<distributionManagement>
 		<snapshotRepository>
 			<id>ossrh</id>
-			<url>https://oss.sonatype.org/note/repositories/snapshots</url>
+			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
 		</snapshotRepository>
+		<repository>
+			<id>ossrh</id>
+			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+		</repository>
 	</distributionManagement>
 
 	<build>
@@ -592,7 +596,7 @@
 	</build>
 	<profiles>
 		<profile>
-			<id>release</id>
+			<id>ossrh</id>
 			<build>
 				<plugins>
 					<plugin>
@@ -606,6 +610,9 @@
 								<goals>
 									<goal>sign</goal>
 								</goals>
+                                <configuration>
+                                    <keyname>${gpg.keyname}</keyname>
+                                    <passphraseServerId>${gpg.keyname}</passphraseServerId>                                </configuration>
 							</execution>
 						</executions>
 					</plugin>
