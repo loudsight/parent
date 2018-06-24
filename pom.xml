@@ -5,7 +5,7 @@
 
 	<groupId>com.loudsight</groupId>
 	<artifactId>parent</artifactId>
-	<version>0.0.3</version>
+	<version>0.0.4</version>
 	<packaging>pom</packaging>
 
 	<name>Loudsight Parent Module</name>
@@ -34,17 +34,15 @@
 		<url>git@github.com:loudsight/parent.git</url>
 	</scm>
 
-<!--  -->
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<loudsight.utilities.version>0.0.1-SNAPSHOT</loudsight.utilities.version>
-		<jboss.weld.version>3.0.1.Final</jboss.weld.version>
+		<loudsight.utilities.version>0.0.4</loudsight.utilities.version>
 		<org.eclipse.jetty.version>9.4.5.v20170502</org.eclipse.jetty.version>
 		<hibernate.version>5.2.11.Final</hibernate.version>
 		<jboss.resteasy.version>3.0.10.Final</jboss.resteasy.version>
-		<glassfish.tyrus.version>1.13</glassfish.tyrus.version>
 		<kotlin.version>1.2.50</kotlin.version>
 	</properties>
+
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
@@ -58,7 +56,6 @@
 				<artifactId>jaxb-api</artifactId>
 				<version>2.2.12</version>
 			</dependency>
-
 
 			<dependency>
                 <groupId>org.jboss.resteasy</groupId>
@@ -97,40 +94,6 @@
 				<artifactId>javaee-api</artifactId>
 				<version>7.0</version>
 			</dependency>
-            <dependency>
-                <groupId>org.jboss.weld</groupId>
-                <artifactId>weld-api</artifactId>
-                <version>3.0.SP1</version>
-            </dependency>
-            <dependency>
-                <groupId>org.jboss.weld</groupId>
-                <artifactId>weld-core</artifactId>
-                <version>${jboss.weld.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.jboss.weld.se</groupId>
-                <artifactId>weld-se-core</artifactId>
-                <version>${jboss.weld.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.jboss.weld</groupId>
-                <artifactId>weld-core-impl</artifactId>
-                <version>${jboss.weld.version}</version>
-            </dependency>
-
-			<dependency>
-				<groupId>org.jboss.weld.servlet</groupId>
-				<artifactId>weld-servlet</artifactId>
-				<version>2.4.5.Final</version>
-			</dependency>
-
-            <dependency>
-                <groupId>org.jboss.weld</groupId>
-                <artifactId>weld-junit4</artifactId>
-                <version>1.1.0.Final</version>
-            </dependency>
 
 			<dependency>
 				<groupId>junit</groupId>
@@ -317,35 +280,6 @@
 				<artifactId>javassist</artifactId>
 				<version>3.20.0-GA</version>
 					</dependency>
-			<dependency>
-				<groupId>org.glassfish.tyrus</groupId>
-				<artifactId>tyrus-client</artifactId>
-				<version>${glassfish.tyrus.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>org.glassfish.tyrus</groupId>
-				<artifactId>tyrus-container-grizzly-client</artifactId>
-				<version>${glassfish.tyrus.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>org.glassfish.tyrus</groupId>
-				<artifactId>tyrus-server</artifactId>
-				<version>${glassfish.tyrus.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>org.glassfish.tyrus</groupId>
-				<artifactId>tyrus-container-grizzly-server</artifactId>
-				<version>${glassfish.tyrus.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>org.jetbrains.kotlin</groupId>
-				<artifactId>kotlin-stdlib-jre8</artifactId>
-				<version>${kotlin.version}</version>
-			</dependency>
 
 			<dependency>
 				<groupId>org.jetbrains.kotlin</groupId>
@@ -421,92 +355,13 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
-				<version>2.20.1</version>
 			</plugin>
 
 
 			<plugin>
 	            <groupId>org.apache.maven.plugins</groupId>
 	            <artifactId>maven-enforcer-plugin</artifactId>
-	            <version>1.4.1</version>
-	            <executions>
-	                <execution>
-	                    <id>enforce-versions</id>
-	                    <goals>
-	                        <goal>enforce</goal>
-	                    </goals>
-	                    <configuration>
-	                        <rules>
-	                            <DependencyConvergence/>
-	                        </rules>
-	                    </configuration>
-	                </execution>
-	            </executions>
 	        </plugin>
-            <plugin>
-                <groupId>org.jetbrains.kotlin</groupId>
-                <artifactId>kotlin-maven-plugin</artifactId>
-                <version>${kotlin.version}</version>
-                <executions>
-                    <execution>
-                        <id>compile</id>
-                        <goals> <goal>compile</goal></goals>
-                        <configuration>
-                            <sourceDirs>
-                                <sourceDir>${project.basedir}/src/meta/kotlin</sourceDir>
-                                <sourceDir>${project.basedir}/src/main/kotlin</sourceDir>
-                                <sourceDir>${project.basedir}/src/main/java</sourceDir>
-                            </sourceDirs>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>test-compile</id>
-                        <goals> <goal>test-compile</goal> </goals>
-                        <configuration>
-                            <sourceDirs>
-                                <sourceDir>${project.basedir}/src/test/kotlin</sourceDir>
-                                <sourceDir>${project.basedir}/src/test/java</sourceDir>
-                            </sourceDirs>
-                        </configuration>
-                    </execution>
-                    <!-- execution>
-                        <id>compile-js</id>
-                        <phase>compile</phase>
-                        <goals>
-                            <goal>js</goal>
-                        </goals>
-                        <configuration>
-                            <sourceDirs>
-                                <sourceDir>${project.basedir}/src/main/kotlin</sourceDir>
-                            </sourceDirs>
-                                <moduleKind>umd</moduleKind>
-                                <sourceMap>true</sourceMap>
-                            <outputFile>${project.build.outputDirectory}/${project.artifactId}.js</outputFile>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>test-compile-js</id>
-                        <phase>test-compile</phase>
-                        <goals>
-                            <goal>test-js</goal>
-                        </goals>
-                        <configuration>
-                            <sourceDirs>
-                                <sourceDir>${project.basedir}/src/test/kotlin</sourceDir>
-                            </sourceDirs>
-                        </configuration>
-                    </execution-->
-                </executions>
-            </plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<configuration>
-					<source>1.8</source>
-					<target>1.8</target>
-				</configuration>
-			</plugin>
-
 			<!-- deployment -->
 			<plugin>
 				<groupId>org.sonatype.plugins</groupId>
@@ -515,7 +370,7 @@
 				<configuration>
 					<serverId>ossrh</serverId>
 					<nexusUrl>https://oss.sonatype.org/</nexusUrl>
-					<autoReleaseAfterClose>true</autoReleaseAfterClose>
+					<autoReleaseAfterClose>false</autoReleaseAfterClose>
 				</configuration>
 			</plugin>
 		</plugins>
@@ -524,7 +379,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-surefire-plugin</artifactId>
-					<version>2.22.0</version>
+                    <version>2.22.0</version>
 				</plugin>
 				<plugin>
 					<groupId>org.codehaus.mojo</groupId>
@@ -556,7 +411,7 @@
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-jar-plugin</artifactId>
 					<version>3.0.2</version>
-				</plugin>
+                </plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-war-plugin</artifactId>
@@ -584,69 +439,71 @@
 					</dependencies>
 				</plugin>
 				<plugin>
-					<groupId>org.jetbrains.kotlin</groupId>
 					<artifactId>kotlin-maven-plugin</artifactId>
-                    <version>${kotlin.version}</version>
+					<groupId>org.jetbrains.kotlin</groupId>
+					<version>${kotlin.version}</version>
 					<executions>
 						<execution>
 							<id>compile</id>
-							<goals> <goal>compile</goal></goals>
+							<goals> <goal>compile</goal> </goals>
 							<configuration>
 								<sourceDirs>
-                                    <sourceDir>${project.basedir}/src/meta/kotlin</sourceDir>
-                                    <sourceDir>${project.basedir}/src/main/kotlin</sourceDir>
+									<sourceDir>${project.basedir}/src/meta/kotlin</sourceDir>
+									<sourceDir>${project.basedir}/src/main/kotlin</sourceDir>
 									<sourceDir>${project.basedir}/src/main/java</sourceDir>
 								</sourceDirs>
 							</configuration>
 						</execution>
 						<execution>
 							<id>test-compile</id>
-                            <goals> <goal>test-compile</goal> </goals>
+							<goals> <goal>test-compile</goal> </goals>
 							<configuration>
 								<sourceDirs>
-                                    <sourceDir>${project.basedir}/src/test/kotlin</sourceDir>
+									<sourceDir>${project.basedir}/src/test/kotlin</sourceDir>
 									<sourceDir>${project.basedir}/src/test/java</sourceDir>
 								</sourceDirs>
 							</configuration>
 						</execution>
-						<!-- execution>
-							<id>compile-js</id>
-							<phase>compile</phase>
-							<goals>
-								<goal>js</goal>
-							</goals>
-							<configuration>
-								<sourceDirs>
-									<sourceDir>${project.basedir}/src/main/kotlin</sourceDir>
-								</sourceDirs>
-									<moduleKind>umd</moduleKind>
-									<sourceMap>true</sourceMap>
-                                <outputFile>${project.build.outputDirectory}/${project.artifactId}.js</outputFile>
-                            </configuration>
-						</execution>
-						<execution>
-							<id>test-compile-js</id>
-							<phase>test-compile</phase>
-							<goals>
-								<goal>test-js</goal>
-							</goals>
-							<configuration>
-								<sourceDirs>
-									<sourceDir>${project.basedir}/src/test/kotlin</sourceDir>
-								</sourceDirs>
-							</configuration>
-						</execution-->
 					</executions>
 				</plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-compiler-plugin</artifactId>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<version>3.5.1</version>
+					<executions>
+						<!-- Replacing default-compile as it is treated specially by maven -->
+						<execution>
+							<id>default-compile</id>
+							<phase>none</phase>
+						</execution>
+						<!-- Replacing default-testCompile as it is treated specially by maven -->
+						<execution>
+							<id>default-testCompile</id>
+							<phase>none</phase>
+						</execution>
+						<execution>
+							<id>java-compile</id>
+							<phase>compile</phase>
+							<goals> <goal>compile</goal> </goals>
+						</execution>
+						<execution>
+							<id>java-test-compile</id>
+							<phase>test-compile</phase>
+							<goals> <goal>testCompile</goal> </goals>
+						</execution>
+					</executions>
                     <configuration>
                         <source>1.8</source>
                         <target>1.8</target>
                     </configuration>
                 </plugin>
-			</plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-enforcer-plugin</artifactId>
+                    <version>1.4.1</version>
+                </plugin>
+
+            </plugins>
 		</pluginManagement>
 	</build>
 	<profiles>
@@ -660,8 +517,6 @@
 						<version>1.6</version>
                         <configuration>
                             <gpgArguments>
-                                <arg>--no-tty</arg>
-                                <arg>--batch</arg>
                                 <arg>--yes</arg>
                                 <arg>--pinentry-mode</arg>
                                 <arg>loopback</arg>
@@ -683,37 +538,43 @@
 				</plugins>
 			</build>
 		</profile>
-
-		<profile>
-			<id>java-only</id>
-			<activation>
-				<activeByDefault>true</activeByDefault>
-			</activation>
-			<build>
-				<plugins>
+        <profile>
+            <id>js-compile</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <build>
+                <plugins>
                     <plugin>
-                        <artifactId>kotlin-maven-plugin</artifactId>
                         <groupId>org.jetbrains.kotlin</groupId>
+                        <artifactId>kotlin-maven-plugin</artifactId>
                         <version>${kotlin.version}</version>
                         <executions>
                             <execution>
-                                <id>compile</id>
-                                <goals> <goal>compile</goal> </goals>
+                                <id>compile-js</id>
+                                <phase>compile</phase>
+                                <goals>
+                                    <goal>js</goal>
+                                </goals>
                                 <configuration>
                                     <sourceDirs>
                                         <sourceDir>${project.basedir}/src/meta/kotlin</sourceDir>
                                         <sourceDir>${project.basedir}/src/main/kotlin</sourceDir>
-                                        <sourceDir>${project.basedir}/src/main/java</sourceDir>
                                     </sourceDirs>
+                                        <moduleKind>umd</moduleKind>
+                                        <sourceMap>true</sourceMap>
+                                    <outputFile>${project.build.outputDirectory}/${project.artifactId}.js</outputFile>
                                 </configuration>
                             </execution>
                             <execution>
-                                <id>test-compile</id>
-                                <goals> <goal>test-compile</goal> </goals>
+                                <id>test-compile-js</id>
+                                <phase>test-compile</phase>
+                                <goals>
+                                    <goal>test-js</goal>
+                                </goals>
                                 <configuration>
                                     <sourceDirs>
                                         <sourceDir>${project.basedir}/src/test/kotlin</sourceDir>
-                                        <sourceDir>${project.basedir}/src/test/java</sourceDir>
                                     </sourceDirs>
                                 </configuration>
                             </execution>
@@ -734,20 +595,36 @@
                                 <id>default-testCompile</id>
                                 <phase>none</phase>
                             </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-jar-plugin</artifactId>
+                        <version>3.0.2</version>
+                        <configuration>
+                            <classifier>js</classifier>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-war-plugin</artifactId>
+                        <version>3.1.0</version>
+                        <executions>
                             <execution>
-                                <id>java-compile</id>
-                                <phase>compile</phase>
-                                <goals> <goal>compile</goal> </goals>
-                            </execution>
-                            <execution>
-                                <id>java-test-compile</id>
-                                <phase>test-compile</phase>
-                                <goals> <goal>testCompile</goal> </goals>
+                                <id>default-war</id>
+                                <phase>none</phase>
                             </execution>
                         </executions>
                     </plugin>
                 </plugins>
-			</build>
-		</profile>
+            </build>
+            <dependencies>
+            <dependency>
+                <groupId>org.jetbrains.kotlin</groupId>
+                <artifactId>kotlin-stdlib-js</artifactId>
+                <version>${kotlin.version}</version>
+            </dependency>
+        </dependencies>
+        </profile>
 	</profiles>
 </project>
