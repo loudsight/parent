@@ -5,7 +5,7 @@
 
 	<groupId>com.loudsight</groupId>
 	<artifactId>parent</artifactId>
-	<version>0.0.4</version>
+	<version>0.0.5</version>
 	<packaging>pom</packaging>
 
 	<name>Loudsight Parent Module</name>
@@ -36,11 +36,11 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<loudsight.utilities.version>0.0.4</loudsight.utilities.version>
+		<loudsight.utilities.version>0.0.5</loudsight.utilities.version>
 		<org.eclipse.jetty.version>9.4.5.v20170502</org.eclipse.jetty.version>
 		<hibernate.version>5.2.11.Final</hibernate.version>
 		<jboss.resteasy.version>3.0.10.Final</jboss.resteasy.version>
-		<kotlin.version>1.2.50</kotlin.version>
+		<kotlin.version>1.2.60</kotlin.version>
 	</properties>
 
 	<dependencyManagement>
@@ -164,7 +164,7 @@
 			<dependency>
 				<groupId>org.hibernate.validator</groupId>
 				<artifactId>hibernate-validator</artifactId>
-				<version>6.0.2.Final</version>
+				<version>6.0.9.Final</version>
 			</dependency>
 			<dependency>
 				<groupId>org.hibernate</groupId>
@@ -469,7 +469,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-compiler-plugin</artifactId>
-					<version>3.5.1</version>
+					<version>3.7.0</version>
 					<executions>
 						<!-- Replacing default-compile as it is treated specially by maven -->
 						<execution>
@@ -493,8 +493,9 @@
 						</execution>
 					</executions>
                     <configuration>
-                        <source>1.8</source>
-                        <target>1.8</target>
+                        <source>10</source>
+						<target>10</target>
+						<release>10</release>
                     </configuration>
                 </plugin>
                 <plugin>
