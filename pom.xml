@@ -5,7 +5,7 @@
 
     <groupId>com.loudsight</groupId>
     <artifactId>parent</artifactId>
-    <version>0.0.6</version>
+    <version>0.0.7-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>Loudsight Parent Module</name>
@@ -37,12 +37,12 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <loudsight.utilities.version>0.0.4-SNAPSHOT</loudsight.utilities.version>
+        <loudsight.appcommon.version>0.0.1-SNAPSHOT</loudsight.appcommon.version>
         <org.eclipse.jetty.version>9.4.5.v20170502</org.eclipse.jetty.version>
         <hibernate.version>5.2.11.Final</hibernate.version>
         <jboss.resteasy.version>3.0.10.Final</jboss.resteasy.version>
-        <kotlin.version>1.2.61</kotlin.version>
+        <kotlin.version>1.2.70</kotlin.version>
         <neo4j.version>3.4.6</neo4j.version>
-
     </properties>
 
     <dependencyManagement>
@@ -431,6 +431,13 @@
                         <pushChanges>false</pushChanges>
                     </configuration>
                     <version>2.5.3</version>
+                    <!-- dependencies>
+                        <dependency>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-scm-plugin</artifactId>
+                            <version>1.8.1</version>
+                        </dependency>
+                    </dependencies -->
                 </plugin>
                 <plugin>
                     <artifactId>kotlin-maven-plugin</artifactId>
