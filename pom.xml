@@ -36,7 +36,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <loudsight.utilities.version>0.0.4-SNAPSHOT</loudsight.utilities.version>
+        <loudsight.utilities.version>0.0.5-SNAPSHOT</loudsight.utilities.version>
         <loudsight.appcommon.version>0.0.1-SNAPSHOT</loudsight.appcommon.version>
         <org.eclipse.jetty.version>9.4.5.v20170502</org.eclipse.jetty.version>
         <hibernate.version>5.2.11.Final</hibernate.version>
@@ -470,6 +470,7 @@
                             </configuration>
                         </execution>
                     </executions>
+                    <configuration> <args> <arg>-Xcoroutines=enable</arg> </args> </configuration>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
