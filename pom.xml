@@ -38,7 +38,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <loudsight.utilities.version>0.0.5-SNAPSHOT</loudsight.utilities.version>
         <loudsight.appcommon.version>0.0.1-SNAPSHOT</loudsight.appcommon.version>
-        <org.eclipse.jetty.version>9.4.5.v20170502</org.eclipse.jetty.version>
+        <org.eclipse.jetty.version>9.4.12.v20180830</org.eclipse.jetty.version>
         <hibernate.version>5.2.11.Final</hibernate.version>
         <jboss.resteasy.version>3.0.10.Final</jboss.resteasy.version>
         <kotlin.version>1.3</kotlin.version>
