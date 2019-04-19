@@ -41,7 +41,7 @@
         <org.eclipse.jetty.version>9.4.14.v20181114</org.eclipse.jetty.version>
         <hibernate.version>5.2.11.Final</hibernate.version>
         <jboss.resteasy.version>3.0.10.Final</jboss.resteasy.version>
-        <kotlin.version>1.3.21</kotlin.version>
+        <kotlin.version>1.3.30</kotlin.version>
         <neo4j.version>3.4.10</neo4j.version>
         <springframework.version>5.1.6.RELEASE</springframework.version>
         <log4j.version>2.11.1</log4j.version>
@@ -407,7 +407,7 @@
                 <plugin>
                     <groupId>org.sonatype.plugins</groupId>
                     <artifactId>nexus-staging-maven-plugin</artifactId>
-                    <version>1.6.7</version>
+                    <version>1.6.8</version>
                     <extensions>true</extensions>
                     <configuration>
                         <serverId>ossrh</serverId>
@@ -417,17 +417,17 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-jar-plugin</artifactId>
-                    <version>3.0.2</version>
+                    <version>3.1.1</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-war-plugin</artifactId>
-                    <version>3.1.0</version>
+                    <version>3.2.2</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-dependency-plugin</artifactId>
-                    <version>2.10</version>
+                    <version>3.1.1</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -561,6 +561,21 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-enforcer-plugin</artifactId>
                     <version>1.4.1</version>
+                    <executions>
+                        <execution>
+                            <id>enforce-maven</id>
+                            <goals>
+                                <goal>enforce</goal>
+                            </goals>
+                            <configuration>
+                                <rules>
+                                    <requireMavenVersion>
+                                        <version>3.5.0</version>
+                                    </requireMavenVersion>
+                                </rules>
+                            </configuration>
+                        </execution>
+                    </executions>
                 </plugin>
 
             </plugins>
@@ -662,7 +677,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-jar-plugin</artifactId>
-                        <version>3.0.2</version>
+                        <version>3.1.1</version>
                         <configuration>
                             <classifier>js</classifier>
                         </configuration>
@@ -670,7 +685,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-war-plugin</artifactId>
-                        <version>3.1.0</version>
+                        <version>3.2.2</version>
                         <executions>
                             <execution>
                                 <id>default-war</id>
