@@ -697,7 +697,7 @@
                     </plugin>
                 </plugins>
             </build>
-            <!--dependencyManagement>
+            <dependencyManagement>
             <dependencies>
                 <dependency>
                     <groupId>org.jetbrains.kotlin</groupId>
@@ -705,12 +705,18 @@
                     <version>${kotlin.version}</version>
                 </dependency>
                 <dependency>
+                    <groupId>com.loudsight.utilities</groupId>
+                    <artifactId>entity</artifactId>
+                    <classifier>js</classifier>
+                    <version>${loudsight.utilities.version}</version>
+                </dependency>
+                <!--dependency>
                     <groupId>org.jetbrains.kotlinx</groupId>
                     <artifactId>kotlinx-serialization-runtime-js</artifactId>
                     <version>${serialization.version}</version>
-                </dependency>
+                </dependency -->
             </dependencies>
-            </dependencyManagement-->
+            </dependencyManagement>
                 <dependencies>
                     <dependency>
                         <groupId>org.jetbrains.kotlin</groupId>
