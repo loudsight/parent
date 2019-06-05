@@ -37,6 +37,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <loudsight.utilities.version>0.0.5-SNAPSHOT</loudsight.utilities.version>
+        <loudsight.persistence.version>0.0.1-SNAPSHOT</loudsight.persistence.version>
         <loudsight.appcommon.version>0.0.1-SNAPSHOT</loudsight.appcommon.version>
         <org.eclipse.jetty.version>9.4.17.v20190418</org.eclipse.jetty.version>
         <jboss.resteasy.version>3.0.10.Final</jboss.resteasy.version>
@@ -506,7 +507,7 @@
                             </configuration>
                         </execution>
                     </executions>
-                    <configuration>
+                    <!--configuration>
                         <compilerPlugins>
                             <plugin>kotlinx-serialization</plugin>
                         </compilerPlugins>
@@ -517,7 +518,7 @@
                             <artifactId>kotlin-maven-serialization</artifactId>
                             <version>${kotlin.version}</version>
                         </dependency>
-                    </dependencies>
+                    </dependencies-->
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -696,7 +697,7 @@
                     </plugin>
                 </plugins>
             </build>
-            <dependencyManagement>
+            <!--dependencyManagement>
             <dependencies>
                 <dependency>
                     <groupId>org.jetbrains.kotlin</groupId>
@@ -709,7 +710,60 @@
                     <version>${serialization.version}</version>
                 </dependency>
             </dependencies>
-            </dependencyManagement>
+            </dependencyManagement-->
+                <dependencies>
+                    <dependency>
+                        <groupId>org.jetbrains.kotlin</groupId>
+                        <artifactId>kotlin-stdlib-common</artifactId>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.jetbrains.kotlin</groupId>
+                        <artifactId>kotlin-stdlib-js</artifactId>
+                    </dependency>
+
+                </dependencies>
+        </profile>
+        <profile>
+            <id>default</id>
+            <activation>
+                <property>
+                    <name>!js-compile</name>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>kotlin-maven-plugin</artifactId>
+                        <groupId>org.jetbrains.kotlin</groupId>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-compiler-plugin</artifactId>
+                    </plugin>
+                </plugins>
+            </build>
+
+            <dependencies>
+                <dependency>
+                    <groupId>org.jetbrains.kotlin</groupId>
+                    <artifactId>kotlin-stdlib</artifactId>
+                </dependency>
+                <dependency>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-api</artifactId>
+                    <version>${slf4j.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>junit</groupId>
+                    <artifactId>junit</artifactId>
+                    <scope>test</scope>
+                </dependency>
+                <dependency>
+                    <groupId>org.jetbrains.kotlin</groupId>
+                    <artifactId>kotlin-test-junit</artifactId>
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
         </profile>
     </profiles>
 </project>
