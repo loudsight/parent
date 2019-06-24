@@ -46,6 +46,7 @@
         <springframework.version>5.1.6.RELEASE</springframework.version>
         <log4j.version>2.11.2</log4j.version>
         <slf4j.version>1.7.5</slf4j.version>
+        <vertx.version>3.7.1</vertx.version>
     </properties>
 
     <dependencyManagement>
@@ -100,7 +101,16 @@
                 <version>2.6</version>
             </dependency>
 
-
+            <dependency>
+                <groupId>io.vertx</groupId>
+                <artifactId>vertx-core</artifactId>
+                <version>${vertx.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.vertx</groupId>
+                <artifactId>vertx-zookeeper</artifactId>
+                <version>${vertx.version}</version>
+            </dependency>
             <dependency>
                 <groupId>org.apache.logging.log4j</groupId>
                 <artifactId>log4j-slf4j-impl</artifactId>
@@ -507,12 +517,14 @@
                             </configuration>
                         </execution>
                     </executions>
-                    <!--configuration>
-                        <compilerPlugins>
+                    <configuration>
+                        <jvmTarget>10</jvmTarget>
+
+                        <!-- compilerPlugins>
                             <plugin>kotlinx-serialization</plugin>
-                        </compilerPlugins>
+                        </compilerPlugins -->
                     </configuration>
-                    <dependencies>
+                    <!--dependencies>
                         <dependency>
                             <groupId>org.jetbrains.kotlin</groupId>
                             <artifactId>kotlin-maven-serialization</artifactId>
