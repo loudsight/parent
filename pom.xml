@@ -40,7 +40,7 @@
         <org.eclipse.jetty.version>9.4.17.v20190418</org.eclipse.jetty.version>
         <jboss.resteasy.version>4.5.3.Final</jboss.resteasy.version>
         <springframework.version>5.2.4.RELEASE</springframework.version>
-        <log4j.version>2.13.1</log4j.version>
+        <log4j.version>2.13.3</log4j.version>
         <slf4j.version>1.7.5</slf4j.version>
         <vertx.version>3.8.5</vertx.version>
         <zookeeper.version>3.5.6</zookeeper.version>
