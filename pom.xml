@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+
     <groupId>com.loudsight</groupId>
     <artifactId>parent</artifactId>
     <version>0.0.8-SNAPSHOT</version>
     <packaging>pom</packaging>
+
     <name>Loudsight Parent Module</name>
     <description>Loudsight Parent Module</description>
     <url>https://loudsight.com/</url>
@@ -26,21 +27,24 @@
         </developer>
     </developers>
     <scm>
-        <connection>scm:git@github.com:loudsight/parent.git</connection>
-        <developerConnection>scm:git@github.com:loudsight/parent.git</developerConnection>
-        <url>git@github.com:loudsight/parent.git</url>
-    </scm>
+        <connection>scm:git:https://github.com/loudsight/parent.git</connection>
+        <developerConnection>scm:git:https://github.com/loudsight/parent.git</developerConnection>
+        <url>https://github.com/loudsight/parent.git</url>
+      <tag>parent-0.0.8</tag>
+  </scm>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <loudsight.utilities.version>0.0.5-SNAPSHOT</loudsight.utilities.version>
         <loudsight.persistence.version>0.0.1-SNAPSHOT</loudsight.persistence.version>
-        <org.eclipse.jetty.version>9.4.17.v20190418</org.eclipse.jetty.version>
-        <springframework.version>5.2.4.RELEASE</springframework.version>
-        <springboot.version>2.3.1.RELEASE</springboot.version>
+        <org.eclipse.jetty.version>9.4.31.v20200723</org.eclipse.jetty.version>
+        <springframework.version>5.3.1</springframework.version>
+        <springboot.version>2.4.0</springboot.version>
         <log4j.version>2.13.3</log4j.version>
         <slf4j.version>1.7.5</slf4j.version>
-        <vertx.version>3.8.5</vertx.version>
+        <vertx.version>3.9.4</vertx.version>
         <zookeeper.version>3.5.6</zookeeper.version>
+        <kotlin.version>1.4.10</kotlin.version>
+        <kotlinx.version>1.4.0</kotlinx.version>
     </properties>
     <dependencyManagement>
         <dependencies>
@@ -75,21 +79,6 @@
                 <version>${vertx.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.apache.logging.log4j</groupId>
-                <artifactId>log4j-slf4j-impl</artifactId>
-                <version>${log4j.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.logging.log4j</groupId>
-                <artifactId>log4j-api</artifactId>
-                <version>${log4j.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.logging.log4j</groupId>
-                <artifactId>log4j-core</artifactId>
-                <version>${log4j.version}</version>
-            </dependency>
-            <dependency>
                 <groupId>org.jboss</groupId>
                 <artifactId>jandex</artifactId>
                 <version>1.2.3.Final</version>
@@ -120,6 +109,19 @@
                 <artifactId>jackson-databind</artifactId>
                 <version>2.11.0</version>
             </dependency>
+
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-core</artifactId>
+                <version>1.2.3</version>
+            </dependency>
+
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-classic</artifactId>
+                <version>1.2.3</version>
+            </dependency>
+
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>
@@ -158,7 +160,7 @@
             <dependency>
                 <groupId>com.google.code.gson</groupId>
                 <artifactId>gson</artifactId>
-                <version>2.8.5</version>
+                <version>2.8.6</version>
             </dependency>
             <!-- Sorted -->
             <dependency>
@@ -233,9 +235,14 @@
                 <version>${springframework.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.springframework.cloud</groupId>
-                <artifactId>spring-cloud-starter-openfeign</artifactId>
-                <version>2.2.3.RELEASE</version>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter</artifactId>
+                <version>${springboot.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-autoconfigure</artifactId>
+                <version>${springboot.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.springframework.boot</groupId>
@@ -315,18 +322,30 @@
                 <version>${springframework.version}</version>
                 <scope>test</scope>
             </dependency>
+
+            <dependency>
+                <groupId>org.jetbrains.kotlin</groupId>
+                <artifactId>kotlin-stdlib</artifactId>
+                <version>${kotlin.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.jetbrains.kotlin</groupId>
+                <artifactId>kotlin-scripting-dependencies</artifactId>
+                <version>${kotlin.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jetbrains.kotlin</groupId>
+                <artifactId>kotlin-script-runtime</artifactId>
+                <version>${kotlin.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jetbrains.kotlin</groupId>
+                <artifactId>kotlin-compiler-embeddable</artifactId>
+                <version>${kotlin.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
-    <distributionManagement>
-        <snapshotRepository>
-            <id>ossrh</id>
-            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-        </snapshotRepository>
-        <repository>
-            <id>ossrh</id>
-            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-        </repository>
-    </distributionManagement>
     <build>
         <plugins>
             <plugin>
@@ -343,17 +362,6 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-enforcer-plugin</artifactId>
             </plugin>
-            <!-- deployment -->
-            <plugin>
-                <groupId>org.sonatype.plugins</groupId>
-                <artifactId>nexus-staging-maven-plugin</artifactId>
-                <extensions>true</extensions>
-                <configuration>
-                    <serverId>ossrh</serverId>
-                    <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-                    <autoReleaseAfterClose>false</autoReleaseAfterClose>
-                </configuration>
-            </plugin>
         </plugins>
         <pluginManagement>
             <plugins>
@@ -361,16 +369,6 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>2.22.0</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.sonatype.plugins</groupId>
-                    <artifactId>nexus-staging-maven-plugin</artifactId>
-                    <version>1.6.8</version>
-                    <extensions>true</extensions>
-                    <configuration>
-                        <serverId>ossrh</serverId>
-                        <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-                    </configuration>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -469,42 +467,109 @@
                         </execution>
                     </executions>
                 </plugin>
+                <plugin>
+                    <groupId>org.jetbrains.kotlin</groupId>
+                    <artifactId>kotlin-maven-plugin</artifactId>
+                    <version>${kotlin.version}</version>
+                    <executions>
+                        <execution>
+                            <id>compile</id>
+                            <goals>
+                                <goal>compile</goal>
+                            </goals>
+                        </execution>
+
+                        <execution>
+                            <id>test-compile</id>
+                            <goals>
+                                <goal>test-compile</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
             </plugins>
         </pluginManagement>
     </build>
     <profiles>
         <profile>
+            <id>azure</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+                <property>
+                    <name>!ossrh</name>
+                </property>
+            </activation>
+            <properties>
+                <skipNexusStagingDeployMojo>true</skipNexusStagingDeployMojo>
+                <altDeploymentRepository>loudsight-azure::default::https://loudsight.pkgs.visualstudio.com/_packaging/repo1/maven/v1</altDeploymentRepository>
+            </properties>
+            <distributionManagement>
+
+            </distributionManagement>
+        </profile>
+        <profile>
             <id>ossrh</id>
+            <distributionManagement>
+                <snapshotRepository>
+                    <id>ossrh</id>
+                    <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+                </snapshotRepository>
+                <repository>
+                    <id>ossrh</id>
+                    <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+                </repository>
+            </distributionManagement>
             <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-gpg-plugin</artifactId>
-                        <version>1.6</version>
-                        <configuration>
-                            <gpgArguments>
-                                <arg>--yes</arg>
-                                <arg>--pinentry-mode</arg>
-                                <arg>loopback</arg>
-                                <!-- arg>- -no-tty</arg>
-                                                <arg>- -batch</arg -->
-                            </gpgArguments>
-                        </configuration>
-                        <executions>
-                            <execution>
-                                <id>sign-artifacts</id>
-                                <phase>verify</phase>
-                                <goals>
-                                    <goal>sign</goal>
-                                </goals>
-                                <configuration>
-                                    <keyname>${gpg.keyname}</keyname>
-                                    <passphraseServerId>${gpg.keyname}</passphraseServerId>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
+                <pluginManagement>
+                    <plugins>
+                        <!-- plugin>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-scm-plugin</artifactId>
+                            <version>1.11.2</version>
+                            <configuration>
+                                <connectionType>connection</connectionType>
+                            </configuration>
+                        </plugin -->
+                        <!-- deployment -->
+                        <plugin>
+                            <groupId>org.sonatype.plugins</groupId>
+                            <artifactId>nexus-staging-maven-plugin</artifactId>
+                            <extensions>true</extensions>
+                            <configuration>
+                                <serverId>ossrh</serverId>
+                                <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+                                <autoReleaseAfterClose>false</autoReleaseAfterClose>
+                            </configuration>
+                        </plugin>
+                        <plugin>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-gpg-plugin</artifactId>
+                            <version>1.6</version>
+                            <configuration>
+                                <gpgArguments>
+                                    <arg>--yes</arg>
+                                    <arg>--pinentry-mode</arg>
+                                    <arg>loopback</arg>
+                                    <!-- arg>- -no-tty</arg>
+                                                    <arg>- -batch</arg -->
+                                </gpgArguments>
+                            </configuration>
+                            <executions>
+                                <execution>
+                                    <id>sign-artifacts</id>
+                                    <phase>verify</phase>
+                                    <goals>
+                                        <goal>sign</goal>
+                                    </goals>
+                                    <configuration>
+                                        <keyname>${gpg.keyname}</keyname>
+                                        <passphraseServerId>${gpg.keyname}</passphraseServerId>
+                                    </configuration>
+                                </execution>
+                            </executions>
+                        </plugin>
+                    </plugins>
+                </pluginManagement>
             </build>
         </profile>
         <profile>
@@ -513,78 +578,81 @@
                 <activeByDefault>false</activeByDefault>
             </activation>
             <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.jetbrains.kotlin</groupId>
-                        <artifactId>kotlin-maven-plugin</artifactId>
-                        <version>${kotlin.version}</version>
-                        <executions>
-                            <execution>
-                                <id>compile-js</id>
-                                <phase>compile</phase>
-                                <goals>
-                                    <goal>js</goal>
-                                </goals>
-                                <configuration>
-                                    <sourceDirs>
-                                        <sourceDir>${project.basedir}/src/main/kotlin</sourceDir>
-                                    </sourceDirs>
-                                    <moduleKind>umd</moduleKind>
-                                    <sourceMap>true</sourceMap>
-                                    <outputFile>${project.build.outputDirectory}/${project.artifactId}.js</outputFile>
-                                </configuration>
-                            </execution>
-                            <execution>
-                                <id>test-compile-js</id>
-                                <phase>test-compile</phase>
-                                <goals>
-                                    <goal>test-js</goal>
-                                </goals>
-                                <configuration>
-                                    <sourceDirs>
-                                        <sourceDir>${project.basedir}/src/test/kotlin</sourceDir>
-                                    </sourceDirs>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-compiler-plugin</artifactId>
-                        <version>3.5.1</version>
-                        <executions>
-                            <!-- Replacing default-compile as it is treated specially by maven -->
-                            <execution>
-                                <id>default-compile</id>
-                                <phase>none</phase>
-                            </execution>
-                            <!-- Replacing default-testCompile as it is treated specially by maven -->
-                            <execution>
-                                <id>default-testCompile</id>
-                                <phase>none</phase>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-jar-plugin</artifactId>
-                        <version>3.1.1</version>
-                        <configuration>
-                            <classifier>js</classifier>
-                        </configuration>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-war-plugin</artifactId>
-                        <version>3.2.2</version>
-                        <executions>
-                            <execution>
-                                <id>default-war</id>
-                                <phase>none</phase>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
+                <pluginManagement>
+                    <plugins>
+                        <plugin>
+                            <groupId>org.jetbrains.kotlin</groupId>
+                            <artifactId>kotlin-maven-plugin</artifactId>
+                            <version>${kotlin.version}</version>
+                            <executions>
+                                <execution>
+                                    <id>compile-js</id>
+                                    <phase>compile</phase>
+                                    <goals>
+                                        <goal>js</goal>
+                                    </goals>
+                                    <configuration>
+                                        <sourceDirs>
+                                            <sourceDir>${project.basedir}/src/main/kotlin</sourceDir>
+                                        </sourceDirs>
+                                        <moduleKind>umd</moduleKind>
+                                        <sourceMap>true</sourceMap>
+                                        <outputFile>${project.build.outputDirectory}/${project.artifactId}.js</outputFile>
+                                    </configuration>
+                                </execution>
+                                <execution>
+                                    <id>test-compile-js</id>
+                                    <phase>test-compile</phase>
+                                    <goals>
+                                        <goal>test-js</goal>
+                                    </goals>
+                                    <configuration>
+                                        <sourceDirs>
+                                            <sourceDir>${project.basedir}/src/test/kotlin</sourceDir>
+                                        </sourceDirs>
+                                    </configuration>
+                                </execution>
+                            </executions>
+                        </plugin>
+                        <plugin>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-compiler-plugin</artifactId>
+                            <version>3.5.1</version>
+                            <executions>
+                                <!-- Replacing default-compile as it is treated specially by maven -->
+                                <execution>
+                                    <id>default-compile</id>
+                                    <phase>none</phase>
+                                </execution>
+                                <!-- Replacing default-testCompile as it is treated specially by maven -->
+                                <execution>
+                                    <id>default-testCompile</id>
+                                    <phase>none</phase>
+                                </execution>
+                            </executions>
+                        </plugin>
+                        <plugin>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-jar-plugin</artifactId>
+                            <version>3.1.1</version>
+                            <configuration>
+                                <classifier>js</classifier>
+                            </configuration>
+                        </plugin>
+                        <plugin>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-war-plugin</artifactId>
+                            <version>3.2.2</version>
+                            <executions>
+                                <execution>
+                                    <id>default-war</id>
+                                    <phase>none</phase>
+                                </execution>
+                            </executions>
+                        </plugin>
+                    </plugins>
+
+                </pluginManagement>
             </build>
             <dependencyManagement>
                 <dependencies>
@@ -599,6 +667,11 @@
                         <artifactId>kotlin-stdlib-js</artifactId>
                         <version>${kotlin.version}</version>
                         <scope>compile</scope>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.jetbrains.kotlinx</groupId>
+                        <artifactId>kotlinx-coroutines-core-js</artifactId>
+                        <version>${kotlinx.version}</version>
                     </dependency>
                 </dependencies>
             </dependencyManagement>
@@ -644,3 +717,4 @@
         </profile>
     </profiles>
 </project>
+
