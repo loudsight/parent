@@ -4,12 +4,12 @@
 
     <groupId>com.loudsight</groupId>
     <artifactId>parent</artifactId>
-    <version>0.0.8</version>
+    <version>0.0.8-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>Loudsight Parent Module</name>
     <description>Loudsight Parent Module</description>
-    <url>https://loudsight.com/</url>
+    <url>https://loudsight.com</url>
 
     <licenses>
         <license>
