@@ -410,7 +410,7 @@
                     <artifactId>maven-release-plugin</artifactId>
                     <configuration>
                         <preparationGoals>clean install</preparationGoals>
-                        <pushChanges>false</pushChanges>
+                        <pushChanges>true</pushChanges>
                     </configuration>
                     <version>2.5.3</version>
                     <!-- dependencies>
