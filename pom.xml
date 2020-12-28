@@ -4,7 +4,7 @@
 
     <groupId>com.loudsight</groupId>
     <artifactId>parent</artifactId>
-    <version>0.0.9-SNAPSHOT</version>
+    <version>0.0.8-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>Loudsight Parent Module</name>
@@ -34,6 +34,7 @@
   </scm>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <release.arguments />
         <loudsight.utilities.version>0.0.5-SNAPSHOT</loudsight.utilities.version>
         <loudsight.persistence.version>0.0.1-SNAPSHOT</loudsight.persistence.version>
         <org.eclipse.jetty.version>9.4.31.v20200723</org.eclipse.jetty.version>
@@ -411,6 +412,7 @@
                     <configuration>
                         <preparationGoals>clean install</preparationGoals>
                         <pushChanges>true</pushChanges>
+                        <arguments>${release.arguments}</arguments>
                     </configuration>
                     <version>2.5.3</version>
                     <!-- dependencies>
