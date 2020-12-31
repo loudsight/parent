@@ -28,9 +28,9 @@
     </developers>
     <scm>
         <connection>scm:git:https://github.com/loudsight/parent.git</connection>
-        <developerConnection>scm:git:https://github.com/loudsight/parent.git</developerConnection>
+        <developerConnection>scm:git:origin</developerConnection>
         <url>https://github.com/loudsight/parent.git</url>
-      <tag>parent-0.0.8</tag>
+      <tag>parent-0.0.8.5</tag>
   </scm>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
