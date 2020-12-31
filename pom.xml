@@ -4,7 +4,7 @@
 
     <groupId>com.loudsight</groupId>
     <artifactId>parent</artifactId>
-    <version>0.0.8.5</version>
+    <version>0.0.8.6-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>Loudsight Parent Module</name>
