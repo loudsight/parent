@@ -503,11 +503,8 @@
             </activation>
             <properties>
                 <skipNexusStagingDeployMojo>true</skipNexusStagingDeployMojo>
-                <altDeploymentRepository>loudsight-azure::default::https://loudsight.pkgs.visualstudio.com/_packaging/repo1/maven/v1</altDeploymentRepository>
             </properties>
-            <distributionManagement>
-
-            </distributionManagement>
+            <distributionManagement />
         </profile>
         <profile>
             <id>ossrh</id>
@@ -530,11 +527,13 @@
                             <version>1.6</version>
                             <configuration>
                                 <gpgArguments>
-                                    <arg>--yes</arg>
-                                    <arg>--pinentry-mode</arg>
+                                    <!--
+                                    <arg>- -yes</arg>
+                                    <arg>- -pinentry-mode</arg>
                                     <arg>loopback</arg>
-                                    <!-- arg>- -no-tty</arg>
-                                                    <arg>- -batch</arg -->
+                                      -->
+                                     <arg>--no-tty</arg>
+                                     <arg>--batch</arg>
                                 </gpgArguments>
                             </configuration>
                             <executions>
@@ -554,6 +553,7 @@
                         <plugin>
                             <groupId>org.sonatype.plugins</groupId>
                             <artifactId>nexus-staging-maven-plugin</artifactId>
+                            <version>1.6.8</version>
                             <extensions>true</extensions>
                             <configuration>
                                 <serverId>ossrh</serverId>
