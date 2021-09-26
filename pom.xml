@@ -35,17 +35,20 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <release.arguments />
+        <java.version>15</java.version>
         <loudsight.utilities.version>0.0.5-SNAPSHOT</loudsight.utilities.version>
         <loudsight.persistence.version>0.0.1-SNAPSHOT</loudsight.persistence.version>
         <org.eclipse.jetty.version>9.4.41.v20210516</org.eclipse.jetty.version>
-        <springframework.version>5.3.1</springframework.version>
-        <springboot.version>2.4.0</springboot.version>
+        <springsecurity.version>5.4.5</springsecurity.version>
+        <springframework.version>5.3.4</springframework.version>
+        <springboot.version>2.4.4</springboot.version>
         <log4j.version>2.13.3</log4j.version>
         <slf4j.version>1.7.5</slf4j.version>
         <vertx.version>3.9.4</vertx.version>
         <zookeeper.version>3.5.6</zookeeper.version>
-        <kotlin.version>1.4.10</kotlin.version>
-        <kotlinx.version>1.4.0</kotlinx.version>
+        <kotlin.version>1.5.20</kotlin.version>
+        <kotlin-coroutines.version>1.5.1</kotlin-coroutines.version>
+        <junit-jupiter.version>5.7.1</junit-jupiter.version>
     </properties>
     <dependencyManagement>
         <dependencies>
@@ -54,10 +57,12 @@
                 <artifactId>javax.json-api</artifactId>
                 <version>1.1.4</version>
             </dependency>
+            <!-- junit 5 -->
             <dependency>
-                <groupId>junit</groupId>
-                <artifactId>junit</artifactId>
-                <version>4.13</version>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter-engine</artifactId>
+                <version>${junit-jupiter.version}</version>
+                <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>commons-lang</groupId>
@@ -165,31 +170,6 @@
             </dependency>
             <!-- Sorted -->
             <dependency>
-                <groupId>org.eclipse.jetty</groupId>
-                <artifactId>jetty-server</artifactId>
-                <version>${org.eclipse.jetty.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.jetty</groupId>
-                <artifactId>jetty-servlet</artifactId>
-                <version>${org.eclipse.jetty.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.jetty</groupId>
-                <artifactId>jetty-webapp</artifactId>
-                <version>${org.eclipse.jetty.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.jetty</groupId>
-                <artifactId>jetty-annotations</artifactId>
-                <version>${org.eclipse.jetty.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.jetty</groupId>
-                <artifactId>jetty-jsp</artifactId>
-                <version>${org.eclipse.jetty.version}</version>
-            </dependency>
-            <dependency>
                 <groupId>org.eclipse.jetty.websocket</groupId>
                 <artifactId>websocket-server</artifactId>
                 <version>${org.eclipse.jetty.version}</version>
@@ -257,7 +237,12 @@
             </dependency>
             <dependency>
                 <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-starter-jetty</artifactId>
+                <artifactId>spring-boot-starter-reactor-netty</artifactId>
+                <version>${springboot.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-security</artifactId>
                 <version>${springboot.version}</version>
             </dependency>
             <dependency>
@@ -271,6 +256,11 @@
                 <version>${springboot.version}</version>
             </dependency>
             <dependency>
+                <groupId>org.springframework.security</groupId>
+                <artifactId>spring-security-oauth2-client</artifactId>
+                <version>${springsecurity.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-test-autoconfigure</artifactId>
                 <version>${springboot.version}</version>
@@ -281,11 +271,6 @@
                 <artifactId>spring-boot-starter-test</artifactId>
                 <version>${springboot.version}</version>
                 <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>com.graphql-java</groupId>
-                <artifactId>graphql-spring-boot-starter</artifactId>
-                <version>5.0.2</version>
             </dependency>
             <dependency>
                 <groupId>org.springframework</groupId>
@@ -315,7 +300,17 @@
             <dependency>
                 <groupId>org.springframework.security</groupId>
                 <artifactId>spring-security-crypto</artifactId>
-                <version>${springframework.version}</version>
+                <version>${springsecurity.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.projectreactor.netty</groupId>
+                <artifactId>reactor-netty</artifactId>
+                <version>1.0.4</version>
+            </dependency>
+            <dependency>
+                <groupId>com.graphql-java</groupId>
+                <artifactId>graphql-spring-boot-starter</artifactId>
+                <version>5.0.2</version>
             </dependency>
             <dependency>
                 <groupId>org.springframework</groupId>
@@ -329,7 +324,17 @@
                 <artifactId>kotlin-stdlib</artifactId>
                 <version>${kotlin.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.jetbrains.kotlin</groupId>
+                <artifactId>kotlin-reflect</artifactId>
+                <version>${kotlin.version}</version>
+            </dependency>
 
+            <dependency>
+                <groupId>org.jetbrains.kotlin</groupId>
+                <artifactId>kotlin-scripting-jsr223</artifactId>
+                <version>${kotlin.version}</version>
+            </dependency>
             <dependency>
                 <groupId>org.jetbrains.kotlin</groupId>
                 <artifactId>kotlin-scripting-dependencies</artifactId>
@@ -345,6 +350,18 @@
                 <artifactId>kotlin-compiler-embeddable</artifactId>
                 <version>${kotlin.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.agrona</groupId>
+                <artifactId>agrona</artifactId>
+                <version>1.11.0</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jetbrains.kotlin</groupId>
+                <artifactId>kotlin-test-junit</artifactId>
+                <version>${kotlin.version}</version>
+                <scope>test</scope>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
     <build>
@@ -358,6 +375,11 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>2.22.0</version>
+                <!-- remove this config when upgrade to 3.x-->
+
+                <configuration>
+                    <forkCount>0</forkCount>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -379,6 +401,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-jar-plugin</artifactId>
+                    <version>3.2.0</version>
                     <executions>
                         <execution>
                             <goals>
@@ -386,7 +409,6 @@
                             </goals>
                         </execution>
                     </executions>
-                    <version>3.1.1</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -415,22 +437,6 @@
                         <arguments>${release.arguments}</arguments>
                     </configuration>
                     <version>2.5.3</version>
-                    <!-- dependencies>
-                                  <dependency>
-                                      <groupId>org.apache.maven.plugins</groupId>
-                                      <artifactId>maven-scm-plugin</artifactId>
-                                      <version>1.8.1</version>
-                                  </dependency>
-                              </dependencies -->
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.8.0</version>
-                    <configuration>
-                        <source>11</source>
-                        <target>11</target>
-                    </configuration>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -457,7 +463,7 @@
                     <artifactId>maven-assembly-plugin</artifactId>
                     <configuration>
                         <descriptors>
-                            <descriptor>src/main/assembly/zip.xml</descriptor>
+                            <descriptor>src/assembly/zip.xml</descriptor>
                         </descriptors>
                     </configuration>
                     <executions>
@@ -479,12 +485,61 @@
                             <goals>
                                 <goal>compile</goal>
                             </goals>
+                            <configuration>
+                                <sourceDirs>
+                                    <sourceDir>${project.basedir}/src/main/kotlin</sourceDir>
+                                    <sourceDir>${project.basedir}/src/main/java</sourceDir>
+                                    <sourceDir>${project.build.directory}/generated-sources/protoc</sourceDir>
+                                </sourceDirs>
+                            </configuration>
                         </execution>
-
                         <execution>
                             <id>test-compile</id>
+                            <goals> <goal>test-compile</goal> </goals>
+                            <configuration>
+                                <sourceDirs>
+                                    <sourceDir>${project.basedir}/src/test/kotlin</sourceDir>
+                                    <sourceDir>${project.basedir}/src/test/java</sourceDir>
+                                </sourceDirs>
+
+                            </configuration>
+                        </execution>
+                    </executions>
+                    <configuration>
+                        <jvmTarget>${java.version}</jvmTarget>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>3.8.0</version>
+                    <configuration>
+                        <source>${java.version}</source>
+                        <target>${java.version}</target>
+                    </configuration>
+                    <executions>
+                        <!-- Replacing default-compile as it is treated specially by maven -->
+                        <execution>
+                            <id>default-compile</id>
+                            <phase>none</phase>
+                        </execution>
+                        <!-- Replacing default-testCompile as it is treated specially by maven -->
+                        <execution>
+                            <id>default-testCompile</id>
+                            <phase>none</phase>
+                        </execution>
+                        <execution>
+                            <id>java-compile</id>
+                            <phase>compile</phase>
                             <goals>
-                                <goal>test-compile</goal>
+                                <goal>compile</goal>
+                            </goals>
+                        </execution>
+                        <execution>
+                            <id>java-test-compile</id>
+                            <phase>test-compile</phase>
+                            <goals>
+                                <goal>testCompile</goal>
                             </goals>
                         </execution>
                     </executions>
@@ -492,6 +547,17 @@
             </plugins>
         </pluginManagement>
     </build>
+    <dependencies>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-core</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+        </dependency>
+    </dependencies>
     <profiles>
         <profile>
             <id>azure</id>
@@ -704,8 +770,8 @@
                     <version>${slf4j.version}</version>
                 </dependency>
                 <dependency>
-                    <groupId>junit</groupId>
-                    <artifactId>junit</artifactId>
+                    <groupId>org.junit.jupiter</groupId>
+                    <artifactId>junit-jupiter-engine</artifactId>
                     <scope>test</scope>
                 </dependency>
             </dependencies>
