@@ -2,11 +2,6 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.loudsight</groupId>
-    <artifactId>parent</artifactId>
-    <version>0.0.9-SNAPSHOT</version>
-    <packaging>pom</packaging>
-
     <name>Loudsight Parent Module</name>
     <description>Loudsight Parent Module</description>
     <url>https://loudsight.com/</url>
@@ -33,6 +28,8 @@
       <tag>parent-0.0.8.5</tag>
   </scm>
     <properties>
+        <!-- Sane default when no revision property is passed in from the commandline -->
+        <revision>0-SNAPSHOT</revision>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <release.arguments />
         <java.version>15</java.version>
@@ -50,6 +47,12 @@
         <kotlin-coroutines.version>1.5.1</kotlin-coroutines.version>
         <junit-jupiter.version>5.7.1</junit-jupiter.version>
     </properties>
+
+    <groupId>com.loudsight</groupId>
+    <artifactId>parent</artifactId>
+    <version>0.0.9.${revision}</version>
+    <packaging>pom</packaging>
+
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -429,14 +432,11 @@
                     <version>3.1.1</version>
                 </plugin>
                 <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-release-plugin</artifactId>
+                    <artifactId>maven-scm-plugin</artifactId>
+                    <version>1.12.0</version>
                     <configuration>
-                        <preparationGoals>clean install</preparationGoals>
-                        <pushChanges>true</pushChanges>
-                        <arguments>${release.arguments}</arguments>
+                        <tag>${project.artifactId}-${project.version}</tag>
                     </configuration>
-                    <version>2.5.3</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
