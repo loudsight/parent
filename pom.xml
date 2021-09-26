@@ -39,7 +39,7 @@
         <loudsight.utilities.version>0.0.5-SNAPSHOT</loudsight.utilities.version>
         <loudsight.persistence.version>0.0.1-SNAPSHOT</loudsight.persistence.version>
         <org.eclipse.jetty.version>9.4.41.v20210516</org.eclipse.jetty.version>
-        <springsecurity.version>5.4.5</springsecurity.version>
+        <springsecurity.version>5.4.7</springsecurity.version>
         <springframework.version>5.3.4</springframework.version>
         <springboot.version>2.4.4</springboot.version>
         <log4j.version>2.13.3</log4j.version>
