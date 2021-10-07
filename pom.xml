@@ -29,7 +29,7 @@
   </scm>
     <properties>
         <!-- Sane default when no revision property is passed in from the commandline -->
-        <revision>0-SNAPSHOT</revision>
+        <revision>0</revision>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <release.arguments />
         <java.version>15</java.version>
