@@ -31,10 +31,10 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <release.arguments />
         <java.version>15</java.version>
-<!--
         <loudsight.utilities.version>0.0.5-SNAPSHOT</loudsight.utilities.version>
-        <loudsight.persistence.version>0.0.1-SNAPSHOT</loudsight.persistence.version>
--->
+        <!--
+                <loudsight.persistence.version>0.0.1-SNAPSHOT</loudsight.persistence.version>
+        -->
         <org.eclipse.jetty.version>9.4.41.v20210516</org.eclipse.jetty.version>
         <springsecurity.version>5.4.7</springsecurity.version>
         <springframework.version>5.3.4</springframework.version>
