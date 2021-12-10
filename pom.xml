@@ -732,14 +732,7 @@
             </build>
             <dependencyManagement>
                 <dependencies>
-<!--
-                    <dependency>
-                        <groupId>com.loudsight.utilities</groupId>
-                        <artifactId>entity</artifactId>
-                        <classifier>js</classifier>
-                        <version>${loudsight.utilities.version}</version>
-                    </dependency>
--->
+
                     <dependency>
                         <groupId>org.jetbrains.kotlin</groupId>
                         <artifactId>kotlin-stdlib-js</artifactId>
