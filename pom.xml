@@ -696,7 +696,7 @@
             <id>js-compile</id>
             <activation>
                 <file>
-                    <missing>${basedir}/package.json</missing>
+                    <exists>${basedir}/package.json</exists>
                 </file>
                 <activeByDefault>false</activeByDefault>
             </activation>
