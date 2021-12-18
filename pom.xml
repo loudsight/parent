@@ -33,7 +33,6 @@
         <java.version>16</java.version>
         <loudsight.utilities.version>0.0.5-SNAPSHOT</loudsight.utilities.version>
         <loudsight.persistence.version>0.0.1-SNAPSHOT</loudsight.persistence.version>
-        <org.eclipse.jetty.version>9.4.41.v20210516</org.eclipse.jetty.version>
         <springsecurity.version>5.6.0</springsecurity.version>
         <springframework.version>5.3.13</springframework.version>
         <springboot.version>2.6.1</springboot.version>
@@ -168,21 +167,6 @@
                 <version>2.3.14</version>
             </dependency>
 
-             <dependency>
-                <groupId>org.eclipse.jetty.websocket</groupId>
-                <artifactId>websocket-server</artifactId>
-                <version>${org.eclipse.jetty.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.jetty.websocket</groupId>
-                <artifactId>javax-websocket-server-impl</artifactId>
-                <version>${org.eclipse.jetty.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.jetty.websocket</groupId>
-                <artifactId>websocket-servlet</artifactId>
-                <version>${org.eclipse.jetty.version}</version>
-            </dependency>
             <dependency>
                 <groupId>org.scannotation</groupId>
                 <artifactId>scannotation</artifactId>
