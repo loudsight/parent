@@ -709,6 +709,7 @@
                                         </args>
                                         <moduleKind>umd</moduleKind>
                                         <sourceMap>true</sourceMap>
+                                        <sourceMapEmbedSources>always</sourceMapEmbedSources>
 
                                         <outputFile>${project.build.outputDirectory}/${project.artifactId}.js</outputFile>
                                     </configuration>
