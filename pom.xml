@@ -27,7 +27,7 @@
   </scm>
     <properties>
         
-        <revision>1</revision>
+        <revision>0</revision>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <release.arguments />
         <java.version>17</java.version>
