@@ -544,6 +544,9 @@
                             <configuration>
                                 <rules>
                                     <dependencyConvergence />
+                                    <requireMavenVersion>
+                                        <version>3.1.1</version>
+                                    </requireMavenVersion>
                                 </rules>
                             </configuration>
                         </execution>
