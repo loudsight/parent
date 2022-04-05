@@ -32,9 +32,9 @@
         <java.version>17</java.version>
         <loudsight.utilities.version>0-SNAPSHOT</loudsight.utilities.version>
         <loudsight.persistence.version>0-SNAPSHOT</loudsight.persistence.version>
-        <springsecurity.version>5.6.0</springsecurity.version>
-        <springframework.version>5.3.13</springframework.version>
-        <springboot.version>2.6.1</springboot.version>
+        <springsecurity.version>5.6.2</springsecurity.version>
+        <springframework.version>5.3.18</springframework.version>
+        <springboot.version>2.6.6</springboot.version>
         <log4j.version>2.17.0</log4j.version>
         <slf4j.version>1.7.5</slf4j.version>
         <vertx.version>3.9.4</vertx.version>
