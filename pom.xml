@@ -42,9 +42,10 @@
         <kotlin.version>1.6.10</kotlin.version>
         <kotlin-coroutines.version>1.6.0</kotlin-coroutines.version>
         <junit-jupiter.version>5.8.2</junit-jupiter.version>
-        <neo4j.version>4.4.2</neo4j.version>
-        <neo4j.driver.version>4.4.2</neo4j.driver.version>
-        <neo4j.browser.version>4.4.1</neo4j.browser.version>
+        <neo4j.version>4.4.5</neo4j.version>
+        <neo4j.driver.version>4.4.5</neo4j.driver.version>
+        <neo4j.browser.version>4.4.4</neo4j.browser.version>
+        <jackson.version>2.13.2</jackson.version>
     </properties>
 
     <groupId>com.loudsight</groupId>
@@ -109,12 +110,12 @@
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-core</artifactId>
-                <version>2.13.2</version>
+                <version>${jackson.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-databind</artifactId>
-                <version>2.13.2</version>
+                <version>${jackson.version}</version>
             </dependency>
 
             <dependency>
@@ -276,7 +277,7 @@
             <dependency>
                 <groupId>io.projectreactor.netty</groupId>
                 <artifactId>reactor-netty</artifactId>
-                <version>1.0.13</version>
+                <version>1.0.17</version>
             </dependency>
             <dependency>
                 <groupId>com.graphql-java</groupId>
