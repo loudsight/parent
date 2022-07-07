@@ -841,7 +841,6 @@
                                     <phase>process-test-sources</phase>
                                     <configuration>
                                         <sourceDirs>
-                                            <sourceDir>src/test/java</sourceDir>
                                             <sourceDir>src/test/kotlin</sourceDir>
                                         </sourceDirs>
                                         <annotationProcessorPaths>
