@@ -841,6 +841,7 @@
                                     <phase>process-test-sources</phase>
                                     <configuration>
                                         <sourceDirs>
+                                            <sourceDir>src/test/java</sourceDir>
                                             <sourceDir>src/test/kotlin</sourceDir>
                                         </sourceDirs>
                                         <annotationProcessorPaths>
@@ -885,6 +886,7 @@
                                     </goals>
                                     <configuration>
                                         <sourceDirs>
+                                            <sourceDir>${project.basedir}/src/test/java</sourceDir>
                                             <sourceDir>${project.basedir}/src/test/kotlin</sourceDir>
                                             <sourceDir>${project.build.directory}/generated-sources/kaptKotlin/test</sourceDir>
                                         </sourceDirs>
