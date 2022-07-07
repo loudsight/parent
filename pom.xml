@@ -768,37 +768,6 @@
                 <pluginManagement>
                     <plugins>
                         <plugin>
-                            <groupId>org.codehaus.mojo</groupId>
-                            <artifactId>build-helper-maven-plugin</artifactId>
-                            <version>1.9.1</version>
-                            <executions>
-                                <execution>
-                                    <id>add-source</id>
-                                    <phase>process-resources</phase>
-                                    <goals>
-                                        <goal>add-source</goal>
-                                    </goals>
-                                    <configuration>
-                                        <sources>
-                                            <source>${project.build.directory}/generated-sources/annotations</source>
-                                        </sources>
-                                    </configuration>
-                                </execution>
-                                <execution>
-                                    <id>add-test-source</id>
-                                    <phase>process-test-resources</phase>
-                                    <goals>
-                                        <goal>add-test-source</goal>
-                                    </goals>
-                                    <configuration>
-                                        <sources>
-                                            <source>${project.build.directory}/generated-test-sources/test-annotations</source>
-                                        </sources>
-                                    </configuration>
-                                </execution>
-                            </executions>
-                        </plugin>
-                        <plugin>
                             <groupId>org.jetbrains.kotlin</groupId>
                             <artifactId>kotlin-maven-plugin</artifactId>
                             <version>${kotlin.version}</version>
@@ -887,7 +856,7 @@
                                     <configuration>
                                         <sourceDirs>
                                             <sourceDir>${project.basedir}/src/test/kotlin</sourceDir>
-                                            <sourceDir>${project.build.directory}/generated-sources/kaptKotlin/test</sourceDir>
+                                            <sourceDir>${project.build.directory}/generated-test-sources/test-annotations</sourceDir>
                                         </sourceDirs>
                                     </configuration>
                                 </execution>
