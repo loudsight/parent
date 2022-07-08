@@ -381,7 +381,7 @@
     </dependencyManagement>
     <build>
         <plugins>
-            <plugin>
+            <!-- plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>
                 <version>1.9.1</version>
@@ -411,7 +411,7 @@
                         </configuration>
                     </execution>
                 </executions>
-            </plugin>
+            </plugin -->
             <plugin>
                 <groupId>org.jetbrains.kotlin</groupId>
                 <artifactId>kotlin-maven-plugin</artifactId>
@@ -454,6 +454,7 @@
                             <configuration>
                                 <sourceDirs>
                                     <sourceDir>src/main/java</sourceDir>
+                                    <sourceDir>src/main/kotlin</sourceDir>
                                 </sourceDirs>
                                 <annotationProcessorPaths>
                                     <annotationProcessorPath>
