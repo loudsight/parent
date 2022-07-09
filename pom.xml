@@ -381,37 +381,6 @@
     </dependencyManagement>
     <build>
         <plugins>
-            <!-- plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>build-helper-maven-plugin</artifactId>
-                <version>1.9.1</version>
-                <executions>
-                    <execution>
-                        <id>add-source</id>
-                        <phase>process-resources</phase>
-                        <goals>
-                            <goal>add-source</goal>
-                        </goals>
-                        <configuration>
-                            <sources>
-                                <source>${project.build.directory}/generated-sources/kaptKotlin/compile</source>
-                            </sources>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>add-test-source</id>
-                        <phase>process-test-resources</phase>
-                        <goals>
-                            <goal>add-test-source</goal>
-                        </goals>
-                        <configuration>
-                            <sources>
-                                <source>${project.build.directory}/generated-sources/kaptKotlin/test</source>
-                            </sources>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin -->
             <plugin>
                 <groupId>org.jetbrains.kotlin</groupId>
                 <artifactId>kotlin-maven-plugin</artifactId>
@@ -498,8 +467,8 @@
                             </goals>
                             <configuration>
                                 <sourceDirs>
-                                    <sourceDir>${project.basedir}/src/main/kotlin</sourceDir>
-                                    <sourceDir>${project.basedir}/src/main/java</sourceDir>
+                                    <sourceDir>src/main/kotlin</sourceDir>
+                                    <sourceDir>src/main/java</sourceDir>
                                     <sourceDir>${project.build.directory}/generated-sources/kaptKotlin/compile</sourceDir>
                                 </sourceDirs>
                             </configuration>
@@ -509,8 +478,8 @@
                             <goals> <goal>test-compile</goal> </goals>
                             <configuration>
                                 <sourceDirs>
-                                    <sourceDir>${project.basedir}/src/test/kotlin</sourceDir>
-                                    <sourceDir>${project.basedir}/src/test/java</sourceDir>
+                                    <sourceDir>src/test/kotlin</sourceDir>
+                                    <sourceDir>src/test/java</sourceDir>
                                     <sourceDir>${project.build.directory}/generated-sources/kaptKotlin/test</sourceDir>
                                 </sourceDirs>
                             </configuration>
@@ -834,7 +803,8 @@
                                     </goals>
                                     <configuration>
                                         <sourceDirs>
-                                            <sourceDir>${project.basedir}/src/main/kotlin</sourceDir>
+                                            <sourceDir>src/main/kotlin</sourceDir>
+                                            <sourceDir>${project.build.directory}/generated-sources/kaptKotlin/compile</sourceDir>
                                         </sourceDirs>
                                         <args>
                                             <arg>-Xuse-ir</arg>
@@ -856,8 +826,8 @@
                                     </goals>
                                     <configuration>
                                         <sourceDirs>
-                                            <sourceDir>${project.basedir}/src/test/kotlin</sourceDir>
-                                            <sourceDir>${project.build.directory}/generated-test-sources/test-annotations</sourceDir>
+                                            <sourceDir>src/test/kotlin</sourceDir>
+                                            <sourceDir>${project.build.directory}/generated-sources/kaptKotlin/test</sourceDir>
                                         </sourceDirs>
                                     </configuration>
                                 </execution>
