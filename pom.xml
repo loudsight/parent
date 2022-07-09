@@ -827,7 +827,6 @@
                                     <configuration>
                                         <sourceDirs>
                                             <sourceDir>src/test/kotlin</sourceDir>
-                                            <sourceDir>${project.build.directory}/generated-sources/kaptKotlin/test</sourceDir>
                                         </sourceDirs>
                                     </configuration>
                                 </execution>
