@@ -27,22 +27,22 @@
   </scm>
     <properties>
         
-        <revision>1-SNAPSHOT</revision>
+        <revision>0-SNAPSHOT</revision>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <release.arguments />
         <java.version>17</java.version>
-        <loudsight.utilities.version>0.0.5-SNAPSHOT</loudsight.utilities.version>
+        <loudsight.utilities.version>0-SNAPSHOT</loudsight.utilities.version>
         <loudsight.persistence.version>0.0.1-SNAPSHOT</loudsight.persistence.version>
-        <springsecurity.version>5.6.0</springsecurity.version>
-        <springframework.version>5.3.13</springframework.version>
-        <springboot.version>2.6.1</springboot.version>
+        <springsecurity.version>5.7.3</springsecurity.version>
+        <springframework.version>5.3.23</springframework.version>
+        <springboot.version>2.7.4</springboot.version>
         <log4j.version>2.17.0</log4j.version>
         <slf4j.version>1.7.5</slf4j.version>
         <vertx.version>3.9.4</vertx.version>
         <zookeeper.version>3.5.6</zookeeper.version>
         <kotlin.version>1.6.10</kotlin.version>
         <kotlin-coroutines.version>1.6.0</kotlin-coroutines.version>
-        <junit-jupiter.version>5.8.1</junit-jupiter.version>
+        <junit-jupiter.version>5.8.2</junit-jupiter.version>
         <neo4j.version>4.4.2</neo4j.version>
         <neo4j.driver.version>4.4.2</neo4j.driver.version>
         <neo4j.browser.version>4.4.1</neo4j.browser.version>
@@ -56,6 +56,20 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
+                <groupId>io.netty</groupId>
+                <artifactId>netty-bom</artifactId>
+                <version>4.1.81.Final</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-framework-bom</artifactId>
+                <version>${springframework.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
                 <groupId>javax.json</groupId>
                 <artifactId>javax.json-api</artifactId>
                 <version>1.1.4</version>
@@ -64,6 +78,11 @@
                 <groupId>org.glassfish</groupId>
                 <artifactId>javax.json</artifactId>
                 <version>1.1</version>
+            </dependency>
+            <dependency>
+                <groupId>net.minidev</groupId>
+                <artifactId>json-smart</artifactId>
+                <version>2.4.8</version>
             </dependency>
 
             <dependency>
@@ -110,12 +129,12 @@
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-core</artifactId>
-                <version>2.13.0</version>
+                <version>2.13.4</version>
             </dependency>
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-databind</artifactId>
-                <version>2.13.0</version>
+                <version>2.13.4</version>
             </dependency>
 
             <dependency>
@@ -164,7 +183,7 @@
             <dependency>
                 <groupId>org.mockito</groupId>
                 <artifactId>mockito-core</artifactId>
-                <version>4.0.0</version>
+                <version>4.8.0</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
@@ -219,7 +238,7 @@
             </dependency>
             <dependency>
                 <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-starter-jooq</artifactId>
+                <artifactId>spring-boot-starter-validation</artifactId>
                 <version>${springboot.version}</version>
             </dependency>
             <dependency>
@@ -274,9 +293,29 @@
                 <version>1.0.13</version>
             </dependency>
             <dependency>
-                <groupId>com.graphql-java</groupId>
-                <artifactId>graphql-spring-boot-starter</artifactId>
-                <version>5.0.2</version>
+                <groupId>io.netty</groupId>
+                <artifactId>netty-codec-http</artifactId>
+                <version>4.1.81.Final</version>
+            </dependency>
+            <dependency>
+                <groupId>org.reactivestreams</groupId>
+                <artifactId>reactive-streams</artifactId>
+                <version>1.0.4</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>31.0.1-jre</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jboss.logging</groupId>
+                <artifactId>jboss-logging</artifactId>
+                <version>3.4.1.Final</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-api</artifactId>
+                <version>${log4j.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.springframework</groupId>
