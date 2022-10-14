@@ -854,6 +854,7 @@
                                     <configuration>
                                         <sourceDirs>
                                             <sourceDir>${project.basedir}/src/test/kotlin</sourceDir>
+                                            <sourceDir>${project.build.directory}/generated-sources/kaptKotlin/compile</sourceDir>
                                             <sourceDir>${project.build.directory}/generated-sources/kaptKotlin/test</sourceDir>
                                         </sourceDirs>
                                     </configuration>
