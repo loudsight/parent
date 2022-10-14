@@ -766,9 +766,6 @@
         <profile>
             <id>js-compile</id>
             <activation>
-                <file>
-                    <exists>${basedir}/package.json</exists>
-                </file>
                 <activeByDefault>false</activeByDefault>
             </activation>
             <build>
@@ -834,6 +831,7 @@
                                     <configuration>
                                         <sourceDirs>
                                             <sourceDir>${project.basedir}/src/main/kotlin</sourceDir>
+                                            <sourceDir>${project.build.directory}/generated-sources/kaptKotlin/compile</sourceDir>
                                         </sourceDirs>
                                         <args>
                                             <arg>-Xuse-ir</arg>
@@ -856,6 +854,7 @@
                                     <configuration>
                                         <sourceDirs>
                                             <sourceDir>${project.basedir}/src/test/kotlin</sourceDir>
+                                            <sourceDir>${project.build.directory}/generated-sources/kaptKotlin/test</sourceDir>
                                         </sourceDirs>
                                     </configuration>
                                 </execution>
