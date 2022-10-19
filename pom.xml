@@ -45,7 +45,7 @@
         <neo4j.version>4.4.5</neo4j.version>
         <neo4j.driver.version>4.4.5</neo4j.driver.version>
         <neo4j.browser.version>4.4.4</neo4j.browser.version>
-        <jackson.version>2.13.3</jackson.version>
+        <jackson.version>2.13.4.1</jackson.version>
         <netty.version>4.1.79.Final</netty.version>
     </properties>
 
