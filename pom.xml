@@ -525,7 +525,6 @@
                             <configuration>
                                 <sourceDirs>
                                     <sourceDir>${project.basedir}/src/test/kotlin</sourceDir>
-                                    <sourceDir>${project.basedir}/src/test/java</sourceDir>
                                     <sourceDir>${project.build.directory}/generated-sources/kaptKotlin/test</sourceDir>
                                 </sourceDirs>
 
