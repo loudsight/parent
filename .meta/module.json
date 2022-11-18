@@ -1,3 +1,4 @@
 {
-  "prerequisites": ["automation/pyscripting/server_helper"]
+  "prerequisites": ["automation/pyscripting/server_helper"],
+  "can_publish": true
 }
