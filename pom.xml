@@ -945,7 +945,7 @@
                                         <sourceMap>true</sourceMap>
                                         <sourceMapEmbedSources>always</sourceMapEmbedSources>
 
-                                        <outputFile>${project.build.outputDirectory}/${project.artifactId}.js</outputFile>
+                                        <outputFile>${project.build.outputDirectory}/${js.artifact.name}.js</outputFile>
                                     </configuration>
                                 </execution>
                                 <execution>
@@ -1012,7 +1012,9 @@
                             <version>3.1.1</version>
                             <configuration>
                                 <classifier>js</classifier>
+                                <finalName>${js.artifact.name}</finalName>
                             </configuration>
+
                         </plugin>
                         <plugin>
                             <groupId>org.apache.maven.plugins</groupId>
