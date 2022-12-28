@@ -31,9 +31,9 @@
         <java.version>17</java.version>
         <loudsight.utilities.version>0-SNAPSHOT</loudsight.utilities.version>
         <loudsight.persistence.version>0-SNAPSHOT</loudsight.persistence.version>
-        <springsecurity.version>6.0.0</springsecurity.version>
-        <springframework.version>6.0.2</springframework.version>
-        <springboot.version>3.0.0</springboot.version>
+        <springsecurity.version>6.0.1</springsecurity.version>
+        <springframework.version>6.0.3</springframework.version>
+        <springboot.version>3.0.1</springboot.version>
         <log4j.version>2.19.0</log4j.version>
         <slf4j.version>2.0.5</slf4j.version>
         <aeron.version>1.39.0</aeron.version>
