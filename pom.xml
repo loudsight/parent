@@ -28,7 +28,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <release.arguments />
-        <java.version>18</java.version>
+        <java.version>17</java.version>
         <loudsight.utilities.version>0-SNAPSHOT</loudsight.utilities.version>
         <loudsight.persistence.version>0-SNAPSHOT</loudsight.persistence.version>
         <springsecurity.version>6.0.1</springsecurity.version>
