@@ -483,7 +483,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.10.1</version>
+                    <version>3.11.0</version>
                     <configuration>
                         <source>${java.version}</source>
                         <target>${java.version}</target>
@@ -523,7 +523,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-pmd-plugin</artifactId>
-                    <version>3.17.0</version>
+                    <version>3.21.0</version>
                     <configuration>
                         <rulesets>
                             <ruleset>/category/java/bestpractices.xml</ruleset>
@@ -541,7 +541,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
-                    <version>3.0.0-M5</version>
+                    <version>3.1.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -563,7 +563,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-dependency-plugin</artifactId>
-                    <version>3.3.0</version>
+                    <version>3.6.0</version>
                     <executions>
                         <execution>
                             <id>copy-dependencies</id>
@@ -580,7 +580,7 @@
                 </plugin>
                 <plugin>
                     <artifactId>maven-scm-plugin</artifactId>
-                    <version>1.13.0</version>
+                    <version>2.0.1</version>
                     <configuration>
                         <tag>${project.artifactId}-${project.version}</tag>
                     </configuration>
@@ -609,7 +609,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-assembly-plugin</artifactId>
-                    <version>3.3.0</version>
+                    <version>3.6.0</version>
                     <configuration>
                         <descriptors>
                             <descriptor>src/assembly/zip.xml</descriptor>
