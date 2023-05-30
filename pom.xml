@@ -30,20 +30,21 @@
         <release.arguments />
         <java.version>17</java.version>
         <loudsight.utilities.version>0-SNAPSHOT</loudsight.utilities.version>
+        <loudsight.useful.version>0.0.2-SNAPSHOT</loudsight.useful.version>
         <loudsight.persistence.version>0-SNAPSHOT</loudsight.persistence.version>
-        <springsecurity.version>6.0.1</springsecurity.version>
-        <springframework.version>6.0.3</springframework.version>
-        <springboot.version>3.0.1</springboot.version>
-        <log4j.version>2.19.0</log4j.version>
-        <slf4j.version>2.0.5</slf4j.version>
+        <springsecurity.version>6.1.0</springsecurity.version>
+        <springframework.version>6.0.9</springframework.version>
+        <springboot.version>3.1.0</springboot.version>
+        <log4j.version>2.20.0</log4j.version>
+        <slf4j.version>2.0.7</slf4j.version>
         <aeron.version>1.39.0</aeron.version>
         <zookeeper.version>3.5.6</zookeeper.version>
         <kotlin.version>1.6.21</kotlin.version>
         <kotlin-coroutines.version>1.6.4</kotlin-coroutines.version>
-        <junit-jupiter.version>5.8.2</junit-jupiter.version>
-        <neo4j.version>5.2.0</neo4j.version>
-        <neo4j.driver.version>5.3.0</neo4j.driver.version>
-        <neo4j.browser.version>5.0.0</neo4j.browser.version>
+        <junit-jupiter.version>5.9.3</junit-jupiter.version>
+        <neo4j.version>5.8.0</neo4j.version>
+        <neo4j.driver.version>5.9.0</neo4j.driver.version>
+        <neo4j.browser.version>5.6.0</neo4j.browser.version>
         <jackson.version>2.14.1</jackson.version>
         <netty.version>4.1.85.Final</netty.version>
         <jetty.version>9.4.49.v20220914</jetty.version>
@@ -73,17 +74,27 @@
             <dependency>
                 <groupId>com.loudsight.useful</groupId>
                 <artifactId>entity</artifactId>
-                <version>0.0.2-SNAPSHOT</version>
+                <version>${loudsight.useful.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.loudsight.useful</groupId>
                 <artifactId>helper</artifactId>
-                <version>0.0.2-SNAPSHOT</version>
+                <version>${loudsight.useful.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.loudsight.useful</groupId>
+                <artifactId>service</artifactId>
+                <version>${loudsight.useful.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.loudsight.useful</groupId>
+                <artifactId>web</artifactId>
+                <version>${loudsight.useful.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.loudsight.useful</groupId>
                 <artifactId>string</artifactId>
-                <version>0.0.2-SNAPSHOT</version>
+                <version>${loudsight.useful.version}</version>
             </dependency>
             <dependency>
                 <groupId>javax.json</groupId>
