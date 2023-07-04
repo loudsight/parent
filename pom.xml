@@ -551,6 +551,7 @@
                     <artifactId>maven-pmd-plugin</artifactId>
                     <version>3.21.0</version>
                     <configuration>
+                        <printFailingErrors>true</printFailingErrors>
                         <rulesets>
                             <ruleset>/category/java/bestpractices.xml</ruleset>
                         </rulesets>
