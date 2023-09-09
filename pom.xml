@@ -52,7 +52,7 @@
 
     <groupId>com.loudsight</groupId>
     <artifactId>parent</artifactId>
-    <version>0.0.15-SNAPSHOT</version>
+    <version>0.0.15</version>
     <packaging>pom</packaging>
 
     <dependencyManagement>
@@ -72,18 +72,23 @@
                 <scope>import</scope>
             </dependency>
             <dependency>
+                <groupId>com.loudsight</groupId>
+                <artifactId>helper</artifactId>
+                <version>0.0.1-SNAPSHOT</version>
+            </dependency>
+            <dependency>
                 <groupId>com.loudsight.useful</groupId>
                 <artifactId>entity</artifactId>
                 <version>${loudsight.useful.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.loudsight.useful</groupId>
-                <artifactId>helper</artifactId>
+                <artifactId>service</artifactId>
                 <version>${loudsight.useful.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.loudsight.useful</groupId>
-                <artifactId>service</artifactId>
+                <artifactId>helper</artifactId>
                 <version>${loudsight.useful.version}</version>
             </dependency>
             <dependency>
