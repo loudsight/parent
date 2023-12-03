@@ -44,10 +44,10 @@
         <junit-jupiter.version>5.10.0</junit-jupiter.version>
         <neo4j.version>5.11.0</neo4j.version>
         <neo4j.driver.version>5.12.0</neo4j.driver.version>
-        <neo4j.browser.version>5.6.0</neo4j.browser.version>
+        <neo4j.browser.version>5.11.0</neo4j.browser.version>
         <jackson.version>2.14.1</jackson.version>
         <netty.version>4.1.85.Final</netty.version>
-        <jetty.version>12.0.1</jetty.version>
+        <jetty.version>10.0.15</jetty.version>
     </properties>
 
     <groupId>com.loudsight</groupId>
