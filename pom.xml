@@ -28,26 +28,26 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <release.arguments />
-        <java.version>17</java.version>
+        <java.version>21</java.version>
         <loudsight.utilities.version>0-SNAPSHOT</loudsight.utilities.version>
         <loudsight.useful.version>0.0.2-SNAPSHOT</loudsight.useful.version>
         <loudsight.persistence.version>0-SNAPSHOT</loudsight.persistence.version>
         <springsecurity.version>6.3.1</springsecurity.version>
-        <springframework.version>6.1.11</springframework.version>
-        <springboot.version>3.3.2</springboot.version>
+        <springframework.version>6.1.14</springframework.version>
+        <springboot.version>3.3.5</springboot.version>
         <log4j.version>2.20.0</log4j.version>
         <slf4j.version>2.0.13</slf4j.version>
-        <logback.version>1.5.6</logback.version>
+        <logback.version>1.5.11</logback.version>
         <aeron.version>1.41.4</aeron.version>
         <zookeeper.version>3.5.6</zookeeper.version>
         <kotlin.version>1.6.21</kotlin.version>
         <kotlin-coroutines.version>1.6.4</kotlin-coroutines.version>
         <junit-jupiter.version>5.10.0</junit-jupiter.version>
-        <neo4j.version>5.11.0</neo4j.version>
-        <neo4j.driver.version>5.12.0</neo4j.driver.version>
-        <neo4j.browser.version>5.11.0</neo4j.browser.version>
+        <neo4j.version>5.25.1</neo4j.version>
+        <neo4j.driver.version>5.26.1</neo4j.driver.version>
+        <neo4j.browser.version>5.24.0</neo4j.browser.version>
         <jackson.version>2.14.1</jackson.version>
-        <netty.version>4.1.85.Final</netty.version>
+        <netty.version>4.1.114.Final</netty.version>
         <jetty.version>10.0.15</jetty.version>
     </properties>
 
@@ -388,7 +388,7 @@
             <dependency>
                 <groupId>io.projectreactor.netty</groupId>
                 <artifactId>reactor-netty</artifactId>
-                <version>1.0.23</version>
+                <version>1.1.23</version>
             </dependency>
             <dependency>
                 <groupId>jakarta.annotation</groupId>
@@ -428,7 +428,7 @@
             <dependency>
                 <groupId>io.projectreactor</groupId>
                 <artifactId>reactor-core</artifactId>
-                <version>3.5.0</version>
+                <version>3.6.11</version>
             </dependency>
             <dependency>
                 <groupId>io.netty</groupId>
