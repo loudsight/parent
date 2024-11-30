@@ -32,9 +32,9 @@
         <loudsight.utilities.version>0-SNAPSHOT</loudsight.utilities.version>
         <loudsight.useful.version>0.0.2-SNAPSHOT</loudsight.useful.version>
         <loudsight.persistence.version>0-SNAPSHOT</loudsight.persistence.version>
-        <springsecurity.version>6.3.1</springsecurity.version>
-        <springframework.version>6.1.14</springframework.version>
-        <springboot.version>3.3.5</springboot.version>
+        <springsecurity.version>6.4.1</springsecurity.version>
+        <springframework.version>6.2.0</springframework.version>
+        <springboot.version>3.4.0</springboot.version>
         <log4j.version>2.20.0</log4j.version>
         <slf4j.version>2.0.13</slf4j.version>
         <logback.version>1.5.11</logback.version>
@@ -291,6 +291,11 @@
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-starter</artifactId>
+                <version>${springboot.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-thymeleaf</artifactId>
                 <version>${springboot.version}</version>
             </dependency>
             <dependency>
