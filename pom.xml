@@ -49,6 +49,7 @@
         <jackson.version>2.14.1</jackson.version>
         <netty.version>4.1.114.Final</netty.version>
         <jetty.version>10.0.15</jetty.version>
+        <sbe.tool.version>1.34.0</sbe.tool.version>
     </properties>
 
     <groupId>com.loudsight</groupId>
@@ -121,6 +122,11 @@
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-text</artifactId>
                 <version>1.10.0</version>
+            </dependency>
+            <dependency>
+                <groupId>uk.co.real-logic</groupId>
+                <artifactId>sbe-tool</artifactId>
+                <version>${sbe.tool.version}</version>
             </dependency>
 
             <dependency>
@@ -484,7 +490,6 @@
                     </exclusion>
                 </exclusions>
             </dependency>
-
         </dependencies>
     </dependencyManagement>
     <build>
@@ -496,11 +501,6 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>exec-maven-plugin</artifactId>
-                <version>3.0.0</version>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -533,7 +533,6 @@
                         <release>${java.version}</release>
                     </configuration>
                 </plugin>
-
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>build-helper-maven-plugin</artifactId>
@@ -561,7 +560,6 @@
                                 </sources>
                             </configuration>
                         </execution>
-
                     </executions>
                 </plugin>
                 <plugin>
@@ -573,6 +571,9 @@
                         <rulesets>
                             <ruleset>/category/java/bestpractices.xml</ruleset>
                         </rulesets>
+                        <excludeRoots>
+                            <excludeRoot>${project.build.directory}/generated-sources/sbe</excludeRoot>
+                        </excludeRoots>
                     </configuration>
                     <executions>
                         <execution>
@@ -702,6 +703,41 @@
                         </execution>
                     </executions>
                 </plugin>
+                <plugin>
+                    <groupId>org.codehaus.gmaven</groupId>
+                    <artifactId>groovy-maven-plugin</artifactId>
+                    <version>2.1.1</version>
+                    <dependencies>
+                        <dependency>
+                            <groupId>org.codehaus.groovy</groupId>
+                            <artifactId>groovy-all</artifactId>
+                            <version>2.0.1</version>
+                        </dependency>
+                    </dependencies>
+                    <executions>
+                        <execution>
+                            <id>Execute docker</id>
+                            <phase>package</phase>
+                            <goals>
+                                <goal>execute</goal>
+                            </goals>
+                            <configuration>
+                                <source>
+                                    def baseDir = $/${project.basedir}/$.replace('\\','/')
+                                    String scriptCommand = "sh -c \"${baseDir}/build.sh\""
+                                    def process = scriptCommand.execute()
+                                    process.consumeProcessOutput(System.out, System.err)
+                                    process.waitFor()
+
+                                    if (process.exitValue() != 0) {
+                                        throw new RuntimeException("Script failed with error: " + error.toString())
+                                    }
+                                </source>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+
             </plugins>
         </pluginManagement>
     </build>
