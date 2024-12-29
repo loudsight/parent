@@ -90,6 +90,13 @@
             </dependency>
             <dependency>
                 <groupId>com.loudsight.useful</groupId>
+                <artifactId>service</artifactId>
+                <version>${loudsight.useful.version}</version>
+                <type>test-jar</type>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.loudsight.useful</groupId>
                 <artifactId>helper</artifactId>
                 <version>${loudsight.useful.version}</version>
             </dependency>
@@ -737,7 +744,6 @@
                         </execution>
                     </executions>
                 </plugin>
-
             </plugins>
         </pluginManagement>
     </build>
