@@ -32,7 +32,7 @@
         <loudsight.utilities.version>0-SNAPSHOT</loudsight.utilities.version>
         <loudsight.useful.version>0.0.2-SNAPSHOT</loudsight.useful.version>
         <loudsight.persistence.version>0-SNAPSHOT</loudsight.persistence.version>
-        <springsecurity.version>6.4.1</springsecurity.version>
+        <springsecurity.version>6.4.3</springsecurity.version>
         <springframework.version>6.2.3</springframework.version>
         <springboot.version>3.4.3</springboot.version>
         <log4j.version>2.20.0</log4j.version>
@@ -43,7 +43,7 @@
         <zookeeper.version>3.5.6</zookeeper.version>
         <kotlin.version>1.6.21</kotlin.version>
         <kotlin-coroutines.version>1.6.4</kotlin-coroutines.version>
-        <junit-jupiter.version>5.10.0</junit-jupiter.version>
+        <junit-jupiter.version>5.12.0</junit-jupiter.version>
         <neo4j.version>5.11.0</neo4j.version>
         <neo4j.driver.version>5.12.0</neo4j.driver.version>
         <neo4j.browser.version>5.11.0</neo4j.browser.version>
@@ -266,7 +266,7 @@
             <dependency>
                 <groupId>org.mockito</groupId>
                 <artifactId>mockito-core</artifactId>
-                <version>4.8.0</version>
+                <version>5.15.2</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
