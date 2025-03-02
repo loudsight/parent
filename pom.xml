@@ -33,11 +33,11 @@
         <loudsight.useful.version>0.0.2-SNAPSHOT</loudsight.useful.version>
         <loudsight.persistence.version>0-SNAPSHOT</loudsight.persistence.version>
         <springsecurity.version>6.4.1</springsecurity.version>
-        <springframework.version>6.2.0</springframework.version>
-        <springboot.version>3.4.0</springboot.version>
+        <springframework.version>6.2.3</springframework.version>
+        <springboot.version>3.4.3</springboot.version>
         <log4j.version>2.20.0</log4j.version>
         <slf4j.version>2.0.13</slf4j.version>
-        <logback.version>1.5.11</logback.version>
+        <logback.version>1.5.17</logback.version>
         <aeron.version>1.47.0</aeron.version>
         <agrona.version>2.0.1</agrona.version>
         <zookeeper.version>3.5.6</zookeeper.version>
