@@ -37,8 +37,8 @@
         <springboot.version>3.4.3</springboot.version>
         <log4j.version>2.20.0</log4j.version>
         <slf4j.version>2.0.13</slf4j.version>
-        <logback.version>1.5.17</logback.version>
-        <aeron.version>1.47.0</aeron.version>
+        <logback.version>1.5.18</logback.version>
+        <aeron.version>1.47.4</aeron.version>
         <agrona.version>2.0.1</agrona.version>
         <zookeeper.version>3.5.6</zookeeper.version>
         <kotlin.version>1.6.21</kotlin.version>
@@ -467,7 +467,7 @@
             <dependency>
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
-                <version>31.1-jre</version>
+                <version>33.4.6-jre</version>
             </dependency>
             <dependency>
                 <groupId>org.jboss.logging</groupId>
