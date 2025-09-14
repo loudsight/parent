@@ -47,7 +47,7 @@
         <neo4j.browser.version>5.11.0</neo4j.browser.version>
         <jackson.version>2.18.3</jackson.version>
         <netty.version>4.1.114.Final</netty.version>
-        <jetty.version>12.0.19</jetty.version>
+        <jetty.version>12.0.25</jetty.version>
         <sbe.tool.version>1.34.0</sbe.tool.version>
         <checker.framework.version>3.42.0</checker.framework.version>
         <jspecify.version>0.3.0</jspecify.version>
@@ -288,6 +288,11 @@
             <dependency>
                 <groupId>org.eclipse.jetty</groupId>
                 <artifactId>jetty-server</artifactId>
+                <version>${jetty.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.jetty</groupId>
+                <artifactId>jetty-http</artifactId>
                 <version>${jetty.version}</version>
             </dependency>
             <dependency>
