@@ -103,11 +103,6 @@
             </dependency>
             <dependency>
                 <groupId>com.loudsight.useful</groupId>
-                <artifactId>web</artifactId>
-                <version>${loudsight.useful.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.loudsight.useful</groupId>
                 <artifactId>string</artifactId>
                 <version>${loudsight.useful.version}</version>
             </dependency>
