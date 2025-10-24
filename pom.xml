@@ -35,7 +35,7 @@
         <springsecurity.version>6.5.5</springsecurity.version>
         <springframework.version>6.2.12</springframework.version>
         <springboot.version>3.5.7</springboot.version>
-        <c.version>2.20.0</c.version>
+        <log4j.version>2.20.0</log4j.version>
         <slf4j.version>2.0.13</slf4j.version>
         <logback.version>1.5.18</logback.version>
         <aeron.version>1.49.0</aeron.version>
