@@ -17,7 +17,7 @@
             <name>loudsight</name>
             <email>spam@loudsight.com</email>
             <organization>Loudsight</organization>
-            <organizationUrl>http://www.loudsight.com</organizationUrl>
+            <organizationUrl>https://www.loudsight.com</organizationUrl>
         </developer>
     </developers>
     <scm>
@@ -30,7 +30,7 @@
         <release.arguments />
         <java.version>25</java.version>
         <loudsight.utilities.version>0-SNAPSHOT</loudsight.utilities.version>
-        <loudsight.useful.version>0.0.2-SNAPSHOT</loudsight.useful.version>
+        <loudsight.useful.version>0-SNAPSHOT</loudsight.useful.version>
         <loudsight.persistence.version>0-SNAPSHOT</loudsight.persistence.version>
         <springsecurity.version>6.5.5</springsecurity.version>
         <springframework.version>6.2.12</springframework.version>
@@ -76,8 +76,8 @@
             </dependency>
             <dependency>
                 <groupId>com.loudsight</groupId>
-                <artifactId>helper</artifactId>
-                <version>0.0.3-SNAPSHOT</version>
+                <artifactId>basic-helper</artifactId>
+                <version>0-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>com.loudsight.useful</groupId>
@@ -740,8 +740,12 @@
                     <version>3.11.2</version>
                     <configuration>
                         <source>${java.version}</source>
-                        <!-- disable doclint, since Java 8 treats warnings as errors -->
-                        <additionalparam>${javadoc.opts}</additionalparam>
+                        <!-- disable doclint for all checks -->
+                        <doclint>none</doclint>
+                        <failOnWarnings>false</failOnWarnings>
+                        <failOnError>false</failOnError>
+                        <quiet>true</quiet>
+                        <skip>false</skip>
                     </configuration>
                     <executions>
                         <execution>
@@ -774,17 +778,19 @@
                                 <goal>execute</goal>
                             </goals>
                             <configuration>
-                                <source>
-                                    def baseDir = $/${project.basedir}/$.replace('\\','/')
-                                    String scriptCommand = "sh -c \"${baseDir}/build.sh\""
-                                    def process = scriptCommand.execute()
-                                    process.consumeProcessOutput(System.out, System.err)
-                                    process.waitFor()
+                                <scripts>
+                                    <script>
+                                        def baseDir = $/${project.basedir}/$.replace('\\','/')
+                                        String scriptCommand = "sh -c \"${baseDir}/build.sh\""
+                                        def process = scriptCommand.execute()
+                                        process.consumeProcessOutput(System.out, System.err)
+                                        process.waitFor()
 
-                                    if (process.exitValue() != 0) {
+                                        if (process.exitValue() != 0) {
                                         throw new RuntimeException("Script failed with error: " + error.toString())
-                                    }
-                                </source>
+                                        }
+                                    </script>
+                                </scripts>
                             </configuration>
                         </execution>
                     </executions>
