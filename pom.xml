@@ -535,10 +535,6 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
             </plugin>
-<!--            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-            </plugin>-->
         </plugins>
         <pluginManagement>
             <plugins>
@@ -757,44 +753,6 @@
                         </execution>
                     </executions>
                 </plugin>
-                <plugin>
-                    <groupId>org.codehaus.gmavenplus</groupId>
-                    <artifactId>gmavenplus-plugin</artifactId>
-                    <version>4.2.0</version>
-                    <dependencies>
-                        <dependency>
-                            <groupId>org.apache.groovy</groupId>
-                            <artifactId>groovy-all</artifactId>
-                            <version>5.0.2</version>
-                            <type>pom</type>
-                            <scope>runtime</scope>
-                        </dependency>
-                    </dependencies>
-                    <executions>
-                        <execution>
-                            <id>Execute docker</id>
-                            <phase>package</phase>
-                            <goals>
-                                <goal>execute</goal>
-                            </goals>
-                            <configuration>
-                                <scripts>
-                                    <script>
-                                        def baseDir = $/${project.basedir}/$.replace('\\','/')
-                                        String scriptCommand = "sh -c \"${baseDir}/build.sh\""
-                                        def process = scriptCommand.execute()
-                                        process.consumeProcessOutput(System.out, System.err)
-                                        process.waitFor()
-
-                                        if (process.exitValue() != 0) {
-                                        throw new RuntimeException("Script failed with error: " + error.toString())
-                                        }
-                                    </script>
-                                </scripts>
-                            </configuration>
-                        </execution>
-                    </executions>
-                </plugin>
             </plugins>
         </pluginManagement>
     </build>
@@ -836,6 +794,96 @@
         </dependency>
     </dependencies>
     <profiles>
+        <!-- Custom Build Profile - Activated by presence of build.sh -->
+        <profile>
+            <id>custom-build</id>
+            <activation>
+                <file>
+                    <exists>${project.basedir}/build.sh</exists>
+                </file>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.gmavenplus</groupId>
+                        <artifactId>gmavenplus-plugin</artifactId>
+                        <version>4.2.0</version>
+                        <dependencies>
+                            <dependency>
+                                <groupId>org.apache.groovy</groupId>
+                                <artifactId>groovy-all</artifactId>
+                                <version>5.0.2</version>
+                                <type>pom</type>
+                                <scope>runtime</scope>
+                            </dependency>
+                        </dependencies>
+                        <executions>
+                            <execution>
+                                <id>Execute docker</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>execute</goal>
+                                </goals>
+                                <configuration>
+                                    <scripts>
+                                        <script>
+                                            def baseDir = $/${project.basedir}/$.replace('\\','/')
+                                            def dockerRegistry = System.getProperty('docker.registry', 'localhost:5000')
+                                            def dockerImagePrefix = System.getProperty('docker.image.prefix', 'localhost:5000/loudsight')
+                                            def projectVersion = "${project.version}"
+                                            def projectArtifactId = "${project.artifactId}"
+                                            String scriptCommand = "sh -c \"${baseDir}/build.sh " +
+                                            " -t ${dockerImagePrefix}/${projectArtifactId}:${projectVersion}" +
+                                            " -t ${dockerImagePrefix}/${projectArtifactId}:latest" +
+                                            " --version ${projectVersion}" +
+                                            " --registry ${dockerRegistry}\""
+                                            def process = scriptCommand.execute()
+                                            process.consumeProcessOutput(System.out, System.err)
+                                            process.waitFor()
+
+                                            if (process.exitValue() != 0) {
+                                            throw new RuntimeException("Script failed with error: " + error.toString())
+                                            }
+                                        </script>
+                                    </scripts>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+<!--
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
+                        <version>3.1.0</version>
+                        <executions>
+                            <execution>
+                                <id>execute-build-script</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                                <configuration>
+                                    <executable>bash</executable>
+                                    <workingDirectory>${project.basedir}</workingDirectory>
+                                    <arguments>
+                                        <argument>${project.basedir}/build.sh</argument>
+                                        <argument>-t</argument>
+                                        <argument>${docker.image.prefix}/${project.artifactId}:${project.version}</argument>
+                                        <argument>-t</argument>
+                                        <argument>${docker.image.prefix}/${project.artifactId}:latest</argument>
+                                        <argument>&#45;&#45;version</argument>
+                                        <argument>${project.version}</argument>
+                                        <argument>&#45;&#45;registry</argument>
+                                        <argument>${docker.registry}</argument>
+                                    </arguments>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+-->
+                </plugins>
+            </build>
+        </profile>
         <profile>
             <id>cicd</id>
             <activation>
@@ -872,7 +920,6 @@
                             <arg>--yes</arg>
                             <arg>--pinentry-mode</arg>
                             <arg>loopback</arg>
-                            
                         </gpgArguments>
                     </configuration>
                     <executions>
