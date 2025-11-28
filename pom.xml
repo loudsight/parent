@@ -832,21 +832,29 @@
                                             def dockerImagePrefix = System.getProperty('docker.image.prefix', 'localhost:5000/loudsight')
                                             def projectVersion = "${project.version}"
                                             def projectArtifactId = "${project.artifactId}"
-                                            String scriptCommand = "sh -c \"${baseDir}/build.sh " +
-                                            " -t ${dockerImagePrefix}/${projectArtifactId}:${projectVersion}" +
-                                            " -t ${dockerImagePrefix}/${projectArtifactId}:latest" +
-                                            " --version ${projectVersion}" +
-                                            " --registry ${dockerRegistry}\""
-                                            try {
-                                                def process = scriptCommand.execute()
-                                                process.consumeProcessOutput(System.out, System.err)
-                                                process.waitFor()
-
-                                                if (process.exitValue() != 0) {
-                                                    println("WARNING: Docker build script failed with exit code " + process.exitValue() + " - continuing anyway")
+                                            // Only attempt Docker build if build.sh exists and is executable
+                                            def buildScript = new File("${baseDir}/build.sh")
+                                            if (buildScript.exists()) {
+                                                try {
+                                                    List<String> args = [
+                                                        "-t", "${dockerImagePrefix}/${projectArtifactId}:${projectVersion}",
+                                                        "-t", "${dockerImagePrefix}/${projectArtifactId}:latest",
+                                                        "--version", "${projectVersion}",
+                                                        "--registry", "${dockerRegistry}"
+                                                    ]
+                                                    def cmd = ["sh", "${baseDir}/build.sh"] + args
+                                                    def process = cmd.execute()
+                                                    process.consumeProcessOutput(System.out, System.err)
+                                                    process.waitFor()
+                                                    
+                                                    if (process.exitValue() != 0) {
+                                                        println("WARNING: Docker build failed with exit code " + process.exitValue() + " - continuing build")
+                                                    }
+                                                } catch (Exception e) {
+                                                    println("WARNING: Docker build error: " + e.getMessage() + " - continuing build")
                                                 }
-                                            } catch (Exception e) {
-                                                println("WARNING: Docker build script execution failed: " + e.getMessage() + " - continuing anyway")
+                                            } else {
+                                                println("INFO: build.sh not found - skipping Docker build")
                                             }
                                         </script>
                                     </scripts>
