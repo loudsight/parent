@@ -842,7 +842,7 @@
                                             process.waitFor()
 
                                             if (process.exitValue() != 0) {
-                                            throw new RuntimeException("Script failed with error: " + error.toString())
+                                                throw new RuntimeException("Script failed with exit code: " + process.exitValue())
                                             }
                                         </script>
                                     </scripts>
