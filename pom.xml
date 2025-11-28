@@ -826,7 +826,7 @@
                                 </goals>
                                 <configuration>
                                     <scripts>
-                                        <script>
+                                        <script><![CDATA[
                                             def baseDir = $/${project.basedir}/$.replace('\\','/')
                                             def dockerRegistry = System.getProperty('docker.registry', 'localhost:5000')
                                             def dockerImagePrefix = System.getProperty('docker.image.prefix', 'localhost:5000/loudsight')
@@ -836,7 +836,7 @@
                                             def buildScript = new File("${baseDir}/build.sh")
                                             if (buildScript.exists()) {
                                                 try {
-                                                    List<String> args = [
+                                                    List args = [
                                                         "-t", "${dockerImagePrefix}/${projectArtifactId}:${projectVersion}",
                                                         "-t", "${dockerImagePrefix}/${projectArtifactId}:latest",
                                                         "--version", "${projectVersion}",
@@ -856,7 +856,7 @@
                                             } else {
                                                 println("INFO: build.sh not found - skipping Docker build")
                                             }
-                                        </script>
+                                        ]]></script>
                                     </scripts>
                                 </configuration>
                             </execution>
