@@ -828,7 +828,7 @@
                         <executions>
                             <execution>
                                 <id>Execute docker</id>
-                                <phase>package</phase>
+                                <phase>verify</phase>
                                 <goals>
                                     <goal>execute</goal>
                                 </goals>
