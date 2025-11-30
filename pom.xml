@@ -544,14 +544,8 @@
                     <version>3.14.0</version>
                     <configuration>
                         <release>${java.version}</release>
-
-                        <annotationProcessorPaths>
-                            <path>
-                                <groupId>com.loudsight.meta</groupId>
-                                <artifactId>entity-meta-processor</artifactId>
-                                <version>0.0.1-SNAPSHOT</version>
-                            </path>
-                        </annotationProcessorPaths>
+                        <!-- Note: annotation processors are configured per-module to avoid circular dependencies -->
+                        <!-- See entity-meta-generator-lib and other modules that need code generation -->
                     </configuration>
                 </plugin>
 
@@ -802,6 +796,32 @@
         </dependency>
     </dependencies>
     <profiles>
+        <!-- Property Missing Profile - Activated when a property is NOT set -->
+        <profile>
+            <id>property-missing-example</id>
+            <activation>
+                <property>
+                    <name>meta-entity-gen-disabled</name>
+                    <value>true</value>
+                </property>
+            </activation>
+            <build>
+                <pluginManagement>
+                    <plugins>
+                        <plugin>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-compiler-plugin</artifactId>
+                            <version>3.14.0</version>
+                            <configuration>
+                                <release>${java.version}</release>
+                                <annotationProcessorPaths />
+                            </configuration>
+                        </plugin>
+                    </plugins>
+                </pluginManagement>
+            </build>
+        </profile>
+        
         <!-- Custom Build Profile - Activated by presence of build.sh -->
         <profile>
             <id>custom-build</id>
