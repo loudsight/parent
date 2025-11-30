@@ -544,8 +544,14 @@
                     <version>3.14.0</version>
                     <configuration>
                         <release>${java.version}</release>
-                        <!-- Note: annotation processors are configured per-module to avoid circular dependencies -->
-                        <!-- See entity-meta-generator-lib and other modules that need code generation -->
+
+                        <annotationProcessorPaths>
+                            <path>
+                                <groupId>com.loudsight.meta</groupId>
+                                <artifactId>entity-meta-processor</artifactId>
+                                <version>0.0.1-SNAPSHOT</version>
+                            </path>
+                        </annotationProcessorPaths>
                     </configuration>
                 </plugin>
 
