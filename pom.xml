@@ -798,10 +798,10 @@
     <profiles>
         <!-- Disable Meta-Entity Generation Profile - Activated when meta-entity-gen-disabled=true -->
         <profile>
-            <id>disable-meta-entity-generation</id>
+            <id>skip-meta-entity-generation</id>
             <activation>
                 <property>
-                    <name>meta-entity-gen-disabled</name>
+                    <name>skip-meta-entity-generation</name>
                     <value>true</value>
                 </property>
             </activation>
