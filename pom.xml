@@ -796,9 +796,9 @@
         </dependency>
     </dependencies>
     <profiles>
-        <!-- Property Missing Profile - Activated when a property is NOT set -->
+        <!-- Disable Meta-Entity Generation Profile - Activated when meta-entity-gen-disabled=true -->
         <profile>
-            <id>property-missing-example</id>
+            <id>disable-meta-entity-generation</id>
             <activation>
                 <property>
                     <name>meta-entity-gen-disabled</name>
@@ -806,19 +806,17 @@
                 </property>
             </activation>
             <build>
-                <pluginManagement>
-                    <plugins>
-                        <plugin>
-                            <groupId>org.apache.maven.plugins</groupId>
-                            <artifactId>maven-compiler-plugin</artifactId>
-                            <version>3.14.0</version>
-                            <configuration>
-                                <release>${java.version}</release>
-                                <annotationProcessorPaths />
-                            </configuration>
-                        </plugin>
-                    </plugins>
-                </pluginManagement>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-compiler-plugin</artifactId>
+                        <version>3.14.0</version>
+                        <configuration>
+                            <release>${java.version}</release>
+                            <annotationProcessorPaths />
+                        </configuration>
+                    </plugin>
+                </plugins>
             </build>
         </profile>
         
