@@ -544,14 +544,6 @@
                     <version>3.14.0</version>
                     <configuration>
                         <release>${java.version}</release>
-
-                        <annotationProcessorPaths>
-                            <path>
-                                <groupId>com.loudsight.meta</groupId>
-                                <artifactId>entity-meta-processor</artifactId>
-                                <version>0.0.1-SNAPSHOT</version>
-                            </path>
-                        </annotationProcessorPaths>
                     </configuration>
                 </plugin>
 
@@ -802,7 +794,39 @@
         </dependency>
     </dependencies>
     <profiles>
-        <!-- Disable Meta-Entity Generation Profile - Activated when skip-meta-entity-generation=true -->
+        <!-- Enable Entity Meta Processor - Activated when enable-meta-entity-generation=true -->
+        <profile>
+            <id>enable-meta-entity-generation</id>
+            <activation>
+                <property>
+                    <name>enable-meta-entity-generation</name>
+                    <value>true</value>
+                </property>
+            </activation>
+            <build>
+                <pluginManagement>
+                    <plugins>
+                        <plugin>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-compiler-plugin</artifactId>
+                            <version>3.14.0</version>
+                            <configuration>
+                                <release>${java.version}</release>
+                                <annotationProcessorPaths>
+                                    <path>
+                                        <groupId>com.loudsight.meta</groupId>
+                                        <artifactId>entity-meta-processor</artifactId>
+                                        <version>0.0.1-SNAPSHOT</version>
+                                    </path>
+                                </annotationProcessorPaths>
+                            </configuration>
+                        </plugin>
+                    </plugins>
+                </pluginManagement>
+            </build>
+        </profile>
+
+        <!-- Disable Meta-Entity Generation Profile - Activated when skip-meta-entity-generation=true (deprecated, for backwards compatibility) -->
         <profile>
             <id>skip-meta-entity-generation</id>
             <activation>
