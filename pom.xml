@@ -886,8 +886,8 @@
                                     <scripts>
                                         <script><![CDATA[
                                             def baseDir = $/${project.basedir}/$.replace('\\','/')
-                                            def dockerRegistry = System.getProperty('docker.registry', 'localhost:5000')
-                                            def dockerImagePrefix = System.getProperty('docker.image.prefix', 'localhost:5000/loudsight')
+                                            def dockerRegistry = System.getProperty('docker.registry', 'localhost:5001')
+                                            def dockerImagePrefix = System.getProperty('docker.image.prefix', 'localhost:5001/loudsight')
                                             def projectVersion = "${project.version}"
                                             def projectArtifactId = "${project.artifactId}"
                                             // Only attempt Docker build if build.sh exists and is executable
