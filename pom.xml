@@ -32,16 +32,16 @@
         <loudsight.utilities.version>0.0.1-SNAPSHOT</loudsight.utilities.version>
         <loudsight.useful.version>0.0.1-SNAPSHOT</loudsight.useful.version>
         <loudsight.persistence.version>0.0.1-SNAPSHOT</loudsight.persistence.version>
-        <springsecurity.version>6.5.5</springsecurity.version>
-        <springframework.version>6.2.12</springframework.version>
-        <spring.boot.version>4.0.1</spring.boot.version>
+        <springsecurity.version>7.0.0</springsecurity.version>
+        <springframework.version>7.0.2</springframework.version>
+        <spring.boot.version>4.1.6</spring.boot.version>
         <log4j.version>2.20.0</log4j.version>
         <slf4j.version>2.0.13</slf4j.version>
         <logback.version>1.5.18</logback.version>
         <aeron.version>1.49.0</aeron.version>
         <agrona.version>2.3.0</agrona.version>
         <zookeeper.version>3.9.4</zookeeper.version>
-        <junit-jupiter.version>5.10.2</junit-jupiter.version>
+        <junit-jupiter.version>6.0.2</junit-jupiter.version>
         <neo4j.version>5.11.0</neo4j.version>
         <neo4j.driver.version>5.12.0</neo4j.driver.version>
         <neo4j.browser.version>5.11.0</neo4j.browser.version>
