@@ -21,9 +21,9 @@
         </developer>
     </developers>
     <scm>
-        <connection>scm:git:https://github.com/loudsight/parent.git</connection>
-        <developerConnection>scm:git:origin</developerConnection>
-        <url>https://github.com/loudsight/parent.git</url>
+        <connection>scm:git:ssh://git@github.com/loudsight/synergisms.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com/loudsight/synergisms.git</developerConnection>
+        <url>https://github.com/loudsight/synergisms</url>
     </scm>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
