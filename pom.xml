@@ -907,6 +907,33 @@
                                                     
                                                     if (process.exitValue() != 0) {
                                                         println("WARNING: Docker build failed with exit code " + process.exitValue() + " - continuing build")
+                                                    } else {
+                                                        // Push images to registry after successful build
+                                                        println("INFO: Pushing Docker images to registry...")
+                                                        def versionTag = "${dockerImagePrefix}/${projectArtifactId}:${projectVersion}"
+                                                        def latestTag = "${dockerImagePrefix}/${projectArtifactId}:latest"
+                                                        
+                                                        def pushVersionCmd = ["docker", "push", versionTag]
+                                                        def pushVersionProcess = pushVersionCmd.execute()
+                                                        pushVersionProcess.consumeProcessOutput(System.out, System.err)
+                                                        pushVersionProcess.waitFor()
+                                                        
+                                                        if (pushVersionProcess.exitValue() == 0) {
+                                                            println("INFO: Pushed " + versionTag)
+                                                        } else {
+                                                            println("WARNING: Failed to push " + versionTag)
+                                                        }
+                                                        
+                                                        def pushLatestCmd = ["docker", "push", latestTag]
+                                                        def pushLatestProcess = pushLatestCmd.execute()
+                                                        pushLatestProcess.consumeProcessOutput(System.out, System.err)
+                                                        pushLatestProcess.waitFor()
+                                                        
+                                                        if (pushLatestProcess.exitValue() == 0) {
+                                                            println("INFO: Pushed " + latestTag)
+                                                        } else {
+                                                            println("WARNING: Failed to push " + latestTag)
+                                                        }
                                                     }
                                                 } catch (Exception e) {
                                                     println("WARNING: Docker build error: " + e.getMessage() + " - continuing build")
