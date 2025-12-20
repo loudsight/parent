@@ -55,11 +55,7 @@
 
     <groupId>com.loudsight</groupId>
     <artifactId>parent</artifactId>
-<<<<<<< HEAD
-    <version>0.5.10-SNAPSHOT</version>
-=======
     <version>0.0.19-SNAPSHOT</version>
->>>>>>> 8698dff (Update pom.xml with useful-helper dependency)
     <packaging>pom</packaging>
 
     <dependencyManagement>
