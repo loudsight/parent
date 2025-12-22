@@ -544,13 +544,8 @@
                     <version>3.14.0</version>
                     <configuration>
                         <release>${java.version}</release>
-                        <annotationProcessorPaths>
-                            <path>
-                                <groupId>com.loudsight.meta</groupId>
-                                <artifactId>entity-meta-processor</artifactId>
-                                <version>0.0.1-SNAPSHOT</version>
-                            </path>
-                        </annotationProcessorPaths>
+                            <release>${java.version}</release>
+                            <annotationProcessorPaths />
                     </configuration>
                 </plugin>
 
@@ -801,13 +796,12 @@
         </dependency>
     </dependencies>
     <profiles>
-        <!-- Disable Meta-Entity Generation Profile - Activated when skip-meta-entity-generation=true -->
+        <!-- Enable Meta-Entity Generation Profile - Activated when enable-meta-entity-generation=true -->
         <profile>
-            <id>skip-meta-entity-generation</id>
+            <id>enable-meta-entity-generation</id>
             <activation>
                 <property>
-                    <name>skip-meta-entity-generation</name>
-                    <value>true</value>
+                    <name>!skip-meta-entity-generation</name>
                 </property>
             </activation>
             <build>
@@ -819,14 +813,20 @@
                             <version>3.14.0</version>
                             <configuration>
                                 <release>${java.version}</release>
-                                <annotationProcessorPaths />
+                                <annotationProcessorPaths>
+                                    <path>
+                                        <groupId>com.loudsight.meta</groupId>
+                                        <artifactId>entity-meta-processor</artifactId>
+                                        <version>0.0.1-SNAPSHOT</version>
+                                    </path>
+                                </annotationProcessorPaths>
                             </configuration>
                         </plugin>
                     </plugins>
                 </pluginManagement>
             </build>
         </profile>
-        
+
         <!-- Custom Build Profile - Activated by presence of build.sh -->
         <profile>
             <id>custom-build</id>
@@ -922,37 +922,37 @@
                             </execution>
                         </executions>
                     </plugin>
-<!--
-                    <plugin>
-                        <groupId>org.codehaus.mojo</groupId>
-                        <artifactId>exec-maven-plugin</artifactId>
-                        <version>3.1.0</version>
-                        <executions>
-                            <execution>
-                                <id>execute-build-script</id>
-                                <phase>package</phase>
-                                <goals>
-                                    <goal>exec</goal>
-                                </goals>
-                                <configuration>
-                                    <executable>bash</executable>
-                                    <workingDirectory>${project.basedir}</workingDirectory>
-                                    <arguments>
-                                        <argument>${project.basedir}/build.sh</argument>
-                                        <argument>-t</argument>
-                                        <argument>${docker.image.prefix}/${project.artifactId}:${project.version}</argument>
-                                        <argument>-t</argument>
-                                        <argument>${docker.image.prefix}/${project.artifactId}:latest</argument>
-                                        <argument>&#45;&#45;version</argument>
-                                        <argument>${project.version}</argument>
-                                        <argument>&#45;&#45;registry</argument>
-                                        <argument>${docker.registry}</argument>
-                                    </arguments>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
--->
+                    <!--
+                                        <plugin>
+                                            <groupId>org.codehaus.mojo</groupId>
+                                            <artifactId>exec-maven-plugin</artifactId>
+                                            <version>3.1.0</version>
+                                            <executions>
+                                                <execution>
+                                                    <id>execute-build-script</id>
+                                                    <phase>package</phase>
+                                                    <goals>
+                                                        <goal>exec</goal>
+                                                    </goals>
+                                                    <configuration>
+                                                        <executable>bash</executable>
+                                                        <workingDirectory>${project.basedir}</workingDirectory>
+                                                        <arguments>
+                                                            <argument>${project.basedir}/build.sh</argument>
+                                                            <argument>-t</argument>
+                                                            <argument>${docker.image.prefix}/${project.artifactId}:${project.version}</argument>
+                                                            <argument>-t</argument>
+                                                            <argument>${docker.image.prefix}/${project.artifactId}:latest</argument>
+                                                            <argument>&#45;&#45;version</argument>
+                                                            <argument>${project.version}</argument>
+                                                            <argument>&#45;&#45;registry</argument>
+                                                            <argument>${docker.registry}</argument>
+                                                        </arguments>
+                                                    </configuration>
+                                                </execution>
+                                            </executions>
+                                        </plugin>
+                    -->
                 </plugins>
             </build>
         </profile>
@@ -983,31 +983,31 @@
             </distributionManagement>
             <build>
                 <plugins>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-gpg-plugin</artifactId>
-                    <version>3.2.7</version>
-                    <configuration>
-                        <gpgArguments>
-                            <arg>--yes</arg>
-                            <arg>--pinentry-mode</arg>
-                            <arg>loopback</arg>
-                        </gpgArguments>
-                    </configuration>
-                    <executions>
-                        <execution>
-                            <id>sign-artifacts</id>
-                            <phase>verify</phase>
-                            <goals>
-                                <goal>sign</goal>
-                            </goals>
-                            <configuration>
-                                <keyname>${gpg.keyname}</keyname>
-                                <passphraseServerId>${gpg.keyname}</passphraseServerId>
-                            </configuration>
-                        </execution>
-                    </executions>
-                </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>3.2.7</version>
+                        <configuration>
+                            <gpgArguments>
+                                <arg>--yes</arg>
+                                <arg>--pinentry-mode</arg>
+                                <arg>loopback</arg>
+                            </gpgArguments>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                                <configuration>
+                                    <keyname>${gpg.keyname}</keyname>
+                                    <passphraseServerId>${gpg.keyname}</passphraseServerId>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
                 </plugins>
                 <pluginManagement>
                     <plugins>
