@@ -665,7 +665,24 @@
                                 <outputDirectory>${project.build.directory}/libs</outputDirectory>
                             </configuration>
                         </execution>
-                    </executions>
+                        <execution>
+                            <id>unpack-shared-resources</id>
+                            <phase>generate-resources</phase>
+                            <goals><goal>unpack</goal></goals>
+                            <configuration>
+                                <outputDirectory>${project.build.directory}/shared-resources/</outputDirectory>
+                                <overWriteReleases>false</overWriteReleases>
+                                <overWriteSnapshots>false</overWriteSnapshots>
+                                <overWriteIfNewer>true</overWriteIfNewer>
+                                <artifactItems>
+                                    <artifactItem>
+                                        <groupId>com.loudsight</groupId>
+                                        <artifactId>shared-resources</artifactId>
+                                        <version>0.0.1-SNAPSHOT</version>
+                                    </artifactItem>
+                                </artifactItems>
+                            </configuration>
+                        </execution>                    </executions>
                 </plugin>
                 <plugin>
                     <artifactId>maven-scm-plugin</artifactId>
