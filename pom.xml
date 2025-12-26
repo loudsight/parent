@@ -103,6 +103,21 @@
                 <version>${loudsight.useful.version}</version>
             </dependency>
             <dependency>
+                <groupId>com.loudsight.meta</groupId>
+                <artifactId>entity-meta-processor</artifactId>
+                <version>0.0.1-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>com.loudsight.persistence</groupId>
+                <artifactId>persistence-client</artifactId>
+                <version>${loudsight.persistence.version}</version>
+            </dependency>
+            <dependency>
+            <groupId>com.loudsight.persistence</groupId>
+            <artifactId>persistence-lib</artifactId>
+            <version>${loudsight.persistence.version}</version>
+        </dependency>
+            <dependency>
                 <groupId>javax.json</groupId>
                 <artifactId>javax.json-api</artifactId>
                 <version>1.1.4</version>
