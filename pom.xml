@@ -29,6 +29,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <release.arguments />
         <java.version>25</java.version>
+        <root.assembly.descriptor>${project.build.directory}/shared-resources/assembly/tar.gz.xml</root.assembly.descriptor>
         <loudsight.utilities.version>0.0.1-SNAPSHOT</loudsight.utilities.version>
         <loudsight.useful.version>0.0.1-SNAPSHOT</loudsight.useful.version>
         <loudsight.persistence.version>0.0.1-SNAPSHOT</loudsight.persistence.version>
@@ -738,7 +739,7 @@
                     <version>3.7.1</version>
                     <configuration>
                         <descriptors>
-                            <descriptor>src/assembly/tar.gz.xml</descriptor>
+                            <descriptor>${root.assembly.descriptor}</descriptor>
                         </descriptors>
                     </configuration>
                     <executions>
