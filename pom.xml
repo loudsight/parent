@@ -39,8 +39,8 @@
         <log4j.version>2.24.1</log4j.version>
         <slf4j.version>2.0.15</slf4j.version>
         <logback.version>1.5.19</logback.version>
-        <aeron.version>1.49.0</aeron.version>
-        <agrona.version>2.3.0</agrona.version>
+        <aeron.version>1.50.0</aeron.version>
+        <agrona.version>2.4.0</agrona.version>
         <zookeeper.version>3.9.4</zookeeper.version>
         <junit-jupiter.version>6.0.1</junit-jupiter.version>
         <neo4j.version>5.11.0</neo4j.version>
@@ -610,8 +610,13 @@
                     <version>3.14.0</version>
                     <configuration>
                         <release>${java.version}</release>
-                            <release>${java.version}</release>
-                            <annotationProcessorPaths />
+                        <annotationProcessorPaths>
+                            <path>
+                                <groupId>com.loudsight.meta</groupId>
+                                <artifactId>entity-meta-processor</artifactId>
+                                <version>0.0.1-SNAPSHOT</version>
+                            </path>
+                        </annotationProcessorPaths>
                     </configuration>
                 </plugin>
 
