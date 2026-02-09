@@ -919,6 +919,39 @@
         </dependency>
     </dependencies>
     <profiles>
+        <!-- WORK_ROOT: macOS default - activated when WORK_ROOT is not set -->
+        <profile>
+            <id>work-root-mac</id>
+            <activation>
+                <os>
+                    <family>mac</family>
+                </os>
+                <property>
+                    <name>!WORK_ROOT</name>
+                </property>
+            </activation>
+            <properties>
+                <WORK_ROOT>${user.home}/dev</WORK_ROOT>
+            </properties>
+        </profile>
+
+        <!-- WORK_ROOT: Linux default - activated when WORK_ROOT is not set -->
+        <profile>
+            <id>work-root-linux</id>
+            <activation>
+                <os>
+                    <family>unix</family>
+                    <name>Linux</name>
+                </os>
+                <property>
+                    <name>!WORK_ROOT</name>
+                </property>
+            </activation>
+            <properties>
+                <WORK_ROOT>/opt</WORK_ROOT>
+            </properties>
+        </profile>
+
         <!-- Enable Meta-Entity Generation Profile - Activated when enable-meta-entity-generation=true -->
         <profile>
             <id>enable-meta-entity-generation</id>
