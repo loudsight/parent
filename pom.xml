@@ -730,7 +730,7 @@
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>3.5.3</version>
                     <configuration>
-                        <argLine>-DWORK_ROOT=${WORK_ROOT} --add-opens=java.base/sun.nio.ch=ALL-UNNAMED --add-opens=java.base/java.lang=ALL-UNNAMED --add-opens=java.base/java.nio=ALL-UNNAMED</argLine>
+                        <argLine>-DWORK_ROOT=${WORK_ROOT} --add-opens=java.base/sun.nio.ch=ALL-UNNAMED --add-opens=java.base/java.lang=ALL-UNNAMED --add-opens=java.base/java.nio=ALL-UNNAMED -Daeron.dir=${project.build.directory}/aeron-test-${surefire.forkNumber}</argLine>
                     </configuration>
                 </plugin>
                 <plugin>
