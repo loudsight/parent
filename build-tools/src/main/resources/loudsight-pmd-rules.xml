@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ruleset name="loudsight"
+         xmlns="http://pmd.sourceforge.net/ruleset/2.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://pmd.sourceforge.net/ruleset/2.0.0 https://pmd.sourceforge.io/ruleset_2_0_0.xsd">
+
+    <description>Loudsight project-specific rules, layered on top of PMD's bundled categories.</description>
+
+    <!--
+      Every LocalDateTime in this system is a UTC instant - see TimeProvider for the full contract.
+      The zero-argument java.time now() factories read the JVM default zone, and the serialization
+      boundaries (CypherQueryUtils, TemporalEntityTransform) then relabel that wall-clock reading as
+      UTC rather than converting it, silently shifting the instant by the JVM's offset.
+
+      Two node types, because the original defect was a method reference
+      (TimeProvider.DEFAULT = LocalDateTime::now) - a rule matching only MethodCall walks straight
+      past it. Instant is intentionally absent: it is inherently UTC and has no default-zone
+      variant.
+
+      The call branch matches on the resolved *signature*, not on the expression's type. Testing
+      the type would flag TimeProvider.now() itself - it is a zero-argument now() returning
+      LocalDateTime - so the rule would ban the very API it exists to promote. (It did, on four
+      call sites, before this was corrected.)
+
+      This rule needs type resolution to match. maven-pmd-plugin builds the auxclasspath from the
+      module's own classpath; if that is ever incomplete, the type tests stop matching and the
+      rule fails open rather than loudly.
+    -->
+    <rule name="NoDefaultZoneNow"
+          language="java"
+          message="Timestamps are UTC instants: use TimeProvider.DEFAULT.now(), or pass an explicit zone such as LocalDateTime.now(ZoneOffset.UTC). See TimeProvider."
+          class="net.sourceforge.pmd.lang.rule.xpath.XPathRule">
+        <description>
+            Bans the zero-argument java.time now() factories, which read the JVM default time zone.
+        </description>
+        <priority>1</priority>
+        <properties>
+            <property name="xpath">
+                <value><![CDATA[
+                    //MethodCall[
+                          pmd-java:matchesSig('java.time.LocalDateTime#now()')
+                       or pmd-java:matchesSig('java.time.LocalDate#now()')
+                       or pmd-java:matchesSig('java.time.LocalTime#now()')
+                       or pmd-java:matchesSig('java.time.ZonedDateTime#now()')
+                       or pmd-java:matchesSig('java.time.OffsetDateTime#now()')]
+                    |
+                    //MethodReference[@MethodName='now']
+                                     [TypeExpression/ClassType[
+                                          pmd-java:typeIsExactly('java.time.LocalDateTime')
+                                       or pmd-java:typeIsExactly('java.time.LocalDate')
+                                       or pmd-java:typeIsExactly('java.time.LocalTime')
+                                       or pmd-java:typeIsExactly('java.time.ZonedDateTime')
+                                       or pmd-java:typeIsExactly('java.time.OffsetDateTime')]]
+                ]]></value>
+            </property>
+        </properties>
+        <example><![CDATA[
+// Bad - both shapes read the JVM default zone
+LocalDateTime created = LocalDateTime.now();
+Supplier<LocalDateTime> clock = LocalDateTime::now;
+
+// Good
+LocalDateTime created = TimeProvider.DEFAULT.now();
+LocalDateTime created = LocalDateTime.now(ZoneOffset.UTC);
+        ]]></example>
+    </rule>
+</ruleset>

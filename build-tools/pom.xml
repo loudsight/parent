@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Carries shared static-analysis rulesets onto the maven-pmd-plugin classpath.
+
+  Deliberately does NOT inherit com.loudsight:parent. The parent's pmd configuration names this
+  artifact as a plugin dependency, so inheriting it would make this module require itself to
+  build. Keeping it standalone (and dependency-free) breaks that cycle.
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.loudsight</groupId>
+    <artifactId>build-tools</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <packaging>jar</packaging>
+
+    <name>Loudsight Build Tools</name>
+    <description>Shared PMD rulesets, resolved from the plugin classpath by com.loudsight:parent</description>
+</project>

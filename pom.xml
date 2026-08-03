@@ -56,12 +56,24 @@
         <testcontainers.version>2.0.3</testcontainers.version>
         <maven.build.timestamp.format>yyyy-MM-dd'T'HH:mm:ss'Z'</maven.build.timestamp.format>
         <skip.git.info>false</skip.git.info>
+        <!-- maven-pmd-plugin exposes no user property for includeTests; this makes it settable. -->
+        <pmd.includeTests>false</pmd.includeTests>
     </properties>
 
     <groupId>com.loudsight</groupId>
     <artifactId>parent</artifactId>
     <version>0.0.19-SNAPSHOT</version>
     <packaging>pom</packaging>
+
+    <!--
+      build-tools is aggregated here, but does not inherit this pom - it only ships the PMD
+      rulesets that the maven-pmd-plugin configuration below loads off its own plugin classpath
+      (a pom-packaging parent cannot carry resource files itself). It is versioned independently,
+      so releasing the parent does not force a ruleset version bump.
+    -->
+    <modules>
+        <module>build-tools</module>
+    </modules>
 
     <dependencyManagement>
         <dependencies>
@@ -707,10 +719,20 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-pmd-plugin</artifactId>
                     <version>3.28.0</version>
+                    <dependencies>
+                        <!-- Puts loudsight-pmd-rules.xml on the plugin classpath. -->
+                        <dependency>
+                            <groupId>com.loudsight</groupId>
+                            <artifactId>build-tools</artifactId>
+                            <version>0.0.1-SNAPSHOT</version>
+                        </dependency>
+                    </dependencies>
                     <configuration>
                         <printFailingErrors>true</printFailingErrors>
+                        <includeTests>${pmd.includeTests}</includeTests>
                         <rulesets>
                             <ruleset>/category/java/bestpractices.xml</ruleset>
+                            <ruleset>loudsight-pmd-rules.xml</ruleset>
                         </rulesets>
                         <excludeRoots>
                             <excludeRoot>${project.build.directory}/generated-sources/sbe</excludeRoot>
