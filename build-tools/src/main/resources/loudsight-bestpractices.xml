@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ruleset name="loudsight-bestpractices"
+         xmlns="http://pmd.sourceforge.net/ruleset/2.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://pmd.sourceforge.net/ruleset/2.0.0 https://pmd.sourceforge.io/ruleset_2_0_0.xsd">
+
+    <description>
+        PMD's bundled bestpractices category, restricted to main sources.
+
+        The parent sets includeTests=true so loudsight-pmd-rules.xml (the UTC timestamp contract)
+        also covers test code, where the same default-zone hazard exists. But bestpractices is a
+        general style category that has never been applied to this project's tests, and turning it
+        on wholesale surfaced 342 pre-existing violations across four modules alone - enough to
+        fail every build.
+
+        Excluding test paths here scopes the widened analysis to exactly what was intended.
+        The alternative - relaxing failurePriority so only priority-1 rules are fatal - would have
+        downgraded bestpractices to warnings on MAIN sources too, weakening a gate that currently
+        passes clean. Note also that splitting this across two plugin executions does NOT work:
+        maven-pmd-plugin's check goal forks the pmd goal, and the fork ignores execution-specific
+        configuration, so the second execution silently analyses nothing and reports success.
+    </description>
+
+    <exclude-pattern>.*/src/test/.*</exclude-pattern>
+
+    <rule ref="category/java/bestpractices.xml"/>
+</ruleset>

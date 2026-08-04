@@ -56,8 +56,10 @@
         <testcontainers.version>2.0.3</testcontainers.version>
         <maven.build.timestamp.format>yyyy-MM-dd'T'HH:mm:ss'Z'</maven.build.timestamp.format>
         <skip.git.info>false</skip.git.info>
-        <!-- maven-pmd-plugin exposes no user property for includeTests; this makes it settable. -->
-        <pmd.includeTests>false</pmd.includeTests>
+        <!-- maven-pmd-plugin exposes no user property for includeTests; this makes it settable.
+             On: the UTC timestamp rule covers test sources too. bestpractices stays main-only,
+             scoped by an exclude-pattern in loudsight-bestpractices.xml. -->
+        <pmd.includeTests>true</pmd.includeTests>
     </properties>
 
     <groupId>com.loudsight</groupId>
@@ -731,7 +733,7 @@
                         <printFailingErrors>true</printFailingErrors>
                         <includeTests>${pmd.includeTests}</includeTests>
                         <rulesets>
-                            <ruleset>/category/java/bestpractices.xml</ruleset>
+                            <ruleset>loudsight-bestpractices.xml</ruleset>
                             <ruleset>loudsight-pmd-rules.xml</ruleset>
                         </rulesets>
                         <excludeRoots>
