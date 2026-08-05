@@ -732,6 +732,38 @@
                     <configuration>
                         <printFailingErrors>true</printFailingErrors>
                         <includeTests>${pmd.includeTests}</includeTests>
+                        <!--
+                          Generated code is exempt from PMD and CPD: nothing under target/ is
+                          hand-written, so there is no source to fix when it is flagged.
+
+                          This became load-bearing when pmd.includeTests was switched on. The
+                          entity-meta processor emits a Meta and a Schema class per @Introspect
+                          fixture into target/generated-test-sources/test-annotations, and generated
+                          Meta classes are near-identical by construction, so CPD reports them as
+                          duplicates of each other. That failed the build in modules nobody had
+                          touched and blocked every deploy, since deploy.sh builds the auto-agent
+                          before the pipeline runs.
+
+                          Matched by FILE NAME, not by directory, because the alternatives do not
+                          work - all verified against webapps/admin-crud-service:
+                            - cpdExcludeRoots pointed at either the test source root or the
+                              generated-test-sources/test-annotations root: no effect.
+                            - an execution-level includeTests=false on cpd-check: no effect, because
+                              cpd-check forks the cpd goal and the fork reads plugin-level config.
+                            - <exclude>**/target/**</exclude>: no effect, because these patterns are
+                              matched relative to each source root, so the path never contains
+                              "target".
+
+                          Cost, accepted: the patterns also exempt four hand-written classes that
+                          happen to carry those names - Meta, Schema, DefaultMeta and GeneratedMeta,
+                          all inside entity-meta-generator itself. Narrow and contained; the
+                          alternative was raising cpd.minimumTokens, which would have weakened
+                          duplicate detection across every main source in the repo.
+                        -->
+                        <excludes>
+                            <exclude>**/*Meta.java</exclude>
+                            <exclude>**/*Schema.java</exclude>
+                        </excludes>
                         <rulesets>
                             <ruleset>loudsight-bestpractices.xml</ruleset>
                             <ruleset>loudsight-pmd-rules.xml</ruleset>
