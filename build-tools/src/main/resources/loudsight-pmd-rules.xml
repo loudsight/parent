@@ -64,4 +64,70 @@ LocalDateTime created = TimeProvider.DEFAULT.now();
 LocalDateTime created = LocalDateTime.now(ZoneOffset.UTC);
         ]]></example>
     </rule>
+
+    <!--
+      Restoring the interrupt status is correct ONLY when the caught exception is an
+      InterruptedException. Setting it for an IOException too poisons the calling thread:
+      HttpClient.send checks the interrupt flag up front, so every later send on that thread
+      fails instantly with InterruptedException. On a pooled dispatcher thread that is
+      permanent - one transient connection error while the peer was still starting up took
+      out every subsequent request for the life of the process. See the comment on the fix at
+      HttpDispatcherClient.send.
+
+      The multi-catch case is the one that actually shipped, twice: a
+      `catch (IOException | InterruptedException e)` that restores the flag applies it to
+      both arms. UnionType is therefore matched unconditionally - a multi-catch containing
+      InterruptedException cannot restore the flag correctly without being split.
+
+      Requiring the Thread.currentThread() qualifier is deliberate: interrupting some OTHER
+      thread from a catch block is a different, legitimate operation (CommandExecutor
+      interrupts its stdout/stderr pump threads when its own wait is interrupted).
+
+      An interrupt() call outside any catch block is not flagged - cancellation paths
+      legitimately set the flag - so this rule is about catch blocks only.
+
+      Like NoDefaultZoneNow this needs type resolution. If the auxclasspath is ever
+      incomplete the typeIsExactly test stops matching and the rule fails open rather than
+      loudly.
+    -->
+    <rule name="InterruptFlagOnlyForInterruptedException"
+          language="java"
+          message="Restore the interrupt status only when catching InterruptedException. Split the multi-catch: setting the flag for an IOException permanently poisons a pooled thread. See HttpDispatcherClient.send."
+          class="net.sourceforge.pmd.lang.rule.xpath.XPathRule">
+        <description>
+            Flags Thread.currentThread().interrupt() inside a catch block whose caught type is
+            anything other than exactly InterruptedException, including any multi-catch.
+        </description>
+        <priority>1</priority>
+        <properties>
+            <property name="xpath">
+                <value><![CDATA[
+                    //MethodCall[pmd-java:matchesSig('java.lang.Thread#interrupt()')]
+                        [MethodCall[pmd-java:matchesSig('java.lang.Thread#currentThread()')]]
+                        [ancestor::CatchClause[1]/CatchParameter[
+                              UnionType
+                           or ClassType[not(pmd-java:typeIsExactly('java.lang.InterruptedException'))]]]
+                ]]></value>
+            </property>
+        </properties>
+        <example><![CDATA[
+// Bad - the flag is restored on the IOException arm too
+try {
+    process.waitFor();
+} catch (IOException | InterruptedException e) {
+    Thread.currentThread().interrupt();
+    return false;
+}
+
+// Good - split, so only the InterruptedException arm restores it
+try {
+    process.waitFor();
+} catch (InterruptedException e) {
+    Thread.currentThread().interrupt();
+    return false;
+} catch (IOException e) {
+    return false;
+}
+        ]]></example>
+    </rule>
 </ruleset>
