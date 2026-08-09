@@ -1,0 +1,3 @@
+Opts this module out of the entity-meta-processing profile in parent/pom.xml.
+
+pom packaging - nothing to compile - and this is the module that defines the profile.

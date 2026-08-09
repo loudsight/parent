@@ -629,13 +629,11 @@
                     <version>3.14.0</version>
                     <configuration>
                         <release>${java.version}</release>
-                        <annotationProcessorPaths>
-                            <path>
-                                <groupId>com.loudsight.meta</groupId>
-                                <artifactId>entity-meta-processor</artifactId>
-                                <version>0.0.1-SNAPSHOT</version>
-                            </path>
-                        </annotationProcessorPaths>
+                        <!--
+                          annotationProcessorPaths is NOT set here. It lives in the
+                          entity-meta-processing profile below, together with the matching
+                          provided-scope dependency, so that a module can opt out of both at once.
+                        -->
                     </configuration>
                 </plugin>
 
@@ -1013,23 +1011,58 @@
             </properties>
         </profile>
 
-        <!-- Enable Meta-Entity Generation Profile - Activated when enable-meta-entity-generation=true -->
+        <!--
+          Entity-meta annotation processing. ON by default for every module inheriting this parent.
+          A module opts out by adding an empty `.no-entity-meta` file next to its pom.xml.
+
+          <file> activation is evaluated per-module, not once for this parent - the same mechanism
+          as the custom-build profile below. Note it does NOT inherit: an opting-out aggregator does
+          not opt out its children, so every module needing the marker gets its own.
+
+          This replaces a profile that had never worked. It activated on a property literally named
+          "Loudsight !skip-meta-entity-generation" - one name with an embedded space and "!" - and
+          POM-level properties cannot activate profiles regardless. The real configuration was the
+          unconditional annotationProcessorPaths in build/pluginManagement, which is why
+          entity-meta-generator and useful/helper need combine.self="override" to escape it.
+        -->
         <profile>
-            <id>enable-meta-entity-generation</id>
+            <id>entity-meta-processing</id>
             <activation>
-                <property>
-                    <name>Loudsight !skip-meta-entity-generation</name>
-                </property>
+                <file>
+                    <missing>${project.basedir}/.no-entity-meta</missing>
+                </file>
             </activation>
+
+            <dependencies>
+                <!--
+                  Not used at compile time. It is here so IntelliJ's Maven importer creates a JPS
+                  module-dependency edge to entity-meta-processor, and transitively to
+                  entity-meta-generator-lib and helper. All three sit on the IDE's annotation
+                  processor path as module OUTPUT DIRECTORIES (.idea/compiler.xml), and without that
+                  edge JPS has no build order between them and their consumers - Build > Rebuild
+                  empties every output dir, compiles in parallel, and a consumer loses the race with
+
+                      java.util.ServiceConfigurationError: javax.annotation.processing.Processor:
+                      Provider com.loudsight.meta.processors.IntrospectAnnotationProcessor not found
+
+                  javac never discovers this copy: annotationProcessorPaths below sets -processorpath,
+                  which suppresses classpath processor discovery. Version comes from
+                  dependencyManagement. Maven was never affected either way.
+                -->
+                <dependency>
+                    <groupId>com.loudsight.meta</groupId>
+                    <artifactId>entity-meta-processor</artifactId>
+                    <scope>provided</scope>
+                </dependency>
+            </dependencies>
+
             <build>
                 <pluginManagement>
                     <plugins>
                         <plugin>
                             <groupId>org.apache.maven.plugins</groupId>
                             <artifactId>maven-compiler-plugin</artifactId>
-                            <version>3.14.0</version>
                             <configuration>
-                                <release>${java.version}</release>
                                 <annotationProcessorPaths>
                                     <path>
                                         <groupId>com.loudsight.meta</groupId>
@@ -1144,10 +1177,17 @@
         </profile>
         <profile>
             <id>cicd</id>
+            <!--
+              Deliberately NOT activeByDefault. Maven suppresses activeByDefault the moment any
+              other profile in the same POM activates, so with entity-meta-processing above this
+              would switch itself off almost everywhere. (It already did on every module with a
+              build.sh, via custom-build.) "!ossrh" activates whenever -Dossrh is absent, which is
+              the intent, and cannot be suppressed. The previous name "Loudsight !ossrh" was a
+              single property name with an embedded space and never matched anything.
+            -->
             <activation>
-                <activeByDefault>true</activeByDefault>
                 <property>
-                    <name>Loudsight !ossrh</name>
+                    <name>!ossrh</name>
                 </property>
             </activation>
             <properties>
