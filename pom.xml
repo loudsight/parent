@@ -60,6 +60,16 @@
         <jetty.version>12.1.4</jetty.version>
         <sbe.tool.version>1.36.0</sbe.tool.version>
         <jspecify.version>1.0.0</jspecify.version>
+        <error-prone.version>2.50.0</error-prone.version>
+        <!--
+          Error Prone's options, as one property so a module can quarantine the layer without
+          deleting configuration - set errorprone.args to -XepDisableAllChecks. Leaving it empty
+          is not equivalent: the -Xplugin argument would still be passed and javac would still
+          load the plugin. Generated sources are excluded by path, which is what keeps the SBE
+          and entity-meta output out of scope without silencing hand-written classes.
+          -XepAllErrorsAsWarnings is the inventory pass and comes off in the ratchet step.
+        -->
+        <errorprone.args>-XepExcludedPaths:.*/target/generated-(test-)?sources/.* -XepAllErrorsAsWarnings</errorprone.args>
         <testcontainers.version>2.0.3</testcontainers.version>
         <maven.build.timestamp.format>yyyy-MM-dd'T'HH:mm:ss'Z'</maven.build.timestamp.format>
         <skip.git.info>false</skip.git.info>
@@ -633,10 +643,34 @@
                     <configuration>
                         <release>${java.version}</release>
                         <!--
-                          annotationProcessorPaths is NOT set here. It lives in the
-                          entity-meta-processing profile below, together with the matching
-                          provided-scope dependency, so that a module can opt out of both at once.
+                          error_prone_core is the baseline processor path for every module.
+                          entity-meta-processor is appended to it, not substituted for it, by the
+                          entity-meta-processing profile below - see the combine.children note there.
+
+                          Setting annotationProcessorPaths at all suppresses javac's classpath
+                          processor discovery. That is already this build's behaviour for every
+                          module the profile applies to, and nothing outside it relies on
+                          discovery: the only processor in the tree is entity-meta-processor.
                         -->
+                        <annotationProcessorPaths>
+                            <path>
+                                <groupId>com.google.errorprone</groupId>
+                                <artifactId>error_prone_core</artifactId>
+                                <version>${error-prone.version}</version>
+                            </path>
+                        </annotationProcessorPaths>
+                        <compilerArgs>
+                            <!--
+                              Error Prone runs inside this javac invocation rather than forking a
+                              second pass. compilePolicy=simple is required by the plugin, and
+                              should-stop=ifError=FLOW keeps javac from proceeding past a failed
+                              flow analysis into the plugin. The -Xplugin value is deliberately one
+                              argument: javac parses the whole string itself.
+                            -->
+                            <arg>-XDcompilePolicy=simple</arg>
+                            <arg>--should-stop=ifError=FLOW</arg>
+                            <arg>-Xplugin:ErrorProne ${errorprone.args}</arg>
+                        </compilerArgs>
                     </configuration>
                 </plugin>
 
@@ -1056,7 +1090,14 @@
                             <groupId>org.apache.maven.plugins</groupId>
                             <artifactId>maven-compiler-plugin</artifactId>
                             <configuration>
-                                <annotationProcessorPaths>
+                                <!--
+                                  combine.children="append" is load-bearing. Maven's default for a
+                                  list element is to replace the inherited one outright, which here
+                                  would drop error_prone_core from the processor path while the
+                                  inherited -Xplugin:ErrorProne argument stayed - javac then fails
+                                  with "plug-in not found: ErrorProne" rather than quietly skipping.
+                                -->
+                                <annotationProcessorPaths combine.children="append">
                                     <path>
                                         <groupId>com.loudsight.meta</groupId>
                                         <artifactId>entity-meta-processor</artifactId>
