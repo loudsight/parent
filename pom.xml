@@ -70,6 +70,36 @@
           -XepAllErrorsAsWarnings is the inventory pass and comes off in the ratchet step.
         -->
         <errorprone.args>-XepExcludedPaths:.*/target/generated-(test-)?sources/.* -XepAllErrorsAsWarnings</errorprone.args>
+        <nullaway.version>0.13.8</nullaway.version>
+        <!--
+          NullAway's options, separate from errorprone.args so a module can quarantine the nullness
+          layer without also losing the rest of Error Prone - set nullaway.args empty and the check
+          reverts to off, because NullAway is not on by default and only runs when -Xep:NullAway
+          names a severity.
+
+          Scope is driven by @NullMarked, not by a package prefix. OnlyNullMarked=true is what makes
+          the rollout unit a package rather than the whole tree: AnnotatedPackages=com.loudsight
+          would put every class in scope on the first build. No package-info.java exists anywhere in
+          the tree (verified 2026-08-16 - the 41 files an earlier draft of the plan counted are all
+          under __archived__/reference, vendored Aeron and Agrona code that this build does not
+          compile), so with OnlyNullMarked the initial in-scope set is empty by construction and
+          each @NullMarked package added is an opt-in.
+
+          JSpecifyMode=true turns on generics-aware nullness. JDK 25 reads type-use annotations from
+          bytecode (JDK >= 22), so NullAway's compatibility assertion passes without
+          -XDaddTypeAnnotationsToSymbol.
+
+          ExcludedFieldAnnotations is deliberately absent. It exists for fields a framework
+          initialises reflectively, and this tree has no such framework: there is no Spring, Guice,
+          Dagger or jakarta/javax.inject dependency in any pom, and no @Inject, @Autowired, @Mock or
+          @InjectMocks field anywhere in the sources (verified 2026-08-16). Adding exclusions for
+          absent annotations, or wiring the Spring and Jakarta handlers NullAway ships, would be
+          configuration for a framework that is not here. Revisit if one is introduced.
+
+          Severity is ERROR, but errorprone.args still carries -XepAllErrorsAsWarnings during the
+          inventory pass, so NullAway reports as warnings until the ratchet step removes that flag.
+        -->
+        <nullaway.args>-Xep:NullAway:ERROR -XepOpt:NullAway:OnlyNullMarked=true -XepOpt:NullAway:JSpecifyMode=true</nullaway.args>
         <testcontainers.version>2.0.3</testcontainers.version>
         <maven.build.timestamp.format>yyyy-MM-dd'T'HH:mm:ss'Z'</maven.build.timestamp.format>
         <skip.git.info>false</skip.git.info>
@@ -643,9 +673,15 @@
                     <configuration>
                         <release>${java.version}</release>
                         <!--
-                          error_prone_core is the baseline processor path for every module.
-                          entity-meta-processor is appended to it, not substituted for it, by the
-                          entity-meta-processing profile below - see the combine.children note there.
+                          error_prone_core and nullaway are the baseline processor path for every
+                          module. entity-meta-processor is appended to them, not substituted for
+                          them, by the entity-meta-processing profile below - see the
+                          combine.children note there.
+
+                          NullAway is an Error Prone plugin check, so it has to be on the processor
+                          path for javac to find it, even though whether it runs is decided by the
+                          -Xep:NullAway severity in nullaway.args and whether any package is
+                          @NullMarked.
 
                           Setting annotationProcessorPaths at all suppresses javac's classpath
                           processor discovery. That is already this build's behaviour for every
@@ -658,6 +694,11 @@
                                 <artifactId>error_prone_core</artifactId>
                                 <version>${error-prone.version}</version>
                             </path>
+                            <path>
+                                <groupId>com.uber.nullaway</groupId>
+                                <artifactId>nullaway</artifactId>
+                                <version>${nullaway.version}</version>
+                            </path>
                         </annotationProcessorPaths>
                         <compilerArgs>
                             <!--
@@ -669,7 +710,7 @@
                             -->
                             <arg>-XDcompilePolicy=simple</arg>
                             <arg>--should-stop=ifError=FLOW</arg>
-                            <arg>-Xplugin:ErrorProne ${errorprone.args}</arg>
+                            <arg>-Xplugin:ErrorProne ${errorprone.args} ${nullaway.args}</arg>
                         </compilerArgs>
                     </configuration>
                 </plugin>
