@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ruleset name="loudsight-codestyle"
+         xmlns="http://pmd.sourceforge.net/ruleset/2.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://pmd.sourceforge.net/ruleset/2.0.0 https://pmd.sourceforge.io/ruleset_2_0_0.xsd">
+
+    <description>
+        A curated subset of PMD's codestyle category, covering main AND test sources.
+
+        This category is referenced rule-by-rule rather than wholesale, because most of its 60 rules
+        encode a house style rather than a defect, and adopting them all would either bury real
+        findings or force a tree-wide reformat. The subset below is limited to two kinds of rule:
+
+          - code that is provably dead or redundant, where the fix is a deletion and there is
+            nothing to argue about;
+          - constructs where the layout can hide a bug, which is why ControlStatementBraces and
+            EmptyControlStatement are here and, say, UselessParentheses is not.
+
+        Tests are in scope: a dead import or a stray semicolon is no more acceptable in a test.
+
+        Deliberately excluded, so the reasoning is recorded rather than rediscovered:
+          - OnlyOneReturn, ConfusingTernary, LocalVariableCouldBeFinal, MethodArgumentCouldBeFinal,
+            UseExplicitTypes, PrematureDeclaration, UselessParentheses, LambdaCanBeMethodReference,
+            FieldDeclarationsShouldBeAtStartOfClass, AtLeastOneConstructor, CallSuperInConstructor,
+            CommentDefaultAccessModifier, TooManyStaticImports, UseUnderscoresInNumericLiterals -
+            house-style preferences that contradict how this tree is already written.
+          - ShortVariable, ShortClassName, ShortMethodName, LongVariable, LinguisticNaming,
+            BooleanGetMethodName - identifier-length and phrasing heuristics, high volume and
+            subjective.
+          - The naming-convention rules (Class/Method/Field/FormalParameter/LocalVariable/
+            TypeParameter/Generics/PackageCase) - objective, but their defaults encode conventions
+            this tree does not follow, so they would need configuring before they mean anything.
+            Candidates for a later pass.
+          - LocalHomeNamingConvention, LocalInterfaceSessionNamingConvention,
+            MDBAndSessionBeanNamingConvention, RemoteInterfaceNamingConvention,
+            RemoteSessionInterfaceNamingConvention - EJB rules; there is no EJB here.
+    </description>
+
+    <!-- Provably dead or redundant: the fix is always a deletion. -->
+    <rule ref="category/java/codestyle.xml/UnnecessaryImport"/>
+    <rule ref="category/java/codestyle.xml/UnnecessarySemicolon"/>
+    <rule ref="category/java/codestyle.xml/UnnecessaryReturn"/>
+    <rule ref="category/java/codestyle.xml/UnnecessaryModifier"/>
+    <rule ref="category/java/codestyle.xml/UnnecessaryCast"/>
+    <rule ref="category/java/codestyle.xml/UnnecessaryBoxing"/>
+    <rule ref="category/java/codestyle.xml/UnnecessaryFullyQualifiedName"/>
+    <!--
+      VariableCanBeInlined rather than UnnecessaryLocalBeforeReturn: the latter covers the same
+      shape but PMD 7.17 marks it deprecated and PMD 8 removes it, so adopting it would only have
+      to be undone. Note that a whole-category <rule ref> silently skips deprecated rules, but an
+      explicit per-rule ref like these does not - it warns and still loads the rule, which is how
+      this was caught.
+    -->
+    <rule ref="category/java/codestyle.xml/VariableCanBeInlined"/>
+    <rule ref="category/java/codestyle.xml/UnnecessaryConstructor"/>
+    <rule ref="category/java/codestyle.xml/UselessQualifiedThis"/>
+    <rule ref="category/java/codestyle.xml/ExtendsObject"/>
+
+    <!-- Layout or structure that can conceal a defect. -->
+    <rule ref="category/java/codestyle.xml/ControlStatementBraces"/>
+    <rule ref="category/java/codestyle.xml/EmptyControlStatement"/>
+    <rule ref="category/java/codestyle.xml/IdenticalCatchBranches"/>
+    <rule ref="category/java/codestyle.xml/ForLoopShouldBeWhileLoop"/>
+    <rule ref="category/java/codestyle.xml/UseDiamondOperator"/>
+    <rule ref="category/java/codestyle.xml/ModifierOrder"/>
+    <rule ref="category/java/codestyle.xml/NoPackage"/>
+    <rule ref="category/java/codestyle.xml/AvoidProtectedFieldInFinalClass"/>
+    <rule ref="category/java/codestyle.xml/AvoidProtectedMethodInFinalClassNotExtending"/>
+    <rule ref="category/java/codestyle.xml/FinalParameterInAbstractMethod"/>
+    <rule ref="category/java/codestyle.xml/AvoidUsingNativeCode"/>
+</ruleset>

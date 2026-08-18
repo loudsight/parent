@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ruleset name="loudsight-multithreading"
+         xmlns="http://pmd.sourceforge.net/ruleset/2.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://pmd.sourceforge.net/ruleset/2.0.0 https://pmd.sourceforge.io/ruleset_2_0_0.xsd">
+
+    <description>
+        PMD's bundled multithreading category, covering main AND test sources.
+
+        This project runs Aeron media drivers, pooled dispatcher threads and a thread monitor, and
+        the defects already found in it (interrupt-flag poisoning, threads blocked with no progress)
+        are exactly this category's subject matter. Test sources are included because the
+        concurrency fixtures spawn real threads.
+
+        All five rules that currently fire are excluded below, so this category contributes zero
+        findings today. It is still worth loading: the rules that matter most here -
+        NonThreadSafeSingleton, DoubleCheckedLocking, UnsynchronizedStaticFormatter, AvoidThreadGroup
+        and the rest - are already clean, so keeping the category costs nothing and guards them
+        against regression. A category is not only valuable when it is complaining.
+    </description>
+
+    <rule ref="category/java/multithreading.xml">
+        <!--
+          DoNotUseThreads, 186 findings, and it would flag the core of the system. The rule encodes a
+          J2EE constraint - application code must not spawn threads because the container owns them.
+          This tree has no such container: it runs its own Aeron media driver, agent runners and
+          pooled dispatcher threads by design. The rule is not wrong so much as addressed to a
+          different kind of program.
+        -->
+        <exclude name="DoNotUseThreads"/>
+
+        <!--
+          UseConcurrentHashMap, 118 findings. Fires on every HashMap regardless of whether it is
+          reachable from more than one thread, and most of these are method-local or
+          confined-by-construction. A blanket swap would impose atomicity costs everywhere while
+          implying a thread-safety guarantee the surrounding code does not actually have.
+        -->
+        <exclude name="UseConcurrentHashMap"/>
+
+        <!--
+          Bans on the primitives this system deliberately uses: volatile is the correct tool for the
+          running/stopped flags on the agent loops, and synchronized blocks and methods are used
+          where a lock is genuinely wanted. None of the three identifies a defect - they express a
+          preference for higher-level constructs.
+        -->
+        <exclude name="AvoidUsingVolatile"/>              <!-- 11 -->
+        <exclude name="AvoidSynchronizedStatement"/>      <!-- 5 -->
+        <exclude name="AvoidSynchronizedAtMethodLevel"/>  <!-- 1 -->
+    </rule>
+</ruleset>

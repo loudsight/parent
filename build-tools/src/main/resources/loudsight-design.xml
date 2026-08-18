@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ruleset name="loudsight-design"
+         xmlns="http://pmd.sourceforge.net/ruleset/2.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://pmd.sourceforge.net/ruleset/2.0.0 https://pmd.sourceforge.io/ruleset_2_0_0.xsd">
+
+    <description>
+        PMD's bundled design category, restricted to main sources.
+
+        Test code is excluded on the same reasoning bestpractices uses: a long, branchy test method
+        is not the defect this category exists to catch, and complexity metrics on fixtures and
+        parameterised cases produce findings with no useful fix.
+
+        Rule exclusions belong in this file, each with a reason.
+    </description>
+
+    <exclude-pattern>.*/src/test/.*</exclude-pattern>
+
+    <rule ref="category/java/design.xml">
+        <!--
+          Complexity metrics. Excluded not because the debt is imaginary but because a threshold
+          rule only means something once its threshold is calibrated to the project, and PMD's
+          defaults are not. Left in the gate they would report 204 findings whose only honest fix is
+          a refactor nobody has scheduled, which is how a gate stops being read. Revisit by picking
+          thresholds deliberately and enabling them one at a time.
+        -->
+        <exclude name="CyclomaticComplexity"/>       <!-- 74 -->
+        <exclude name="CognitiveComplexity"/>        <!-- 43 -->
+        <exclude name="NPathComplexity"/>            <!-- 13 -->
+        <exclude name="NcssCount"/>                  <!-- 5 -->
+        <exclude name="TooManyMethods"/>             <!-- 46 -->
+        <exclude name="GodClass"/>                   <!-- 19 -->
+        <exclude name="CouplingBetweenObjects"/>     <!-- 23 -->
+        <exclude name="ExcessiveImports"/>           <!-- 11 -->
+        <exclude name="ExcessivePublicCount"/>       <!-- 2 -->
+        <exclude name="ExcessiveParameterList"/>     <!-- 3 -->
+
+        <!--
+          LawOfDemeter, 159 findings. Flags any chained call through an object it does not own,
+          which in practice means most fluent and builder APIs, the Aeron and Neo4j drivers
+          included. The rule has no configuration that separates a genuine train wreck from
+          idiomatic chaining, so it cannot be made to mean anything here.
+        -->
+        <exclude name="LawOfDemeter"/>
+
+        <!--
+          AvoidCatchingGenericException, 281 findings - the single largest rule in the tree. A
+          catch (Exception) at a process boundary is the correct construct for a dispatcher, a
+          request handler and a CLI entry point, all of which this system has: the alternative is
+          letting one malformed message kill a long-running server. Narrower catches inside those
+          boundaries are worth having, but this rule cannot tell the two apart.
+        -->
+        <exclude name="AvoidCatchingGenericException"/>
+
+        <!--
+          Signature-shape opinions, 63 findings between them. `throws Exception` is how the visitor
+          and command interfaces in this tree are declared, and declaring an unchecked exception is
+          documentation rather than a defect. Neither identifies something that can be wrong.
+        -->
+        <exclude name="SignatureDeclareThrowsException"/>        <!-- 45 -->
+        <exclude name="AvoidUncheckedExceptionsInSignatures"/>   <!-- 18 -->
+
+        <!--
+          Shape heuristics that misread deliberate designs: DataClass flags the DTOs and record-like
+          carriers the persistence layer is built on, UseObjectForClearerAPI objects to
+          multi-parameter methods, and AbstractClassWithoutAnyMethod flags a marker base class.
+        -->
+        <exclude name="DataClass"/>                       <!-- 50 -->
+        <exclude name="UseObjectForClearerAPI"/>          <!-- 6 -->
+        <exclude name="AbstractClassWithoutAnyMethod"/>   <!-- 1 -->
+    </rule>
+</ruleset>

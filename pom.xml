@@ -107,6 +107,7 @@
              On: the UTC timestamp rule covers test sources too. bestpractices stays main-only,
              scoped by an exclude-pattern in loudsight-bestpractices.xml. -->
         <pmd.includeTests>true</pmd.includeTests>
+        <pmd.excludeFromFailureFile>${project.basedir}/pmd-baseline.properties</pmd.excludeFromFailureFile>
     </properties>
 
     <groupId>com.loudsight</groupId>
@@ -830,10 +831,35 @@
                             <exclude>**/*Meta.java</exclude>
                             <exclude>**/*Schema.java</exclude>
                         </excludes>
+                        <!--
+                          One file per category so that every rule exclusion is written down next to
+                          the category it applies to, with a reason. The alternative - lowering
+                          failurePriority until the build passes - would silently downgrade all of
+                          them, including the two project-specific priority-1 rules.
+
+                          codestyle and documentation are curated subsets rather than whole
+                          categories; see the descriptions in those files for what was left out.
+                        -->
                         <rulesets>
                             <ruleset>loudsight-bestpractices.xml</ruleset>
+                            <ruleset>loudsight-errorprone.xml</ruleset>
+                            <ruleset>loudsight-design.xml</ruleset>
+                            <ruleset>loudsight-multithreading.xml</ruleset>
+                            <ruleset>loudsight-performance.xml</ruleset>
+                            <ruleset>loudsight-codestyle.xml</ruleset>
+                            <ruleset>loudsight-documentation.xml</ruleset>
                             <ruleset>loudsight-pmd-rules.xml</ruleset>
                         </rulesets>
+                        <!--
+                          Incremental analysis. Without it every `verify` re-analyses every file,
+                          which is the dominant cost now that seven rulesets are loaded instead of
+                          two. The cache lives under target/ so `clean` discards it: it is a build
+                          artifact, not state worth preserving, and a stale cache that survived a
+                          clean would be a source of unreproducible results.
+                        -->
+                        <analysisCache>true</analysisCache>
+                        <analysisCacheLocation>${project.build.directory}/pmd/pmd.cache</analysisCacheLocation>
+                        <excludeFromFailureFile>${pmd.excludeFromFailureFile}</excludeFromFailureFile>
                         <excludeRoots>
                             <excludeRoot>${project.build.directory}/generated-sources/sbe</excludeRoot>
                             <excludeRoot>${project.build.directory}/generated-sources/annotations</excludeRoot>

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ruleset name="loudsight-errorprone"
+         xmlns="http://pmd.sourceforge.net/ruleset/2.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://pmd.sourceforge.net/ruleset/2.0.0 https://pmd.sourceforge.io/ruleset_2_0_0.xsd">
+
+    <description>
+        PMD's bundled errorprone category, covering main AND test sources.
+
+        Unlike bestpractices, this category is about latent defects rather than style, and the
+        hazards it finds are as real in test code as in main - a test that compares floats with ==
+        or swallows an exception is a test that can pass while the thing it covers is broken. So it
+        deliberately carries no exclude-pattern for src/test.
+
+        Rule exclusions belong in this file, each with a reason, rather than being handled by
+        lowering failurePriority - that would weaken every rule in every category at once.
+    </description>
+
+    <rule ref="category/java/errorprone.xml">
+        <!--
+          AvoidDuplicateLiterals, 272 findings. A maintainability heuristic sitting in a defect
+          category: it counts repeated string literals, and in this tree the repeats are Cypher
+          fragments, header names and test fixture values, where hoisting each to a constant would
+          move the text away from the code that reads it without removing any hazard.
+        -->
+        <exclude name="AvoidDuplicateLiterals"/>
+
+        <!--
+          AvoidLiteralsInIfCondition, 71 findings. Comparing against 0, 1 or -1 is not a defect, and
+          the rule cannot distinguish those from a genuine magic number.
+        -->
+        <exclude name="AvoidLiteralsInIfCondition"/>
+
+        <!--
+          AvoidFieldNameMatchingMethodName, 65 findings. `name` alongside `name()` is the accessor
+          convention this tree uses throughout, and the same shape every Java record generates.
+        -->
+        <exclude name="AvoidFieldNameMatchingMethodName"/>
+
+        <!--
+          DoNotTerminateVM, 13 findings. Every one is a System.exit in an auto-agent CLI command -
+          DeployCommand, RollbackCommand, StatusCommand and MavenDependencyTreeCommand - where
+          setting the process exit code is the required behaviour and the thing callers like
+          deploy.sh branch on. The rule exists for code running inside a container that must not
+          kill its host JVM; nothing here does.
+        -->
+        <exclude name="DoNotTerminateVM"/>
+    </rule>
+</ruleset>

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ruleset name="loudsight-performance"
+         xmlns="http://pmd.sourceforge.net/ruleset/2.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://pmd.sourceforge.net/ruleset/2.0.0 https://pmd.sourceforge.io/ruleset_2_0_0.xsd">
+
+    <description>
+        PMD's bundled performance category, restricted to main sources.
+
+        Test code is excluded: an avoidable allocation in a fixture costs nothing that matters, so
+        flagging it produces churn without benefit.
+
+        Rule exclusions belong in this file, each with a reason.
+    </description>
+
+    <exclude-pattern>.*/src/test/.*</exclude-pattern>
+
+    <rule ref="category/java/performance.xml">
+        <!--
+          The StringBuilder micro-optimisation family, 173 findings between them. These date from
+          before javac compiled string concatenation into invokedynamic and the JIT learned to elide
+          the intermediate builders, and none of the sites they flag is on a hot path - they are log
+          messages, Cypher fragments and exception text. Acting on them would mean hand-unrolling
+          readable concatenation into append chains for no measurable gain, which is the definition
+          of premature optimisation. Re-enable for a specific hot module if profiling ever justifies
+          it.
+        -->
+        <exclude name="ConsecutiveAppendsShouldReuse"/>        <!-- 73 -->
+        <exclude name="AppendCharacterWithChar"/>              <!-- 48 -->
+        <exclude name="ConsecutiveLiteralAppends"/>            <!-- 39 -->
+        <exclude name="InsufficientStringBufferDeclaration"/>  <!-- 12 -->
+        <exclude name="InefficientStringBuffering"/>           <!-- 1 -->
+
+        <!--
+          AvoidInstantiatingObjectsInLoops, 52 findings. Allocating inside a loop is how most correct
+          code is written - each iteration usually needs its own object - and the rule cannot tell
+          that from a hoistable allocation. Escape analysis handles the cheap cases anyway.
+        -->
+        <exclude name="AvoidInstantiatingObjectsInLoops"/>
+    </rule>
+</ruleset>

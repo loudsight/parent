@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ruleset name="loudsight-documentation"
+         xmlns="http://pmd.sourceforge.net/ruleset/2.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://pmd.sourceforge.net/ruleset/2.0.0 https://pmd.sourceforge.io/ruleset_2_0_0.xsd">
+
+    <description>
+        A curated subset of PMD's documentation category, covering main AND test sources.
+
+        Only the three rules that catch a mistake are enabled. The category's other three measure
+        comment volume, which is not the same thing as comment quality and would push this codebase
+        toward the restating-the-obvious Javadoc it currently avoids.
+
+        Enabled:
+          - DanglingJavadoc - a /** block somewhere the tool will never associate with a
+            declaration, so documentation someone wrote is silently not documentation.
+          - UncommentedEmptyConstructor / UncommentedEmptyMethodBody - an empty body is either
+            deliberate, in which case say so, or an unfinished implementation. Both have shipped
+            here before.
+
+        Deliberately excluded:
+          - CommentRequired - would demand Javadoc on every declaration, generating thousands of
+            findings whose only cheap fix is filler text.
+          - CommentSize - line and length limits on comments; this tree's explanatory comments are
+            long on purpose, and several are cited from the plan documents.
+          - CommentContent - a banned-word scan that does nothing until configured with words.
+    </description>
+
+    <rule ref="category/java/documentation.xml/DanglingJavadoc"/>
+    <rule ref="category/java/documentation.xml/UncommentedEmptyConstructor"/>
+    <rule ref="category/java/documentation.xml/UncommentedEmptyMethodBody"/>
+</ruleset>
