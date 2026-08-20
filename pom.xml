@@ -107,7 +107,14 @@
              On: the UTC timestamp rule covers test sources too. bestpractices stays main-only,
              scoped by an exclude-pattern in loudsight-bestpractices.xml. -->
         <pmd.includeTests>true</pmd.includeTests>
-        <pmd.excludeFromFailureFile>${project.basedir}/pmd-baseline.properties</pmd.excludeFromFailureFile>
+        <!--
+             No repo-wide default path: maven-pmd-plugin errors out if this points at a file that
+             doesn't exist, and every category currently sits at zero violations (fixed directly,
+             not baselined - see Step 10.3's "a baseline that still exists is a gate that is still
+             off"). A module that accumulates a real backlog sets this to its own
+             pmd-baseline.properties and deletes the override once that file is back to zero.
+        -->
+        <pmd.excludeFromFailureFile></pmd.excludeFromFailureFile>
     </properties>
 
     <groupId>com.loudsight</groupId>
