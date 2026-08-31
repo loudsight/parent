@@ -570,15 +570,23 @@
                 <artifactId>jakarta.activation</artifactId>
                 <version>1.2.2</version>
             </dependency>
+            <!--
+              Must track the version Spring Framework ships with (spring-context 7.0.2 declares
+              micrometer-observation 1.16.1). Pinning older silently breaks @Scheduled: Spring 7's
+              ScheduledMethodRunnable wraps every run in a Micrometer Observation, and against an
+              incompatible micrometer the ObservationRegistry arrives null -> NPE in
+              Observation.createNotStarted before the method body executes (FxHistoryRefreshJob never
+              ran on dev for this reason). Bump this in lockstep with springframework.version.
+            -->
             <dependency>
                 <groupId>io.micrometer</groupId>
                 <artifactId>micrometer-observation</artifactId>
-                <version>1.10.0</version>
+                <version>1.16.1</version>
             </dependency>
             <dependency>
                 <groupId>io.micrometer</groupId>
                 <artifactId>micrometer-commons</artifactId>
-                <version>1.10.0</version>
+                <version>1.16.1</version>
             </dependency>
             <dependency>
                 <groupId>jakarta.xml.bind</groupId>
