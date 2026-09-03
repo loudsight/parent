@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FindBugsFilter
+    xmlns="https://github.com/spotbugs/filter/3.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="https://github.com/spotbugs/filter/3.0.0 https://raw.githubusercontent.com/spotbugs/spotbugs/4.10.3/spotbugs/etc/findbugsfilter.xsd">
+
+    <!--
+      Exclude generated entity-meta classes by source path. These are emitted by
+      entity-meta-processor into target/generated-sources/annotations and
+      target/generated-test-sources/test-annotations. The pattern matches both.
+
+      Excluded by source path rather than filename so the four hand-written classes in
+      entity-meta-generator itself (Meta, Schema, DefaultMeta, GeneratedMeta) are not swept up.
+      This is the same rationale documented in parent/pom.xml for the PMD filename excludes.
+    -->
+    <Match>
+        <Source name="~.*/target/generated-(test-)?sources/.*/.*Meta\.java"/>
+    </Match>
+    <Match>
+        <Source name="~.*/target/generated-(test-)?sources/.*/.*Schema\.java"/>
+    </Match>
+
+    <!--
+      Exclude SBE-generated sources. These are emitted into target/generated-sources/sbe and are
+      already exempt from PMD and Error Prone via path-based exclusions.
+    -->
+    <Match>
+        <Source name="~.*/target/generated-sources/sbe/.*"/>
+    </Match>
+
+</FindBugsFilter>
