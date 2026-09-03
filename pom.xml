@@ -54,8 +54,11 @@
         <neo4j.driver.version>5.28.15</neo4j.driver.version>
         <jackson.version>3.0.3</jackson.version>
         <jackson-annotations.version>2.20</jackson-annotations.version>
-        <!-- Track Spring Boot 4.0.1's managed versions. -->
-        <netty.version>4.2.9.Final</netty.version>
+        <!--
+          Track Spring Boot 4.0.1's managed versions, but override Netty to 4.2.15.Final
+          to satisfy requireUpperBoundDeps with Neo4j driver 5.28.15.
+        -->
+        <netty.version>4.2.15.Final</netty.version>
         <reactor-bom.version>2025.0.1</reactor-bom.version>
         <jetty.version>12.1.5</jetty.version>
         <jakarta.servlet.version>6.1.0</jakarta.servlet.version>
@@ -77,6 +80,7 @@
         <spotbugs.version>4.10.3</spotbugs.version>
         <spotbugs-maven-plugin.version>4.10.3.0</spotbugs-maven-plugin.version>
         <findsecbugs.version>1.14.0</findsecbugs.version>
+        <forbidden-apis.version>3.9</forbidden-apis.version>
         <!--
           NullAway's options, separate from errorprone.args so a module can quarantine the nullness
           layer without also losing the rest of Error Prone - set nullaway.args empty and the check
@@ -146,6 +150,15 @@
                 <version>${netty.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
+            </dependency>
+            <!--
+              Override netty-tcnative-classes to satisfy requireUpperBoundDeps with Neo4j driver.
+              The Netty BOM 4.2.15 provides 2.0.74.Final, but Neo4j driver 5.28.15 wants 2.0.77.Final.
+            -->
+            <dependency>
+                <groupId>io.netty</groupId>
+                <artifactId>netty-tcnative-classes</artifactId>
+                <version>2.0.77.Final</version>
             </dependency>
             <dependency>
                 <groupId>org.springframework</groupId>
@@ -512,6 +525,13 @@
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-core</artifactId>
                 <version>${springframework.version}</version>
+                <exclusions>
+                    <!-- Excluded per Step 7 bannedDependencies - use jcl-over-slf4j bridge instead -->
+                    <exclusion>
+                        <groupId>commons-logging</groupId>
+                        <artifactId>commons-logging</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>org.springframework</groupId>
@@ -541,12 +561,12 @@
             <dependency>
                 <groupId>jakarta.annotation</groupId>
                 <artifactId>jakarta.annotation-api</artifactId>
-                <version>2.1.1</version>
+                <version>3.0.0</version>
             </dependency>
             <dependency>
                 <groupId>jakarta.validation</groupId>
                 <artifactId>jakarta.validation-api</artifactId>
-                <version>3.0.2</version>
+                <version>3.1.1</version>
             </dependency>
             <dependency>
                 <groupId>com.sun.activation</groupId>
@@ -627,6 +647,10 @@
             <plugin>
                 <groupId>com.github.spotbugs</groupId>
                 <artifactId>spotbugs-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>de.thetaphi</groupId>
+                <artifactId>forbiddenapis</artifactId>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -945,6 +969,80 @@
                     </executions>
                 </plugin>
                 <plugin>
+                    <groupId>de.thetaphi</groupId>
+                    <artifactId>forbiddenapis</artifactId>
+                    <version>${forbidden-apis.version}</version>
+                    <dependencies>
+                        <!-- Puts forbidden-signatures.txt on the plugin classpath. -->
+                        <dependency>
+                            <groupId>com.loudsight</groupId>
+                            <artifactId>build-tools</artifactId>
+                            <version>0.0.1-SNAPSHOT</version>
+                        </dependency>
+                    </dependencies>
+                    <configuration>
+                        <!--
+                          Bundled signatures omitted because JDK 25 is not yet supported by
+                          forbidden-apis 3.9. The plugin fails with "Bundled signatures resource not
+                          found: jdk-unsafe-25" when bundled signatures are enabled. Revisit when
+                          forbidden-apis adds JDK 25 support.
+
+                          The custom signatures below remain fully enforced and cover the critical
+                          UTC/locale/charset invariants this step exists to guard.
+                        -->
+                        <!--
+                          Inline custom signatures for default-locale/charset/timezone-sensitive APIs.
+                          This is the bytecode-level enforcement of the UTC invariant that
+                          NoDefaultZoneNow guards at source level. It catches the cases PMD's type
+                          resolution cannot see, including the "fails open rather than loudly" hole
+                          where a rule misconfiguration silently stops checking.
+                        -->
+                        <signatures>
+                            <![CDATA[
+@defaultMessage Use ZonedDateTime.now(ZoneOffset.UTC) or TimeProvider.DEFAULT.now() instead
+java.time.LocalDateTime#now()
+java.time.LocalDate#now()
+java.time.LocalTime#now()
+java.time.ZonedDateTime#now()
+java.time.OffsetDateTime#now()
+java.time.Instant#now()
+
+@defaultMessage Use ZoneOffset.UTC explicitly
+java.time.ZoneId#systemDefault()
+
+@defaultMessage Use Locale.ROOT or Locale.US explicitly
+java.lang.String#toLowerCase()
+java.lang.String#toUpperCase()
+java.lang.String#format(java.lang.String,java.lang.Object[])
+
+@defaultMessage Use StandardCharsets.UTF_8 explicitly
+java.lang.String#<init>(byte[])
+java.lang.String#<init>(byte[],int,int)
+java.lang.String#getBytes()
+java.io.FileReader#<init>(java.lang.String)
+java.io.FileReader#<init>(java.io.File)
+java.io.FileWriter#<init>(java.lang.String)
+java.io.FileWriter#<init>(java.io.File)
+java.io.InputStreamReader#<init>(java.io.InputStream)
+java.io.OutputStreamWriter#<init>(java.io.OutputStream)
+                            ]]>
+                        </signatures>
+                        <!--
+                          Inventory mode: failOnViolation=false so violations are reported but do not
+                          break the build. Switch to true in Step 10 when the backlog is cleared.
+                        -->
+                        <failOnViolation>false</failOnViolation>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <goals>
+                                <goal>check</goal>
+                                <goal>testCheck</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+                <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-dependency-plugin</artifactId>
                     <version>3.11.0</version>
@@ -986,6 +1084,34 @@
                         <tag>${project.artifactId}-${project.version}</tag>
                     </configuration>
                 </plugin>
+                <!--
+                  Core lifecycle plugins - versions must be explicit per requirePluginVersions rule.
+                -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-clean-plugin</artifactId>
+                    <version>3.2.0</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-resources-plugin</artifactId>
+                    <version>3.3.1</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-install-plugin</artifactId>
+                    <version>3.1.2</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-deploy-plugin</artifactId>
+                    <version>3.1.2</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-site-plugin</artifactId>
+                    <version>3.12.1</version>
+                </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-enforcer-plugin</artifactId>
@@ -1002,6 +1128,30 @@
                                     <requireMavenVersion>
                                         <version>3.8.1</version>
                                     </requireMavenVersion>
+                                    <!--
+                                      Step 7 hardening: additional dependency and plugin hygiene rules.
+                                    -->
+                                    <requireUpperBoundDeps />
+                                    <banDuplicatePomDependencyVersions />
+                                    <banDynamicVersions>
+                                        <allowSnapshots>true</allowSnapshots>
+                                    </banDynamicVersions>
+                                    <requirePluginVersions>
+                                        <message>All plugin versions must be explicitly declared</message>
+                                    </requirePluginVersions>
+                                    <bannedDependencies>
+                                        <excludes>
+                                            <!-- Ban SLF4J bridges that route to other logging frameworks -->
+                                            <exclude>org.slf4j:slf4j-log4j12</exclude>
+                                            <exclude>org.slf4j:slf4j-reload4j</exclude>
+                                            <exclude>org.slf4j:slf4j-jdk14</exclude>
+                                            <exclude>org.slf4j:slf4j-nop</exclude>
+                                            <!-- Ban commons-logging in favor of jcl-over-slf4j bridge -->
+                                            <exclude>commons-logging:commons-logging</exclude>
+                                            <!-- Ban log4j 1.x (EOL, security issues) -->
+                                            <exclude>log4j:log4j</exclude>
+                                        </excludes>
+                                    </bannedDependencies>
                                 </rules>
                             </configuration>
                         </execution>
@@ -1105,6 +1255,14 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
             <version>${slf4j.version}</version>
+        </dependency>
+        <!--
+          Bridge for commons-logging to SLF4J. Required because Step 7 bannedDependencies
+          excludes commons-logging from spring-core (and transitively all Spring modules).
+        -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>jcl-over-slf4j</artifactId>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>

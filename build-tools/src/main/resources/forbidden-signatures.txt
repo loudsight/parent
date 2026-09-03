@@ -1,0 +1,63 @@
+# Forbidden API signatures for default-locale/charset/timezone-sensitive JDK methods.
+#
+# This is the bytecode-level enforcement of the UTC invariant that NoDefaultZoneNow guards
+# at source level. It catches cases PMD's type resolution cannot see, including the "fails
+# open rather than loudly" hole where a rule misconfiguration silently stops checking.
+#
+# Rationale: Default locale/charset/timezone behavior is JVM-configuration-dependent and
+# produces non-deterministic results across environments. All time operations must use UTC
+# explicitly, all string operations must specify Locale.ROOT or Locale.US, and all I/O must
+# specify UTF-8.
+
+@defaultMessage Use ZonedDateTime.now(ZoneOffset.UTC) or TimeProvider.DEFAULT.now() instead
+java.time.LocalDateTime#now()
+java.time.LocalDate#now()
+java.time.LocalTime#now()
+java.time.ZonedDateTime#now()
+java.time.OffsetDateTime#now()
+java.time.Instant#now()
+
+@defaultMessage Use ZoneOffset.UTC explicitly
+java.time.ZoneId#systemDefault()
+
+@defaultMessage Use Locale.ROOT or Locale.US explicitly
+java.lang.String#toLowerCase()
+java.lang.String#toUpperCase()
+java.lang.String#format(java.lang.String,java.lang.Object[])
+java.io.PrintStream#format(java.lang.String,java.lang.Object[])
+java.io.PrintStream#printf(java.lang.String,java.lang.Object[])
+java.io.PrintWriter#format(java.lang.String,java.lang.Object[])
+java.io.PrintWriter#printf(java.lang.String,java.lang.Object[])
+java.util.Formatter#<init>(java.lang.String)
+java.util.Formatter#<init>(java.io.File)
+java.util.Formatter#<init>(java.io.OutputStream)
+java.util.Formatter#<init>(java.lang.Appendable)
+
+@defaultMessage Use StandardCharsets.UTF_8 explicitly
+java.lang.String#<init>(byte[])
+java.lang.String#<init>(byte[],int,int)
+java.lang.String#getBytes()
+java.io.FileReader#<init>(java.lang.String)
+java.io.FileReader#<init>(java.io.File)
+java.io.FileWriter#<init>(java.lang.String)
+java.io.FileWriter#<init>(java.lang.String,boolean)
+java.io.FileWriter#<init>(java.io.File)
+java.io.FileWriter#<init>(java.io.File,boolean)
+java.io.InputStreamReader#<init>(java.io.InputStream)
+java.io.OutputStreamWriter#<init>(java.io.OutputStream)
+java.io.PrintStream#<init>(java.io.File)
+java.io.PrintStream#<init>(java.lang.String)
+java.io.PrintStream#<init>(java.io.OutputStream)
+java.io.PrintStream#<init>(java.io.OutputStream,boolean)
+java.io.PrintWriter#<init>(java.io.File)
+java.io.PrintWriter#<init>(java.lang.String)
+java.io.PrintWriter#<init>(java.io.OutputStream)
+java.io.PrintWriter#<init>(java.io.OutputStream,boolean)
+java.util.Scanner#<init>(java.io.File)
+java.util.Scanner#<init>(java.nio.file.Path)
+java.util.Scanner#<init>(java.io.InputStream)
+java.nio.file.Files#newBufferedReader(java.nio.file.Path)
+java.nio.file.Files#newBufferedWriter(java.nio.file.Path,java.nio.file.OpenOption[])
+java.nio.file.Files#readAllLines(java.nio.file.Path)
+java.nio.file.Files#readString(java.nio.file.Path)
+java.nio.file.Files#writeString(java.nio.file.Path,java.lang.CharSequence,java.nio.file.OpenOption[])
