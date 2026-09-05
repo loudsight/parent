@@ -83,6 +83,19 @@
           NullAway included. Severities are now the checks' own again.
         -->
         <errorprone.args>-XepExcludedPaths:.*/target/generated-(test-)?sources/.*</errorprone.args>
+        <!--
+          Enforcement state of each gate, in one place. These are the ENFORCING defaults; the
+          `inventory` profile at the bottom of this file flips every one of them to report-only.
+          Keep any new gate's fail switch here rather than hardcoding it in the plugin, or the
+          profile silently stops covering it. spotbugs and forbidden-apis are still false because
+          those layers have not been ratcheted yet (Step 10) - the profile still has to name them,
+          so that flipping them to true does not quietly leave them failing during a survey.
+        -->
+        <maven.compiler.failOnWarning>true</maven.compiler.failOnWarning>
+        <pmd.failOnViolation>true</pmd.failOnViolation>
+        <cpd.failOnViolation>true</cpd.failOnViolation>
+        <spotbugs.failOnError>false</spotbugs.failOnError>
+        <forbiddenapis.failOnViolation>false</forbiddenapis.failOnViolation>
         <nullaway.version>0.13.8</nullaway.version>
         <spotbugs.version>4.10.3</spotbugs.version>
         <spotbugs-maven-plugin.version>4.10.3.0</spotbugs-maven-plugin.version>
@@ -719,6 +732,13 @@
                                 <version>${nullaway.version}</version>
                             </path>
                         </annotationProcessorPaths>
+                        <!--
+                          -Werror, via the plugin's own parameter rather than a raw compilerArg, so
+                          the `inventory` profile can switch it off. Turning it off matters for more
+                          than tolerance: with it on, `compile` fails before `testCompile` ever runs,
+                          so a survey would silently miss every finding in test sources.
+                        -->
+                        <failOnWarning>${maven.compiler.failOnWarning}</failOnWarning>
                         <compilerArgs>
                             <!--
                               Error Prone runs inside this javac invocation rather than forking a
@@ -730,11 +750,6 @@
                             <arg>-XDcompilePolicy=simple</arg>
                             <arg>--should-stop=ifError=FLOW</arg>
                             <arg>-Xplugin:ErrorProne ${errorprone.args} ${nullaway.args}</arg>
-                            <!--
-                              Step 1: Treat all compiler warnings as errors. This is the last gate to
-                              add because it's the noisiest, but necessary for build hygiene.
-                            -->
-                            <arg>-Werror</arg>
                         </compilerArgs>
                     </configuration>
                 </plugin>
@@ -968,7 +983,7 @@
                           the build. This matches the Error Prone and PMD rollout pattern - inventory
                           first, then ratchet. Switch to true in Step 10 when the backlog is cleared.
                         -->
-                        <failOnError>false</failOnError>
+                        <failOnError>${spotbugs.failOnError}</failOnError>
                         <includeTests>true</includeTests>
                         <excludeFilterFile>spotbugs-exclude.xml</excludeFilterFile>
                         <plugins>
@@ -1050,7 +1065,7 @@ java.io.OutputStreamWriter#<init>(java.io.OutputStream)
                           Inventory mode: failOnViolation=false so violations are reported but do not
                           break the build. Switch to true in Step 10 when the backlog is cleared.
                         -->
-                        <failOnViolation>false</failOnViolation>
+                        <failOnViolation>${forbiddenapis.failOnViolation}</failOnViolation>
                     </configuration>
                     <executions>
                         <execution>
@@ -1301,6 +1316,40 @@ java.io.OutputStreamWriter#<init>(java.io.OutputStream)
     </dependencies>
     <profiles>
         <!-- WORK_ROOT: macOS default - activated when WORK_ROOT is not set -->
+        <!--
+          Survey mode: report every finding in one pass instead of failing on the first.
+
+          Added 2026-09-05 alongside the removal of -XepAllErrorsAsWarnings. That flag had been
+          doing this job as a permanent global setting, which was wrong - it overrode every check's
+          declared severity - but removing it without a replacement would have taken the capability
+          with it, leaving "temporarily re-add the flag" as prose in a plan document.
+
+          Three things have to change together, and missing any one of them yields a survey that
+          silently under-reports:
+
+            - failOnWarning off. Not merely so the build survives: with -Werror on, `compile` fails
+              before `testCompile` runs, so every finding in test sources is invisible.
+            - -XepAllErrorsAsWarnings back on. Error Prone findings are otherwise compile errors,
+              and the should-stop=ifError=FLOW arg then halts javac early, truncating the report.
+            - every other gate to report-only, so an early PMD violation cannot abort the run
+              before the later phases have said anything.
+
+          Usage: mvn -Pinventory clean test-compile pmd:check
+          Per-module and in parallel across the tree, because the auto-agent's build-order visitor
+          stops at the first failing module and so cannot survey. See scripts/inventory-sweep.sh.
+        -->
+        <profile>
+            <id>inventory</id>
+            <properties>
+                <maven.compiler.failOnWarning>false</maven.compiler.failOnWarning>
+                <pmd.failOnViolation>false</pmd.failOnViolation>
+                <cpd.failOnViolation>false</cpd.failOnViolation>
+                <spotbugs.failOnError>false</spotbugs.failOnError>
+                <forbiddenapis.failOnViolation>false</forbiddenapis.failOnViolation>
+                <errorprone.args>-XepExcludedPaths:.*/target/generated-(test-)?sources/.* -XepAllErrorsAsWarnings</errorprone.args>
+            </properties>
+        </profile>
+
         <profile>
             <id>work-root-mac</id>
             <activation>
