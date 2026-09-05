@@ -716,6 +716,11 @@
                             <arg>-XDcompilePolicy=simple</arg>
                             <arg>--should-stop=ifError=FLOW</arg>
                             <arg>-Xplugin:ErrorProne ${errorprone.args} ${nullaway.args}</arg>
+                            <!--
+                              Step 1: Treat all compiler warnings as errors. This is the last gate to
+                              add because it's the noisiest, but necessary for build hygiene.
+                            -->
+                            <arg>-Werror</arg>
                         </compilerArgs>
                     </configuration>
                 </plugin>
