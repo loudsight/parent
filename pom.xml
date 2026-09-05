@@ -73,9 +73,16 @@
           is not equivalent: the -Xplugin argument would still be passed and javac would still
           load the plugin. Generated sources are excluded by path, which is what keeps the SBE
           and entity-meta output out of scope without silencing hand-written classes.
-          -XepAllErrorsAsWarnings is the inventory pass and comes off in the ratchet step.
+
+          -XepAllErrorsAsWarnings was the inventory pass and was removed on 2026-09-05, once
+          Step 1's -Werror had driven the backlog to zero. Removing it was a no-op for build
+          outcome - -Werror already fails on any Error Prone warning - but it matters for what
+          the configuration means: with the flag on, every check's declared severity was
+          overridden to WARNING, so the ERROR/WARNING distinction carried no information and
+          anything that later relaxed -Werror would have silently un-enforced every ERROR check,
+          NullAway included. Severities are now the checks' own again.
         -->
-        <errorprone.args>-XepExcludedPaths:.*/target/generated-(test-)?sources/.* -XepAllErrorsAsWarnings</errorprone.args>
+        <errorprone.args>-XepExcludedPaths:.*/target/generated-(test-)?sources/.*</errorprone.args>
         <nullaway.version>0.13.8</nullaway.version>
         <spotbugs.version>4.10.3</spotbugs.version>
         <spotbugs-maven-plugin.version>4.10.3.0</spotbugs-maven-plugin.version>
@@ -106,8 +113,10 @@
           absent annotations, or wiring the Spring and Jakarta handlers NullAway ships, would be
           configuration for a framework that is not here. Revisit if one is introduced.
 
-          Severity is ERROR, but errorprone.args still carries -XepAllErrorsAsWarnings during the
-          inventory pass, so NullAway reports as warnings until the ratchet step removes that flag.
+          Severity is ERROR and is now honoured directly: -XepAllErrorsAsWarnings came off on
+          2026-09-05. Note this changes nothing observable yet - OnlyNullMarked=true and the
+          absence of any @NullMarked package mean NullAway's in-scope set is still empty by
+          construction, so it reports nothing until the first package opts in.
         -->
         <nullaway.args>-Xep:NullAway:ERROR -XepOpt:NullAway:OnlyNullMarked=true -XepOpt:NullAway:JSpecifyMode=true</nullaway.args>
         <testcontainers.version>2.0.3</testcontainers.version>
