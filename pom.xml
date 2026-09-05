@@ -628,6 +628,11 @@
                 <artifactId>neo4j-java-driver</artifactId>
                 <version>${neo4j.driver.version}</version>
             </dependency>
+            <dependency>
+                <groupId>com.github.spotbugs</groupId>
+                <artifactId>spotbugs-annotations</artifactId>
+                <version>${spotbugs.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
     <build>
