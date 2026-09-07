@@ -741,6 +741,17 @@
                         <failOnWarning>${maven.compiler.failOnWarning}</failOnWarning>
                         <compilerArgs>
                             <!--
+                              -Xlint:all turns on every javac lint category except processing. The
+                              processing category would emit "No processor claimed any of these
+                              annotations" for every Spring/JUnit/SpotBugs/etc. annotation in a
+                              module, which is noise rather than a code-level hazard. The `inventory`
+                              profile temporarily disables failOnWarning so the whole tree can be
+                              surveyed without failing on the first warning.
+                            -->
+                            <arg>-Xlint:all</arg>
+                            <arg>-Xlint:-processing</arg>
+                            <arg>-Xlint:-text-blocks</arg>
+                            <!--
                               Error Prone runs inside this javac invocation rather than forking a
                               second pass. compilePolicy=simple is required by the plugin, and
                               should-stop=ifError=FLOW keeps javac from proceeding past a failed
