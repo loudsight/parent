@@ -83,4 +83,92 @@
         <Bug pattern="CT_CONSTRUCTOR_THROW"/>
     </Match>
 
+    <!--
+      INFORMATION_EXPOSURE_THROUGH_AN_ERROR_MESSAGE (FindSecBugs) in test classes. This detector
+      models an attacker seeing a stack trace or exception message through an HTTP error response.
+      In a JUnit test, folding e.getMessage() into a fail(...) / assertion message is the correct
+      thing to do and there is no response channel to an attacker. Kept fully enforced for
+      non-test code.
+    -->
+    <Match>
+        <Class name="~.*(Test|Tests|IT)"/>
+        <Bug pattern="INFORMATION_EXPOSURE_THROUGH_AN_ERROR_MESSAGE"/>
+    </Match>
+
+    <!--
+      EI_EXPOSE_REP2 in a constructor (~93 findings, 2026-09-09). Storing a constructor
+      argument into a field is how both dependency injection and immutable-object composition
+      work: `new NotesEndpoint(notesService, templateEngine, ...)`, `new AeronDispatcher(aeron,
+      registry, executor, ...)`. There is nothing to defensively copy - the argument is a
+      collaborator, not owned data. The genuine aliasing hazard REP2 exists for - a caller
+      mutating your internals after handing them over - is still enforced on setters, and
+      EI_EXPOSE_REP is still enforced on getters. As a matter of style a constructor that is
+      genuinely handed a caller-owned mutable *collection* should still copy it; that is caught
+      by review, not by this detector.
+    -->
+    <Match>
+        <Method name="&lt;init&gt;"/>
+        <Bug pattern="EI_EXPOSE_REP2"/>
+    </Match>
+
+    <!--
+      EI_EXPOSE_REP / EI_EXPOSE_REP2 / MS_EXPOSE_REP on the shared persistence entity model
+      (com.loudsight.useful.entity.**: User, Subject, PermissionGrant, TagAssignment, ...).
+      These are mutable beans by contract - the persistence layer hydrates them field-by-field
+      through their setters and reads them back through their getters. Wrapping the accessors in
+      defensive copies would break hydration and relationship traversal. Same rationale as
+      excluding generated code: the shape is dictated by the framework, not a design choice this
+      detector should police. Business @Introspect entities elsewhere get the same treatment
+      per-module as they are reached. SING_SINGLETON_HAS_NONPRIVATE_CONSTRUCTOR is included for
+      the same reason: Subject exposes getAdmin()/getAnonymous() convenience instances but is a
+      persistable base entity (User extends it), so its constructor cannot be private.
+    -->
+    <Match>
+        <Class name="~com\.loudsight\.useful\.entity\..*"/>
+        <Bug pattern="EI_EXPOSE_REP,EI_EXPOSE_REP2,MS_EXPOSE_REP,SING_SINGLETON_HAS_NONPRIVATE_CONSTRUCTOR"/>
+    </Match>
+
+    <!--
+      EntityQuery / NativeEntityQuery are @Introspect transport DTOs: constructed empty and
+      populated field-by-field by the deserializer (setParameters/setRelationships/
+      setResultFields), then read back the same way. Same bean-hydration rationale as the
+      entity model above. DE_MIGHT_IGNORE on EntityQuery.setTypeName is also expected - a
+      typeName that does not resolve to a local Class is normal on the class-free server side;
+      typeClass simply stays null.
+    -->
+    <Match>
+        <Class name="~com\.loudsight\.persistence\.client\.(EntityQuery|NativeEntityQuery)"/>
+        <Bug pattern="EI_EXPOSE_REP,EI_EXPOSE_REP2,DE_MIGHT_IGNORE"/>
+    </Match>
+
+    <!--
+      SaveEntitySpec is an @Introspect transport record whose list/map components carry the
+      caller's own field and relationship data verbatim across the wire; SubjectReferencingFixture-
+      Entity is a persistence-lib test fixture @Introspect bean. Same bean/DTO rationale as the
+      entity model and the persistence-client query DTOs above.
+    -->
+    <Match>
+        <Class name="~com\.loudsight\.persistence\.server\.(query\.SaveEntitySpec|SubjectReferencingFixtureEntity)"/>
+        <Bug pattern="EI_EXPOSE_REP,EI_EXPOSE_REP2"/>
+    </Match>
+
+    <!--
+      CypherQueryUtils.generateMergeQueryForEntity (and its lambda): the format strings are
+      text-block literals whose .stripIndent() only normalises indentation - no interpolation.
+      The %s arguments are Cypher fragments composed from schema metadata (labels, alias names,
+      property-key lists) and values already routed through quoteIfString, never raw request
+      input. The literal \n breaks are deliberate Cypher formatting, not platform line separators.
+      Scoped to this one method rather than the class, since CypherQueryUtils is the injection
+      surface and every other format call in it must stay checked. A method-level
+      @SuppressFBWarnings cannot cover the lambda's synthetic method, hence a filter entry.
+    -->
+    <Match>
+        <Class name="com.loudsight.persistence.server.query.CypherQueryUtils"/>
+        <Or>
+            <Method name="generateMergeQueryForEntity"/>
+            <Method name="~lambda\$generateMergeQueryForEntity\$.*"/>
+        </Or>
+        <Bug pattern="FORMAT_STRING_MANIPULATION,VA_FORMAT_STRING_USES_NEWLINE"/>
+    </Match>
+
 </FindBugsFilter>
