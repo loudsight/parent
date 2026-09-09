@@ -29,20 +29,15 @@
     </Match>
 
     <!--
-      entity-meta-processor-tests fixtures. That module has no src/main - every type is a
-      JUnit test or a deliberately-plain @Introspect fixture entity that exists only to be an
-      unremarkable mutable JavaBean for the processor to read. Defensive-copy, equals/hashCode
-      and "rough approximation of PI" advice do not apply to a fixture whose shape is dictated
-      by what it must exercise; making them immutable would defeat their purpose. Real
-      correctness and security detectors still run against this module.
+      Test-fixture @Introspect entities live in a `.fixtures` package (com.loudsight.meta.fixtures.*
+      for the entity-meta and simple-pojo fixture sets). They exist only to be unremarkable mutable
+      JavaBeans for the processor / persistence layer to read; defensive-copy, equals/hashCode and
+      "rough approximation of PI" advice do not apply to a fixture whose shape is dictated by what
+      it must exercise. Real correctness and security detectors still run against them.
     -->
     <Match>
-        <Class name="~com\.loudsight\.meta\.entity\.(SimpleClass|SimpleParentClass|FakeClassNoDefaultConstructor|CompositeIdEntity|EntityWithMap|EntityWithValueObjectList|SelfReferencingEntity|SimpleEntity|SimpleEntitySubclass|SimpleEntityWithChildren|RecordEntityWithNullableField|Amount)"/>
-        <Bug pattern="EI_EXPOSE_REP,EI_EXPOSE_REP2,EQ_DOESNT_OVERRIDE_EQUALS"/>
-    </Match>
-    <Match>
-        <Class name="~com\.loudsight\.meta\.(SimpleEntityMetaGenerationTests|RecordMetaGenerationTests|SerializationTest|generation\.MetaGeneratorTest)"/>
-        <Bug pattern="CNT_ROUGH_CONSTANT_VALUE,EI_EXPOSE_REP,EI_EXPOSE_REP2"/>
+        <Package name="~com\.loudsight\..*\.fixtures(\..*)?"/>
+        <Bug pattern="EI_EXPOSE_REP,EI_EXPOSE_REP2,EQ_DOESNT_OVERRIDE_EQUALS,CNT_ROUGH_CONSTANT_VALUE"/>
     </Match>
 
     <!--
@@ -144,7 +139,7 @@
     -->
     <Match>
         <Class name="~.*(Test|Tests|IT)"/>
-        <Bug pattern="RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE,DMI_HARDCODED_ABSOLUTE_FILENAME,NM_CONFUSING,DMI_RANDOM_USED_ONLY_ONCE,IAOM_DO_NOT_INCREASE_METHOD_ACCESSIBILITY,BC_UNCONFIRMED_CAST_OF_RETURN_VALUE,UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR,EI_EXPOSE_REP2,RV_RETURN_VALUE_IGNORED"/>
+        <Bug pattern="RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE,DMI_HARDCODED_ABSOLUTE_FILENAME,NM_CONFUSING,DMI_RANDOM_USED_ONLY_ONCE,IAOM_DO_NOT_INCREASE_METHOD_ACCESSIBILITY,BC_UNCONFIRMED_CAST_OF_RETURN_VALUE,UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR,EI_EXPOSE_REP2,RV_RETURN_VALUE_IGNORED,CNT_ROUGH_CONSTANT_VALUE"/>
     </Match>
 
     <!--
