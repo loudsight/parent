@@ -176,26 +176,26 @@
     </Match>
 
     <!--
-      EntityQuery / NativeEntityQuery are @Introspect transport DTOs: constructed empty and
-      populated field-by-field by the deserializer (setParameters/setRelationships/
-      setResultFields), then read back the same way. Same bean-hydration rationale as the
-      entity model above. DE_MIGHT_IGNORE on EntityQuery.setTypeName is also expected - a
-      typeName that does not resolve to a local Class is normal on the class-free server side;
-      typeClass simply stays null.
+      Transport DTOs live in a `.dto` package (com.loudsight.persistence.client.dto,
+      ...server.query.dto, com.loudsight.app.notes.api.dto, com.loudsight.app.ledger.api.dto, ...).
+      They are @Introspect wire messages: constructed empty or via a canonical constructor and
+      populated field-by-field by the deserializer, then read back the same way - the same
+      bean-hydration rationale as the persistence entity model. EI_EXPOSE_REP on getters and
+      EI_EXPOSE_REP2 on setters are inherent to that shape, and DE_MIGHT_IGNORE on
+      EntityQuery.setTypeName is expected (a typeName that does not resolve to a local Class is
+      normal on the class-free server side). Persisted @Id entities and hard-coded FQCN labels
+      (e.g. authentication Session) deliberately stay in .entity and are NOT moved here.
     -->
     <Match>
-        <Class name="~com\.loudsight\.persistence\.client\.(EntityQuery|NativeEntityQuery)"/>
+        <Package name="~com\.loudsight\..*\.dto(\..*)?"/>
         <Bug pattern="EI_EXPOSE_REP,EI_EXPOSE_REP2,DE_MIGHT_IGNORE"/>
     </Match>
 
     <!--
-      SaveEntitySpec is an @Introspect transport record whose list/map components carry the
-      caller's own field and relationship data verbatim across the wire; SubjectReferencingFixture-
-      Entity is a persistence-lib test fixture @Introspect bean. Same bean/DTO rationale as the
-      entity model and the persistence-client query DTOs above.
+      SubjectReferencingFixtureEntity is a persistence-lib test fixture @Introspect bean.
     -->
     <Match>
-        <Class name="~com\.loudsight\.persistence\.server\.(query\.SaveEntitySpec|SubjectReferencingFixtureEntity)"/>
+        <Class name="~com\.loudsight\.persistence\.server\.SubjectReferencingFixtureEntity"/>
         <Bug pattern="EI_EXPOSE_REP,EI_EXPOSE_REP2"/>
     </Match>
 
