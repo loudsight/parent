@@ -46,6 +46,32 @@
     </Match>
 
     <!--
+      auto-agent is an operator-driven build/deploy CLI. It is never network- or request-
+      facing: every input is the operator's own shell, Maven's own output, or repo-committed
+      deployment config under deployment/config/**. Three detector classes are structural
+      false positives in that context and are scoped to its packages:
+        - DM_EXIT in the cli.commands package: a CLI command's run() setting the process exit
+          code with System.exit is correct, not a library-in-a-container hazard.
+        - EI_EXPOSE_REP2 on a graph visitor's visit(DirectedGraph, VisitorContext): the visitor
+          pattern receives and holds its traversal context by design; there is nothing to copy.
+        - IMPROPER_UNICODE: every site is X.equalsIgnoreCase("jar"/"zip"/"http"/module-name) on
+          ASCII build identifiers from Maven or repo config, never user text.
+    -->
+    <Match>
+        <Class name="~com\.loudsight\.automation\.cli\.commands\..*"/>
+        <Bug pattern="DM_EXIT"/>
+    </Match>
+    <Match>
+        <Class name="~com\.loudsight\.automation\.graph\.visitors\..*"/>
+        <Method name="visit"/>
+        <Bug pattern="EI_EXPOSE_REP2"/>
+    </Match>
+    <Match>
+        <Class name="~com\.loudsight\.automation\..*"/>
+        <Bug pattern="IMPROPER_UNICODE"/>
+    </Match>
+
+    <!--
       ============================================================================
       Architectural-opinion detectors excluded wholesale, with measured counts.
       Same rationale as the PMD rule exclusions in loudsight-*.xml: these fire on
@@ -93,6 +119,16 @@
     <Match>
         <Class name="~.*(Test|Tests|IT)"/>
         <Bug pattern="INFORMATION_EXPOSURE_THROUGH_AN_ERROR_MESSAGE"/>
+    </Match>
+
+    <!--
+      Style/hygiene detectors that are noise in test code: a redundant null-check on a value a
+      helper always returns non-null, and absolute pathnames (test resource roots, /tmp, the
+      /opt/deployments layout an integration test asserts against). Kept enforced for main code.
+    -->
+    <Match>
+        <Class name="~.*(Test|Tests|IT)"/>
+        <Bug pattern="RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE,DMI_HARDCODED_ABSOLUTE_FILENAME"/>
     </Match>
 
     <!--
