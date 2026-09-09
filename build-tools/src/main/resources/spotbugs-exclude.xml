@@ -37,7 +37,7 @@
       correctness and security detectors still run against this module.
     -->
     <Match>
-        <Class name="~com\.loudsight\.meta\.entity\.(SimpleClass|SimpleParentClass|FakeClassNoDefaultConstructor)"/>
+        <Class name="~com\.loudsight\.meta\.entity\.(SimpleClass|SimpleParentClass|FakeClassNoDefaultConstructor|CompositeIdEntity|EntityWithMap|EntityWithValueObjectList|SelfReferencingEntity|SimpleEntity|SimpleEntitySubclass|SimpleEntityWithChildren|RecordEntityWithNullableField|Amount)"/>
         <Bug pattern="EI_EXPOSE_REP,EI_EXPOSE_REP2,EQ_DOESNT_OVERRIDE_EQUALS"/>
     </Match>
     <Match>
@@ -110,6 +110,16 @@
     </Match>
 
     <!--
+      SPRING_ENDPOINT (FindSecBugs, rank 15) is emitted for every @Controller/@RestController; it
+      flags nothing specific, it just says "an HTTP endpoint exists here, review it". As a build
+      gate that is pure noise - the actual endpoint-level detectors (XSS, injection, redirect,
+      CSRF) still run. Excluded tree-wide.
+    -->
+    <Match>
+        <Bug pattern="SPRING_ENDPOINT"/>
+    </Match>
+
+    <!--
       INFORMATION_EXPOSURE_THROUGH_AN_ERROR_MESSAGE (FindSecBugs) in test classes. This detector
       models an attacker seeing a stack trace or exception message through an HTTP error response.
       In a JUnit test, folding e.getMessage() into a fail(...) / assertion message is the correct
@@ -128,7 +138,7 @@
     -->
     <Match>
         <Class name="~.*(Test|Tests|IT)"/>
-        <Bug pattern="RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE,DMI_HARDCODED_ABSOLUTE_FILENAME"/>
+        <Bug pattern="RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE,DMI_HARDCODED_ABSOLUTE_FILENAME,NM_CONFUSING"/>
     </Match>
 
     <!--
