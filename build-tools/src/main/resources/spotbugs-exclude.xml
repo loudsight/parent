@@ -28,4 +28,59 @@
         <Source name="~.*/target/generated-sources/sbe/.*"/>
     </Match>
 
+    <!--
+      entity-meta-processor-tests fixtures. That module has no src/main - every type is a
+      JUnit test or a deliberately-plain @Introspect fixture entity that exists only to be an
+      unremarkable mutable JavaBean for the processor to read. Defensive-copy, equals/hashCode
+      and "rough approximation of PI" advice do not apply to a fixture whose shape is dictated
+      by what it must exercise; making them immutable would defeat their purpose. Real
+      correctness and security detectors still run against this module.
+    -->
+    <Match>
+        <Class name="~com\.loudsight\.meta\.entity\.(SimpleClass|SimpleParentClass|FakeClassNoDefaultConstructor)"/>
+        <Bug pattern="EI_EXPOSE_REP,EI_EXPOSE_REP2,EQ_DOESNT_OVERRIDE_EQUALS"/>
+    </Match>
+    <Match>
+        <Class name="~com\.loudsight\.meta\.(SimpleEntityMetaGenerationTests|RecordMetaGenerationTests|SerializationTest|generation\.MetaGeneratorTest)"/>
+        <Bug pattern="CNT_ROUGH_CONSTANT_VALUE,EI_EXPOSE_REP,EI_EXPOSE_REP2"/>
+    </Match>
+
+    <!--
+      ============================================================================
+      Architectural-opinion detectors excluded wholesale, with measured counts.
+      Same rationale as the PMD rule exclusions in loudsight-*.xml: these fire on
+      correct, idiomatic code and enforcing them would mean hundreds of low-value
+      edits with real regression risk. Decision recorded in
+      notebook/plans/static-analysis-best-in-class-4c1a09.md, Step 5c.
+      Re-survey with scripts/inventory-sweep.sh if these need revisiting.
+      ============================================================================
+    -->
+
+    <!--
+      THROWS_METHOD_THROWS_CLAUSE_BASIC_EXCEPTION (141 findings, 2026-09-09) and
+      THROWS_METHOD_THROWS_RUNTIMEEXCEPTION (9). "Method lists Exception/RuntimeException
+      in its throws clause, but it could be more specific." Almost all sites are JUnit
+      test methods and framework-boundary methods where `throws Exception` is the
+      idiom. Enumerating the concrete checked exceptions in every signature is churn
+      with no defect-prevention value; javac and Error Prone already police unreachable
+      or swallowed checked exceptions.
+    -->
+    <Match>
+        <Bug pattern="THROWS_METHOD_THROWS_CLAUSE_BASIC_EXCEPTION,THROWS_METHOD_THROWS_RUNTIMEEXCEPTION"/>
+    </Match>
+
+    <!--
+      CT_CONSTRUCTOR_THROW (16 findings, 2026-09-09). CERT OBJ11-J: an exception
+      escaping a constructor leaves a partially-constructed object reachable via a
+      subclass finalizer. It fires on ordinary constructor argument validation
+      (`Objects.requireNonNull`, range checks). The accepted mitigation is to make
+      the class `final` (which removes the finalizer-attack vector entirely) rather
+      than to remove the validation; several of these classes are already `final`
+      and SpotBugs still reports them. Not worth a tree-wide `final` sweep driven by
+      this detector alone.
+    -->
+    <Match>
+        <Bug pattern="CT_CONSTRUCTOR_THROW"/>
+    </Match>
+
 </FindBugsFilter>
