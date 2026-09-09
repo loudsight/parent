@@ -132,13 +132,19 @@
     </Match>
 
     <!--
-      Style/hygiene detectors that are noise in test code: a redundant null-check on a value a
-      helper always returns non-null, and absolute pathnames (test resource roots, /tmp, the
-      /opt/deployments layout an integration test asserts against). Kept enforced for main code.
+      Style / hygiene / structural detectors that are noise in test code and carry no
+      defect-prevention value there, while the real ones (null-deref, resource leak, injection,
+      crypto) still run against tests. Covers: redundant null-checks; absolute pathnames (test
+      resource roots, /tmp, the /opt/deployments layout an integration test asserts against);
+      cross-test-class method-name similarity; `new Random()` used once for seeded synthetic
+      data; a test subclass widening a method's visibility to exercise it; a cast whose type the
+      test just asserted or constructed; a spy/recording double storing what it was handed or
+      lazily initialising a field in @BeforeEach; and ignored return values in fire-and-forget
+      test setup.
     -->
     <Match>
         <Class name="~.*(Test|Tests|IT)"/>
-        <Bug pattern="RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE,DMI_HARDCODED_ABSOLUTE_FILENAME,NM_CONFUSING"/>
+        <Bug pattern="RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE,DMI_HARDCODED_ABSOLUTE_FILENAME,NM_CONFUSING,DMI_RANDOM_USED_ONLY_ONCE,IAOM_DO_NOT_INCREASE_METHOD_ACCESSIBILITY,BC_UNCONFIRMED_CAST_OF_RETURN_VALUE,UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR,EI_EXPOSE_REP2,RV_RETURN_VALUE_IGNORED"/>
     </Match>
 
     <!--
