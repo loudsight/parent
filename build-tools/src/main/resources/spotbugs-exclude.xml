@@ -58,16 +58,16 @@
           ASCII build identifiers from Maven or repo config, never user text.
     -->
     <Match>
-        <Class name="~com\.loudsight\.automation\.cli\.commands\..*"/>
+        <Package name="~com\.loudsight\.automation\.cli\.commands(\..*)?"/>
         <Bug pattern="DM_EXIT"/>
     </Match>
     <Match>
-        <Class name="~com\.loudsight\.automation\.graph\.visitors\..*"/>
+        <Package name="~com\.loudsight\.automation\.graph\.visitors(\..*)?"/>
         <Method name="visit"/>
         <Bug pattern="EI_EXPOSE_REP2"/>
     </Match>
     <Match>
-        <Class name="~com\.loudsight\.automation\..*"/>
+        <Package name="~com\.loudsight\.automation(\..*)?"/>
         <Bug pattern="IMPROPER_UNICODE"/>
     </Match>
 
@@ -176,7 +176,7 @@
       persistable base entity (User extends it), so its constructor cannot be private.
     -->
     <Match>
-        <Class name="~com\.loudsight\.useful\.entity\..*"/>
+        <Package name="~com\.loudsight\.useful\.entity(\..*)?"/>
         <Bug pattern="EI_EXPOSE_REP,EI_EXPOSE_REP2,MS_EXPOSE_REP,SING_SINGLETON_HAS_NONPRIVATE_CONSTRUCTOR"/>
     </Match>
 
