@@ -1309,6 +1309,18 @@ java.io.OutputStreamWriter#<init>(java.io.OutputStream)
             <groupId>org.slf4j</groupId>
             <artifactId>jcl-over-slf4j</artifactId>
         </dependency>
+        <!--
+          SpotBugs @SuppressFBWarnings annotations are used throughout the tree. The annotation
+          has CLASS retention, so any module compiling against a dependency class that carries one
+          needs the annotation type on its own compile classpath or javac warns ("cannot find
+          annotation method value()") - fatal under -Werror. `provided` keeps it off the runtime
+          classpath but on every module's compile classpath; it is annotations-only (~35 KB).
+        -->
+        <dependency>
+            <groupId>com.github.spotbugs</groupId>
+            <artifactId>spotbugs-annotations</artifactId>
+            <scope>provided</scope>
+        </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
