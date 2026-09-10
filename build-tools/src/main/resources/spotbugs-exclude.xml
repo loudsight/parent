@@ -122,7 +122,7 @@
       non-test code.
     -->
     <Match>
-        <Class name="~.*(Test|Tests|IT)"/>
+        <Class name="~.*(Test|Tests|IT)(\$.*)?"/>
         <Bug pattern="INFORMATION_EXPOSURE_THROUGH_AN_ERROR_MESSAGE"/>
     </Match>
 
@@ -134,12 +134,15 @@
       cross-test-class method-name similarity; `new Random()` used once for seeded synthetic
       data; a test subclass widening a method's visibility to exercise it; a cast whose type the
       test just asserted or constructed; a spy/recording double storing what it was handed or
-      lazily initialising a field in @BeforeEach; and ignored return values in fire-and-forget
-      test setup.
+      lazily initialising a field in @BeforeEach; ignored return values in fire-and-forget
+      test setup; a deliberate exact != / == check between two computed doubles asserting "these
+      two runs differ"; and \n rather than %n inside a multi-line assertion / skip message.
+      The `(\$.*)?` on the class pattern extends this to nested helper classes of a test
+      (e.g. a `SomethingTest$RecordingApi` in-line test double).
     -->
     <Match>
-        <Class name="~.*(Test|Tests|IT)"/>
-        <Bug pattern="RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE,DMI_HARDCODED_ABSOLUTE_FILENAME,NM_CONFUSING,DMI_RANDOM_USED_ONLY_ONCE,IAOM_DO_NOT_INCREASE_METHOD_ACCESSIBILITY,BC_UNCONFIRMED_CAST_OF_RETURN_VALUE,UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR,EI_EXPOSE_REP2,RV_RETURN_VALUE_IGNORED,CNT_ROUGH_CONSTANT_VALUE"/>
+        <Class name="~.*(Test|Tests|IT)(\$.*)?"/>
+        <Bug pattern="RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE,DMI_HARDCODED_ABSOLUTE_FILENAME,NM_CONFUSING,DMI_RANDOM_USED_ONLY_ONCE,IAOM_DO_NOT_INCREASE_METHOD_ACCESSIBILITY,BC_UNCONFIRMED_CAST_OF_RETURN_VALUE,UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR,EI_EXPOSE_REP2,RV_RETURN_VALUE_IGNORED,CNT_ROUGH_CONSTANT_VALUE,FE_FLOATING_POINT_EQUALITY,VA_FORMAT_STRING_USES_NEWLINE"/>
     </Match>
 
     <!--
@@ -196,6 +199,19 @@
     -->
     <Match>
         <Class name="~com\.loudsight\.persistence\.server\.SubjectReferencingFixtureEntity"/>
+        <Bug pattern="EI_EXPOSE_REP,EI_EXPOSE_REP2"/>
+    </Match>
+
+    <!--
+      Connection is a persisted @Introspect entity (@Id id, INVITER/INVITEE relationship edges).
+      Its inviter/invitee fields are com.loudsight.useful.entity Subject instances, already
+      accepted as shared mutable beans the persistence layer hydrates in place (see the
+      useful.entity block above). It is a persisted @Id entity with hard-coded relationship
+      names, so it is deliberately NOT moved to a .dto package; the record's implicit accessors
+      cannot carry a @SuppressFBWarnings, hence a filter entry.
+    -->
+    <Match>
+        <Class name="com.loudsight.connections.Connection"/>
         <Bug pattern="EI_EXPOSE_REP,EI_EXPOSE_REP2"/>
     </Match>
 
