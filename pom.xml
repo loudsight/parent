@@ -1027,14 +1027,20 @@
                     </dependencies>
                     <configuration>
                         <!--
-                          Bundled signatures omitted because JDK 25 is not yet supported by
-                          forbidden-apis 3.9. The plugin fails with "Bundled signatures resource not
-                          found: jdk-unsafe-25" when bundled signatures are enabled. Revisit when
-                          forbidden-apis adds JDK 25 support.
-
-                          The custom signatures below remain fully enforced and cover the critical
-                          UTC/locale/charset invariants this step exists to guard.
+                          forbidden-apis 3.9 ships bundled JDK signature sets only up to JDK 24, so
+                          on a JDK 25 build it looks for a non-existent jdk-unsafe-25 and aborts.
+                          Pinning targetVersion to 24 makes it resolve jdk-unsafe-24 / jdk-deprecated-24
+                          / jdk-non-portable-24, which still cover every Unsafe / non-portable / and
+                          pre-25-deprecated API this project could call. It just does not flag APIs
+                          newly deprecated in 25 - a small gap to close with a forbidden-apis version
+                          bump once one supports JDK 25 bundled sigs.
                         -->
+                        <targetVersion>24</targetVersion>
+                        <bundledSignatures>
+                            <bundledSignature>jdk-unsafe</bundledSignature>
+                            <bundledSignature>jdk-deprecated</bundledSignature>
+                            <bundledSignature>jdk-non-portable</bundledSignature>
+                        </bundledSignatures>
                         <!--
                           Inline custom signatures for default-locale/charset/timezone-sensitive APIs.
                           This is the bytecode-level enforcement of the UTC invariant that
