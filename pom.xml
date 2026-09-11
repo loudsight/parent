@@ -1525,51 +1525,53 @@ java.io.OutputStreamWriter#<init>(java.io.OutputStream)
                                             // Only attempt Docker build if build.sh exists and is executable
                                             def buildScript = new File("${baseDir}/build.sh")
                                             if (buildScript.exists()) {
-                                                try {
-                                                    List args = [
-                                                        "-t", "${dockerImagePrefix}/${projectArtifactId}:${projectVersion}",
-                                                        "-t", "${dockerImagePrefix}/${projectArtifactId}:latest",
-                                                        "--version", "${projectVersion}",
-                                                        "--registry", "${dockerRegistry}"
-                                                    ]
-                                                    def cmd = ["sh", "${baseDir}/build.sh"] + args
-                                                    def process = cmd.execute()
-                                                    process.consumeProcessOutput(System.out, System.err)
-                                                    process.waitFor()
-                                                    
-                                                    if (process.exitValue() != 0) {
-                                                        println("WARNING: Docker build failed with exit code " + process.exitValue() + " - continuing build")
-                                                    } else {
-                                                        // Push images to registry after successful build
-                                                        println("INFO: Pushing Docker images to registry...")
-                                                        def versionTag = "${dockerImagePrefix}/${projectArtifactId}:${projectVersion}"
-                                                        def latestTag = "${dockerImagePrefix}/${projectArtifactId}:latest"
-                                                        
-                                                        def pushVersionCmd = ["docker", "push", versionTag]
-                                                        def pushVersionProcess = pushVersionCmd.execute()
-                                                        pushVersionProcess.consumeProcessOutput(System.out, System.err)
-                                                        pushVersionProcess.waitFor()
-                                                        
-                                                        if (pushVersionProcess.exitValue() == 0) {
-                                                            println("INFO: Pushed " + versionTag)
-                                                        } else {
-                                                            println("WARNING: Failed to push " + versionTag)
-                                                        }
-                                                        
-                                                        def pushLatestCmd = ["docker", "push", latestTag]
-                                                        def pushLatestProcess = pushLatestCmd.execute()
-                                                        pushLatestProcess.consumeProcessOutput(System.out, System.err)
-                                                        pushLatestProcess.waitFor()
-                                                        
-                                                        if (pushLatestProcess.exitValue() == 0) {
-                                                            println("INFO: Pushed " + latestTag)
-                                                        } else {
-                                                            println("WARNING: Failed to push " + latestTag)
-                                                        }
-                                                    }
-                                                } catch (Exception e) {
-                                                    println("WARNING: Docker build error: " + e.getMessage() + " - continuing build")
+                                                // No swallow-and-continue here on purpose (2026-09-11): a caught
+                                                // exception or a WARNING-only push failure used to let this
+                                                // execution - and therefore 'mvn install' for the module - succeed
+                                                // anyway. BuildSignatureManager then cached that as a successful
+                                                // build and never retried, leaving the registry silently missing
+                                                // an image that DeployVisitor's pre-flight pull later required
+                                                // (happened to deployments/nginx: build succeeded locally, push
+                                                // failed, and the stale cached signature skipped every rebuild
+                                                // afterwards until a prod deploy refused to proceed). Any failure
+                                                // here must propagate and fail the build instead.
+                                                List args = [
+                                                    "-t", "${dockerImagePrefix}/${projectArtifactId}:${projectVersion}",
+                                                    "-t", "${dockerImagePrefix}/${projectArtifactId}:latest",
+                                                    "--version", "${projectVersion}",
+                                                    "--registry", "${dockerRegistry}"
+                                                ]
+                                                def cmd = ["sh", "${baseDir}/build.sh"] + args
+                                                def process = cmd.execute()
+                                                process.consumeProcessOutput(System.out, System.err)
+                                                process.waitFor()
+
+                                                if (process.exitValue() != 0) {
+                                                    throw new RuntimeException("Docker build failed for ${projectArtifactId} with exit code " + process.exitValue())
                                                 }
+
+                                                // Push images to registry after successful build
+                                                println("INFO: Pushing Docker images to registry...")
+                                                def versionTag = "${dockerImagePrefix}/${projectArtifactId}:${projectVersion}"
+                                                def latestTag = "${dockerImagePrefix}/${projectArtifactId}:latest"
+
+                                                def pushVersionCmd = ["docker", "push", versionTag]
+                                                def pushVersionProcess = pushVersionCmd.execute()
+                                                pushVersionProcess.consumeProcessOutput(System.out, System.err)
+                                                pushVersionProcess.waitFor()
+                                                if (pushVersionProcess.exitValue() != 0) {
+                                                    throw new RuntimeException("Failed to push " + versionTag)
+                                                }
+                                                println("INFO: Pushed " + versionTag)
+
+                                                def pushLatestCmd = ["docker", "push", latestTag]
+                                                def pushLatestProcess = pushLatestCmd.execute()
+                                                pushLatestProcess.consumeProcessOutput(System.out, System.err)
+                                                pushLatestProcess.waitFor()
+                                                if (pushLatestProcess.exitValue() != 0) {
+                                                    throw new RuntimeException("Failed to push " + latestTag)
+                                                }
+                                                println("INFO: Pushed " + latestTag)
                                             } else {
                                                 println("INFO: build.sh not found - skipping Docker build")
                                             }
