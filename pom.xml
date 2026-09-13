@@ -101,6 +101,9 @@
         <spotbugs-maven-plugin.version>4.10.3.0</spotbugs-maven-plugin.version>
         <findsecbugs.version>1.14.0</findsecbugs.version>
         <forbidden-apis.version>3.9</forbidden-apis.version>
+        <!-- 3.51.x is the first Checker Framework line that runs on JDK 25 (3.51.2 from the
+             plan never existed; 3.51.1 is its last release). -->
+        <checker.framework.version>3.51.1</checker.framework.version>
         <!--
           NullAway's options, separate from errorprone.args so a module can quarantine the nullness
           layer without also losing the rest of Error Prone - set nullaway.args empty and the check
@@ -776,13 +779,12 @@
                     - <javaParams> is declared String but was given list syntax, and
                       checkerFrameworkVersion defaults to ${plugin.version} (1.8.2), which is not
                       a Checker Framework version.
-                  If a soundness proof is wanted, re-add the Nullness Checker through
-                  maven-compiler-plugin annotationProcessorPaths behind an opt-in profile, not
-                  through this plugin. The version that was pinned here is
-                  org.checkerframework:checker:3.51.2, which is the first release to run on
-                  JDK 25 and needs the javac parser package exported to ALL-UNNAMED.
-                  The checker.framework.version property was removed with the plugin, since
-                  nothing else referenced it.
+                  The soundness proof it pretended to be now actually exists as the
+                  `deep-nullness` profile below: the Nullness Checker as an isolated
+                  proc:only compile execution, opt-in per module via a `.deep-nullness`
+                  marker file. org.checkerframework:checker 3.51.x is the first release line
+                  to run on JDK 25 and needs the javac parser package exported to ALL-UNNAMED
+                  (already in .mvn/jvm.config for Error Prone).
                 -->
                 <plugin>
                     <groupId>io.github.git-commit-id</groupId>
@@ -1377,6 +1379,158 @@ java.io.OutputStreamWriter#<init>(java.io.OutputStream)
                 <forbiddenapis.failOnViolation>false</forbiddenapis.failOnViolation>
                 <errorprone.args>-XepExcludedPaths:.*/target/generated-(test-)?sources/.* -XepAllErrorsAsWarnings</errorprone.args>
             </properties>
+        </profile>
+
+        <!--
+          deep-nullness: the Checker Framework Nullness Checker - the sound, whole-program
+          nullness proof that NullAway deliberately is not (Step 8b). Non-default: a module
+          opts in with an empty `.deep-nullness` marker file next to its pom.xml, the same
+          file-activation mechanism custom-build uses for `build.sh` (and the opposite
+          polarity to `.no-entity-meta`). Intended scope: persistence-lib and the
+          dispatcher/transport modules, where a soundness proof pays for a second analysis
+          pass. `mvn -Pdeep-nullness` forces it on anywhere.
+
+          To SURVEY a module rather than gate it, add -Dmaven.compiler.failOnError=false:
+
+              mvn -Pdeep-nullness clean process-test-classes -Dmaven.compiler.failOnError=false
+
+          Without it the main-source pass fails at process-classes and the test-source pass
+          never runs, so every finding in test sources is invisible - the same trap the
+          `inventory` profile documents for -Werror. Note the plugin reports each finding
+          twice (once in the COMPILATION ERROR block, once in the [ERROR] summary), so a
+          raw grep -c of [ERROR] lines double-counts.
+
+          The checker runs as its own proc:only execution, NOT on the shared
+          annotationProcessorPaths, for two reasons:
+
+            - checker.jar's META-INF/services registers every Checker Framework checker, so
+              putting it on the shared path would run all of them via discovery in the MAIN
+              compile of every marked module.
+            - selecting it with -processor in the main compile would instead bypass
+              discovery entirely and silently stop entity-meta-processor from running -
+              every currently-markable module generates *Meta classes.
+
+          Both problems disappear in a dedicated execution: annotationProcessorPaths is
+          replaced outright (combine.self="override") so the pass resolves checker.jar only,
+          and -processor names exactly the one processor to run. The pass still shares the
+          Maven JVM, so the javac add-exports/add-opens flags CF needs come from
+          .mvn/jvm.config like Error Prone's.
+        -->
+        <profile>
+            <id>deep-nullness</id>
+            <activation>
+                <file>
+                    <exists>${project.basedir}/.deep-nullness</exists>
+                </file>
+            </activation>
+            <dependencies>
+                <!--
+                  On the COMPILE classpath, not just the processor path: AnnotationBuilder
+                  resolves annotation types via elements.getTypeElement, which searches the
+                  module's own classpath - a dependency's bytecode carrying a CF qualifier
+                  (e.g. @Deterministic) otherwise fails the pass with "can't load class".
+                  provided scope: annotations only, nothing ships.
+                -->
+                <dependency>
+                    <groupId>org.checkerframework</groupId>
+                    <artifactId>checker-qual</artifactId>
+                    <version>${checker.framework.version}</version>
+                    <scope>provided</scope>
+                </dependency>
+            </dependencies>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-compiler-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>deep-nullness</id>
+                                <phase>process-classes</phase>
+                                <goals>
+                                    <goal>compile</goal>
+                                </goals>
+                                <configuration>
+                                    <proc>only</proc>
+                                    <!--
+                                      The plugin's staleness check compares each source
+                                      against its .class under outputDirectory; target/
+                                      classes is always fresh right after default-compile,
+                                      so the pass would print "Nothing to compile" and
+                                      silently never run. Point it at a directory proc:only
+                                      never populates instead: every source is permanently
+                                      "stale" and the check runs on every build.
+                                    -->
+                                    <outputDirectory>${project.build.directory}/deep-nullness</outputDirectory>
+                                    <useIncrementalCompilation>false</useIncrementalCompilation>
+                                    <!--
+                                      annotationProcessorPaths does not resolve transitively
+                                      (verified: the debug mojo config listed checker.jar
+                                      alone, and the pass failed with "can't load class
+                                      org.checkerframework.dataflow.qual.Deterministic").
+                                      checker-qual and checker-util are checker's runtime
+                                      deps and must be named explicitly.
+                                    -->
+                                    <annotationProcessorPaths combine.self="override">
+                                        <path>
+                                            <groupId>org.checkerframework</groupId>
+                                            <artifactId>checker</artifactId>
+                                            <version>${checker.framework.version}</version>
+                                        </path>
+                                        <path>
+                                            <groupId>org.checkerframework</groupId>
+                                            <artifactId>checker-qual</artifactId>
+                                            <version>${checker.framework.version}</version>
+                                        </path>
+                                        <path>
+                                            <groupId>org.checkerframework</groupId>
+                                            <artifactId>checker-util</artifactId>
+                                            <version>${checker.framework.version}</version>
+                                        </path>
+                                    </annotationProcessorPaths>
+                                    <compilerArgs combine.self="override">
+                                        <arg>-processor</arg>
+                                        <arg>org.checkerframework.checker.nullness.NullnessChecker</arg>
+                                    </compilerArgs>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>deep-nullness-test</id>
+                                <phase>process-test-classes</phase>
+                                <goals>
+                                    <goal>testCompile</goal>
+                                </goals>
+                                <configuration>
+                                    <proc>only</proc>
+                                    <outputDirectory>${project.build.directory}/deep-nullness-test</outputDirectory>
+                                    <useIncrementalCompilation>false</useIncrementalCompilation>
+                                    <annotationProcessorPaths combine.self="override">
+                                        <path>
+                                            <groupId>org.checkerframework</groupId>
+                                            <artifactId>checker</artifactId>
+                                            <version>${checker.framework.version}</version>
+                                        </path>
+                                        <path>
+                                            <groupId>org.checkerframework</groupId>
+                                            <artifactId>checker-qual</artifactId>
+                                            <version>${checker.framework.version}</version>
+                                        </path>
+                                        <path>
+                                            <groupId>org.checkerframework</groupId>
+                                            <artifactId>checker-util</artifactId>
+                                            <version>${checker.framework.version}</version>
+                                        </path>
+                                    </annotationProcessorPaths>
+                                    <compilerArgs combine.self="override">
+                                        <arg>-processor</arg>
+                                        <arg>org.checkerframework.checker.nullness.NullnessChecker</arg>
+                                    </compilerArgs>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
         </profile>
 
         <profile>
