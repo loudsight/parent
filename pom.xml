@@ -1382,6 +1382,45 @@ java.io.OutputStreamWriter#<init>(java.io.OutputStream)
         </profile>
 
         <!--
+          analysis-only: run the analysis gates over a module, or the tree, without the
+          side effects a normal `verify` carries (Step 9.2). SARIF aggregation, the rest of
+          the original Step 9, was dropped - there is no CI in this repo to consume it.
+
+          Two side effects are neutralised, each through its own plugin's documented user
+          property rather than by editing the execution, so nothing here duplicates or can
+          drift from the real configuration:
+
+            - custom-build's gmavenplus "Execute docker" script, which runs `docker build`
+              AND `docker push` at pre-integration-test in the 7 deployments/* modules that
+              have a build.sh. custom-build activates on that file's presence and so cannot
+              be switched off by another profile; skipScriptExecution is the supported lever.
+            - maven-assembly-plugin's fat-jar `single`, via assembly.skipAssembly.
+
+          Tests deliberately still run: this profile does NOT set skipTests, so
+          `-Panalysis-only verify` stays an honest build rather than something that reports
+          success while having run nothing. (Note `verify` still invokes failsafe, so
+          modules whose ITs need a live stack - integration-tests - need that stack.)
+
+          For a fast findings-only pass, invoke the goals directly instead. This never
+          enters package or pre-integration-test, so it cannot trigger Docker or assembly by
+          construction rather than by remembering a flag, and it runs no tests without
+          needing skipTests - the same pattern scripts/inventory-sweep.sh already uses:
+
+              mvn -Panalysis-only clean test-compile \
+                  pmd:check pmd:cpd-check spotbugs:check \
+                  forbiddenapis:check forbiddenapis:testCheck
+
+          Compose with -Pinventory to survey (report-only) instead of gate.
+        -->
+        <profile>
+            <id>analysis-only</id>
+            <properties>
+                <skipScriptExecution>true</skipScriptExecution>
+                <assembly.skipAssembly>true</assembly.skipAssembly>
+            </properties>
+        </profile>
+
+        <!--
           deep-nullness: the Checker Framework Nullness Checker - the sound, whole-program
           nullness proof that NullAway deliberately is not (Step 8b). Non-default: a module
           opts in with an empty `.deep-nullness` marker file next to its pom.xml, the same
