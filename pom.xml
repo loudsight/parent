@@ -237,6 +237,11 @@
                 <version>0.0.1-SNAPSHOT</version>
             </dependency>
             <dependency>
+                <groupId>com.loudsight.meta</groupId>
+                <artifactId>codemap-processor</artifactId>
+                <version>0.0.1-SNAPSHOT</version>
+            </dependency>
+            <dependency>
                 <groupId>com.loudsight.persistence</groupId>
                 <artifactId>persistence-client</artifactId>
                 <version>${loudsight.persistence.version}</version>
@@ -1667,6 +1672,59 @@ java.io.OutputStreamWriter#<init>(java.io.OutputStream)
                                     <path>
                                         <groupId>com.loudsight.meta</groupId>
                                         <artifactId>entity-meta-processor</artifactId>
+                                        <version>0.0.1-SNAPSHOT</version>
+                                    </path>
+                                </annotationProcessorPaths>
+                            </configuration>
+                        </plugin>
+                    </plugins>
+                </pluginManagement>
+            </build>
+        </profile>
+
+        <!--
+          Code-map annotation processing. OFF by default, unlike entity-meta-processing above.
+          A module opts IN by adding an empty `.codemap-enabled` file next to its pom.xml.
+
+          This is deliberately the opposite polarity from entity-meta-processing. That profile's
+          <missing> activation means ~120 of this tree's ~126 modules already carry
+          entity-meta-processor on their annotation-processor path today - if codemap-processor
+          were wired the same way, it would go tree-wide the instant this profile's jar rebuilds,
+          with no way to trial it on a handful of modules first. <exists> keeps the initial rollout
+          to exactly the modules that opt in; promoting to tree-wide later (flipping to <missing>
+          .no-codemap, mirroring the modules that carry .no-entity-meta) is a deliberate follow-up
+          decision, not a side effect of adding this profile.
+        -->
+        <profile>
+            <id>codemap-processing</id>
+            <activation>
+                <file>
+                    <exists>${project.basedir}/.codemap-enabled</exists>
+                </file>
+            </activation>
+
+            <dependencies>
+                <!-- Same IntelliJ JPS build-order rationale as entity-meta-processor's dependency
+                     edge above: without it, Build > Rebuild can race codemap-processor's own
+                     compile against a consumer module and fail with a ServiceConfigurationError. -->
+                <dependency>
+                    <groupId>com.loudsight.meta</groupId>
+                    <artifactId>codemap-processor</artifactId>
+                    <scope>provided</scope>
+                </dependency>
+            </dependencies>
+
+            <build>
+                <pluginManagement>
+                    <plugins>
+                        <plugin>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-compiler-plugin</artifactId>
+                            <configuration>
+                                <annotationProcessorPaths combine.children="append">
+                                    <path>
+                                        <groupId>com.loudsight.meta</groupId>
+                                        <artifactId>codemap-processor</artifactId>
                                         <version>0.0.1-SNAPSHOT</version>
                                     </path>
                                 </annotationProcessorPaths>
