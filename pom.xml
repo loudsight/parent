@@ -87,15 +87,15 @@
           Enforcement state of each gate, in one place. These are the ENFORCING defaults; the
           `inventory` profile at the bottom of this file flips every one of them to report-only.
           Keep any new gate's fail switch here rather than hardcoding it in the plugin, or the
-          profile silently stops covering it. spotbugs and forbidden-apis are still false because
-          those layers have not been ratcheted yet (Step 10) - the profile still has to name them,
-          so that flipping them to true does not quietly leave them failing during a survey.
+          profile silently stops covering it. All seven layers are enforcing; the inventory
+          profile relaxes every switch at once for surveys (Step 10 closed the ratchet on
+          spotbugs and forbidden-apis, the last two reporting-only layers).
         -->
         <maven.compiler.failOnWarning>true</maven.compiler.failOnWarning>
         <pmd.failOnViolation>true</pmd.failOnViolation>
         <cpd.failOnViolation>true</cpd.failOnViolation>
-        <spotbugs.failOnError>false</spotbugs.failOnError>
-        <forbiddenapis.failOnViolation>false</forbiddenapis.failOnViolation>
+        <spotbugs.failOnError>true</spotbugs.failOnError>
+        <forbiddenapis.failOnViolation>true</forbiddenapis.failOnViolation>
         <nullaway.version>0.13.8</nullaway.version>
         <spotbugs.version>4.10.3</spotbugs.version>
         <spotbugs-maven-plugin.version>4.10.3.0</spotbugs-maven-plugin.version>
@@ -997,11 +997,15 @@
                         <effort>Max</effort>
                         <threshold>Low</threshold>
                         <!--
-                          Inventory mode: failOnError=false so findings are reported but do not break
-                          the build. This matches the Error Prone and PMD rollout pattern - inventory
-                          first, then ratchet. Switch to true in Step 10 when the backlog is cleared.
+                          Enforcing since Step 10 (2026-09-13): the backlog was re-inventoried to
+                          zero tree-wide and the gate flipped. The `inventory` profile drops the
+                          property back to false for surveys without editing this file.
+                          maxAllowedViolations is pinned explicitly - it is already the plugin
+                          default, but `failOnError` reads as though it covered analysis errors
+                          rather than findings, so the threshold is spelled out.
                         -->
                         <failOnError>${spotbugs.failOnError}</failOnError>
+                        <maxAllowedViolations>0</maxAllowedViolations>
                         <includeTests>true</includeTests>
                         <excludeFilterFile>spotbugs-exclude.xml</excludeFilterFile>
                         <plugins>
@@ -1046,8 +1050,21 @@
                         <bundledSignatures>
                             <bundledSignature>jdk-unsafe</bundledSignature>
                             <bundledSignature>jdk-deprecated</bundledSignature>
-                            <bundledSignature>jdk-non-portable</bundledSignature>
+                            <bundledSignature>jdk-internal</bundledSignature>
                         </bundledSignatures>
+                        <!--
+                          jdk-internal, not jdk-non-portable (changed 2026-09-13, Step 10).
+                          jdk-non-portable has no signature file - it is computed from java.se
+                          module membership and flags any class outside the Java SE aggregate
+                          spec. That produced 29 findings on com.sun.net.httpserver, which is
+                          a supported, exported JDK module API (the jdk.httpserver module
+                          descriptor exports com.sun.net.httpserver), used by two
+                          test harnesses standing up in-process stub HTTP servers. This build
+                          pins its own JDK in every deployment, so a "not in the Java SE spec"
+                          check answers a portability question nobody is asking. jdk-internal
+                          (sun.misc.**, sun.reflect.**) bans the genuinely-internal APIs that
+                          were previously covered only incidentally.
+                        -->
                         <!--
                           Inline custom signatures for default-locale/charset/timezone-sensitive APIs.
                           This is the bytecode-level enforcement of the UTC invariant that
@@ -1086,8 +1103,9 @@ java.io.OutputStreamWriter#<init>(java.io.OutputStream)
                             ]]>
                         </signatures>
                         <!--
-                          Inventory mode: failOnViolation=false so violations are reported but do not
-                          break the build. Switch to true in Step 10 when the backlog is cleared.
+                          Enforcing since Step 10 (2026-09-13): backlog cleared to zero and the
+                          gate flipped. The `inventory` profile drops the property back to false
+                          for surveys without editing this file.
                         -->
                         <failOnViolation>${forbiddenapis.failOnViolation}</failOnViolation>
                     </configuration>
