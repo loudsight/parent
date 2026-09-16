@@ -1553,6 +1553,12 @@ java.io.OutputStreamWriter#<init>(java.io.OutputStream)
                                     <compilerArgs combine.self="override">
                                         <arg>-processor</arg>
                                         <arg>org.checkerframework.checker.nullness.NullnessChecker</arg>
+                                        <!-- Generated meta sources are processor output, not hand-maintained
+                                             code; their fixes belong upstream in the meta generator. -->
+                                        <arg>-AskipFiles=generated-sources|generated-test-sources</arg>
+                                        <!-- slow.typechecking is a checker-performance lint, not a
+                                             nullness finding - -Werror would otherwise fail on it. -->
+                                        <arg>-AsuppressWarnings=slow.typechecking</arg>
                                     </compilerArgs>
                                 </configuration>
                             </execution>
@@ -1586,6 +1592,8 @@ java.io.OutputStreamWriter#<init>(java.io.OutputStream)
                                     <compilerArgs combine.self="override">
                                         <arg>-processor</arg>
                                         <arg>org.checkerframework.checker.nullness.NullnessChecker</arg>
+                                        <arg>-AskipFiles=generated-sources|generated-test-sources</arg>
+                                        <arg>-AsuppressWarnings=slow.typechecking</arg>
                                     </compilerArgs>
                                 </configuration>
                             </execution>
