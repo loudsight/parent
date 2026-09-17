@@ -110,16 +110,32 @@
           reverts to off, because NullAway is not on by default and only runs when -Xep:NullAway
           names a severity.
 
-          Scope is driven by @NullMarked, not by a package prefix. OnlyNullMarked=true is what makes
-          the rollout unit a package rather than the whole tree: AnnotatedPackages=com.loudsight
-          would put every class in scope on the first build. No package-info.java exists anywhere in
-          the tree (verified 2026-08-16 - the 41 files an earlier draft of the plan counted are all
-          under __archived__/reference, vendored Aeron and Agrona code that this build does not
-          compile), so with OnlyNullMarked the initial in-scope set is empty by construction and
-          each @NullMarked package added is an opt-in.
+          Scope is opt-out, not opt-in. AnnotatedPackages=com.loudsight puts every package under
+          the com.loudsight root in scope - all sources in the tree live there, and
+          AnnotatedPackages is mutually exclusive with the OnlyNullMarked scheme this replaced
+          (NullAway's own config check rejects the pair). UnannotatedSubPackages then subtracts
+          the residue that still has findings: a package drops off the list once it compiles
+          clean, so a package nobody remembered to mark is enforced from the day it is created
+          rather than invisible by default. Any @NullMarked left on a package-info.java is now
+          redundant metadata - harmless, kept as a record of which package opted in first.
 
-          JSpecifyMode=true turns on generics-aware nullness. JDK 25 reads type-use annotations from
-          bytecode (JDK >= 22), so NullAway's compatibility assertion passes without
+          Entries are package PREFIXES, not exact packages: NullAway compiles the list to
+          ^(?:entry)(?:\..*)?$ , so an entry excludes the package and everything under it. The
+          seed below is therefore a minimal cover - a prefix appears only when its whole
+          source-bearing subtree was dirty, which drags some clean leaf packages into exclusion
+          as collateral; they return to enforcement when their parent entry narrows.
+
+          nullaway.unannotated.subpackages is its own property rather than inlined into
+          nullaway.args so every cleanup commit is a one-line greppable diff - the list only
+          ever shrinks, and shrinking it IS the progress metric. Two hazards around the empty
+          end state: never leave UnannotatedSubPackages in nullaway.args with an empty value
+          (NullAway splits on commas, "" becomes an empty prefix, and the empty alternative in
+          the generated regex matches every package - the check silently turns off tree-wide),
+          and never re-add an entry without re-running the survey. When the last entry comes
+          off, delete the flag and this property together.
+
+          JSpecifyMode=true turns on generics-aware nullness. JDK 25 reads type-use annotations
+          from bytecode (JDK >= 22), so NullAway's compatibility assertion passes without
           -XDaddTypeAnnotationsToSymbol.
 
           ExcludedFieldAnnotations is deliberately absent. It exists for fields a framework
@@ -129,12 +145,21 @@
           absent annotations, or wiring the Spring and Jakarta handlers NullAway ships, would be
           configuration for a framework that is not here. Revisit if one is introduced.
 
-          Severity is ERROR and is now honoured directly: -XepAllErrorsAsWarnings came off on
-          2026-09-05. Note this changes nothing observable yet - OnlyNullMarked=true and the
-          absence of any @NullMarked package mean NullAway's in-scope set is still empty by
-          construction, so it reports nothing until the first package opts in.
+          Severity is ERROR and is honoured directly: -XepAllErrorsAsWarnings came off on
+          2026-09-05, and the `inventory` profile re-adds it for surveys. Note the survey
+          consequence of that ordering: an explicit -Xep:NullAway severity BEATS
+          -XepAllErrorsAsWarnings, so a survey under -Pinventory still fails on NullAway ERROR
+          findings before test-compile can run - survey with -Xep:NullAway:WARN in this
+          property (temporarily), or test-source findings are silently missed.
         -->
-        <nullaway.args>-Xep:NullAway:ERROR -XepOpt:NullAway:OnlyNullMarked=true -XepOpt:NullAway:JSpecifyMode=true</nullaway.args>
+        <nullaway.args>-Xep:NullAway:ERROR -XepOpt:NullAway:AnnotatedPackages=com.loudsight -XepOpt:NullAway:UnannotatedSubPackages=${nullaway.unannotated.subpackages} -XepOpt:NullAway:JSpecifyMode=true</nullaway.args>
+        <!--
+          Seeded 2026-09-16 from a tree-wide survey (-Pinventory, clean test-compile,
+          -Xep:NullAway:WARN): 1011 findings across 79 of 151 source-bearing packages,
+          collapsed to this minimal prefix cover. Cleanup order follows the real Maven build
+          order - see notebook/plans/nullaway-opt-out-scoping-and-build-order-sequencing.md.
+        -->
+        <nullaway.unannotated.subpackages>com.loudsight.aeron.dispatcher,com.loudsight.app.admin.service,com.loudsight.app.connections,com.loudsight.app.exchange.service,com.loudsight.app.interest.service,com.loudsight.app.ledger.service,com.loudsight.app.networth.service,com.loudsight.app.notes.entity,com.loudsight.app.notes.service,com.loudsight.app.notes.store,com.loudsight.app.signallab.service,com.loudsight.authentication.api,com.loudsight.authentication.mail,com.loudsight.authentication.security,com.loudsight.automation.build,com.loudsight.automation.cli,com.loudsight.automation.deployment,com.loudsight.automation.graph,com.loudsight.automation.orchestration,com.loudsight.codemap,com.loudsight.collection,com.loudsight.connections,com.loudsight.facade.filesystem,com.loudsight.facade.platform,com.loudsight.http.dispatcher,com.loudsight.integration.dispatcher,com.loudsight.integration.web,com.loudsight.maven,com.loudsight.meta,com.loudsight.persistence.client,com.loudsight.service.registry.impl,com.loudsight.sharing,com.loudsight.threadmonitor,com.loudsight.tools,com.loudsight.tradingsignal,com.loudsight.usage,com.loudsight.useful.collection,com.loudsight.useful.entity.permission,com.loudsight.useful.entity.tag,com.loudsight.useful.entity.utils,com.loudsight.useful.helper,com.loudsight.useful.service.dispatcher,com.loudsight.useful.service.ping,com.loudsight.utilities.json,com.loudsight.utilities.web,com.loudsight.web.backend,com.loudsight.web.config</nullaway.unannotated.subpackages>
         <testcontainers.version>2.0.3</testcontainers.version>
         <maven.build.timestamp.format>yyyy-MM-dd'T'HH:mm:ss'Z'</maven.build.timestamp.format>
         <skip.git.info>false</skip.git.info>
