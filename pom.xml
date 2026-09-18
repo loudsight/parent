@@ -1734,23 +1734,31 @@ java.io.OutputStreamWriter#<init>(java.io.OutputStream)
         </profile>
 
         <!--
-          Code-map annotation processing. OFF by default, unlike entity-meta-processing above.
-          A module opts IN by adding an empty `.codemap-enabled` file next to its pom.xml.
+          Code-map annotation processing. ON by default for every module inheriting this parent,
+          same polarity as entity-meta-processing above. A module opts out by adding an empty
+          `.no-codemap` file next to its pom.xml.
 
-          This is deliberately the opposite polarity from entity-meta-processing. That profile's
-          <missing> activation means ~120 of this tree's ~126 modules already carry
-          entity-meta-processor on their annotation-processor path today - if codemap-processor
-          were wired the same way, it would go tree-wide the instant this profile's jar rebuilds,
-          with no way to trial it on a handful of modules first. <exists> keeps the initial rollout
-          to exactly the modules that opt in; promoting to tree-wide later (flipping to <missing>
-          .no-codemap, mirroring the modules that carry .no-entity-meta) is a deliberate follow-up
-          decision, not a side effect of adding this profile.
+          Flipped from opt-in (<exists>.codemap-enabled</exists>) to opt-out on 2026-09-17 after
+          three pilot modules (automation-agent, entity-meta-generator-lib, notes-store) proved
+          clean: no interaction with error-prone/nullaway/PMD/SpotBugs/forbidden-apis, and the
+          committed notebook/architecture/codemap output matched expectations. The old
+          `.codemap-enabled` markers are gone - they are inert under this activation.
+
+          Unlike entity-meta-processing, codemap-processor has no dependency of its own (only
+          auto-service) and so cannot form a build-order cycle through anything it depends on -
+          the only module that structurally NEEDS .no-codemap is codemap-processor itself
+          (otherwise it would depend on its own not-yet-built jar). parent and entity-meta-generator
+          carry it too, for the same hygiene reason they carry .no-entity-meta: they are
+          pom-packaged aggregators with no sources to process, so the dependency would be inert.
+          entity-meta-generator-lib, entity-meta-processor, entity-meta-processor-tests, and
+          useful/helper do NOT carry .no-codemap - they opted out of entity-meta-processing for a
+          cycle that is specific to depending on entity-meta-processor, which does not apply here.
         -->
         <profile>
             <id>codemap-processing</id>
             <activation>
                 <file>
-                    <exists>${project.basedir}/.codemap-enabled</exists>
+                    <missing>${project.basedir}/.no-codemap</missing>
                 </file>
             </activation>
 
