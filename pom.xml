@@ -7,7 +7,7 @@
 
     <licenses>
         <license>
-            <name>Loudsight Apache License 2.0 (Apache-2.0)</name>
+            <name>Apache License 2.0 (Apache-2.0)</name>
             <url>https://www.apache.org/licenses/LICENSE-2.0.html</url>
         </license>
     </licenses>
@@ -21,9 +21,9 @@
         </developer>
     </developers>
     <scm>
-        <connection>scm:git:ssh://git@github.com/loudsight/synergisms.git</connection>
-        <developerConnection>scm:git:ssh://git@github.com/loudsight/synergisms.git</developerConnection>
-        <url>https://github.com/loudsight/synergisms</url>
+        <connection>scm:git:https://github.com/loudsight/parent.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com/loudsight/parent.git</developerConnection>
+        <url>https://github.com/loudsight/parent</url>
     </scm>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -38,8 +38,12 @@
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <root.assembly.descriptor>${project.build.directory}/shared-resources/assembly/tar.gz.xml</root.assembly.descriptor>
+        <!-- Build-tree root. internal-parent overrides this per-OS for the monorepo; the
+             default keeps ${WORK_ROOT} resolvable for anyone building against this parent. -->
+        <WORK_ROOT>${user.home}/dev</WORK_ROOT>
         <loudsight.useful.version>0.0.1-SNAPSHOT</loudsight.useful.version>
-        <loudsight.persistence.version>0.0.1-SNAPSHOT</loudsight.persistence.version>
+        <loudsight.meta.version>0.0.1-SNAPSHOT</loudsight.meta.version>
+        <loudsight.buildtools.version>0.0.1-SNAPSHOT</loudsight.buildtools.version>
         <springsecurity.version>7.0.2</springsecurity.version>
         <springframework.version>7.0.2</springframework.version>
         <spring.boot.version>4.0.1</spring.boot.version>
@@ -159,7 +163,14 @@
           collapsed to this minimal prefix cover. Cleanup order follows the real Maven build
           order - see notebook/plans/nullaway-opt-out-scoping-and-build-order-sequencing.md.
         -->
-        <nullaway.unannotated.subpackages>com.loudsight.aeron.dispatcher,com.loudsight.app.admin.service,com.loudsight.app.connections,com.loudsight.app.exchange.service,com.loudsight.app.interest.service,com.loudsight.app.ledger.service,com.loudsight.app.networth.service,com.loudsight.app.notes.entity,com.loudsight.app.notes.service,com.loudsight.app.notes.store,com.loudsight.app.signallab.service,com.loudsight.authentication.api,com.loudsight.authentication.mail,com.loudsight.authentication.security,com.loudsight.automation.build,com.loudsight.automation.cli,com.loudsight.automation.deployment,com.loudsight.automation.graph,com.loudsight.automation.orchestration,com.loudsight.codemap,com.loudsight.collection,com.loudsight.connections,com.loudsight.facade.filesystem,com.loudsight.facade.platform,com.loudsight.http.dispatcher,com.loudsight.integration.dispatcher,com.loudsight.integration.web,com.loudsight.maven,com.loudsight.meta,com.loudsight.persistence.client,com.loudsight.service.registry.impl,com.loudsight.sharing,com.loudsight.threadmonitor,com.loudsight.tools,com.loudsight.tradingsignal,com.loudsight.usage,com.loudsight.useful.collection,com.loudsight.useful.entity.permission,com.loudsight.useful.entity.tag,com.loudsight.useful.entity.utils,com.loudsight.useful.helper,com.loudsight.useful.service.dispatcher,com.loudsight.useful.service.ping,com.loudsight.utilities.json,com.loudsight.utilities.web,com.loudsight.web.backend,com.loudsight.web.config</nullaway.unannotated.subpackages>
+        <!--
+          Baseline list, covering only packages published from this parent (useful/* and
+          entity-meta-generator/*). com.loudsight:internal-parent appends the monorepo's own
+          packages to it; keeping the two apart is what stops internal service package names
+          from shipping inside a public artifact.
+        -->
+        <nullaway.oss.unannotated.subpackages>com.loudsight.codemap,com.loudsight.collection,com.loudsight.meta,com.loudsight.useful.collection,com.loudsight.useful.entity.permission,com.loudsight.useful.entity.tag,com.loudsight.useful.entity.utils,com.loudsight.useful.helper,com.loudsight.useful.service.dispatcher,com.loudsight.useful.service.ping,com.loudsight.utilities.json,com.loudsight.utilities.web</nullaway.oss.unannotated.subpackages>
+        <nullaway.unannotated.subpackages>${nullaway.oss.unannotated.subpackages}</nullaway.unannotated.subpackages>
         <testcontainers.version>2.0.3</testcontainers.version>
         <maven.build.timestamp.format>yyyy-MM-dd'T'HH:mm:ss'Z'</maven.build.timestamp.format>
         <skip.git.info>false</skip.git.info>
@@ -259,23 +270,13 @@
             <dependency>
                 <groupId>com.loudsight.meta</groupId>
                 <artifactId>entity-meta-processor</artifactId>
-                <version>0.0.1-SNAPSHOT</version>
+                <version>${loudsight.meta.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.loudsight.meta</groupId>
                 <artifactId>codemap-processor</artifactId>
-                <version>0.0.1-SNAPSHOT</version>
+                <version>${loudsight.meta.version}</version>
             </dependency>
-            <dependency>
-                <groupId>com.loudsight.persistence</groupId>
-                <artifactId>persistence-client</artifactId>
-                <version>${loudsight.persistence.version}</version>
-            </dependency>
-            <dependency>
-            <groupId>com.loudsight.persistence</groupId>
-            <artifactId>persistence-lib</artifactId>
-            <version>${loudsight.persistence.version}</version>
-        </dependency>
             <dependency>
                 <groupId>jakarta.json</groupId>
                 <artifactId>jakarta.json-api</artifactId>
@@ -528,16 +529,6 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-starter-webflux</artifactId>
                 <version>${spring.boot.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.loudsight.service</groupId>
-                <artifactId>service-registry-lib</artifactId>
-                <version>0.0.1-SNAPSHOT</version>
-            </dependency>
-            <dependency>
-                <groupId>com.loudsight.http</groupId>
-                <artifactId>http-dispatcher</artifactId>
-                <version>0.0.1-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.springframework.boot</groupId>
@@ -874,7 +865,7 @@
                         <dependency>
                             <groupId>com.loudsight</groupId>
                             <artifactId>build-tools</artifactId>
-                            <version>0.0.1-SNAPSHOT</version>
+                            <version>${loudsight.buildtools.version}</version>
                         </dependency>
                     </dependencies>
                     <configuration>
@@ -1015,7 +1006,7 @@
                         <dependency>
                             <groupId>com.loudsight</groupId>
                             <artifactId>build-tools</artifactId>
-                            <version>0.0.1-SNAPSHOT</version>
+                            <version>${loudsight.buildtools.version}</version>
                         </dependency>
                     </dependencies>
                     <configuration>
@@ -1058,7 +1049,7 @@
                         <dependency>
                             <groupId>com.loudsight</groupId>
                             <artifactId>build-tools</artifactId>
-                            <version>0.0.1-SNAPSHOT</version>
+                            <version>${loudsight.buildtools.version}</version>
                         </dependency>
                     </dependencies>
                     <configuration>
@@ -1394,7 +1385,6 @@ java.io.OutputStreamWriter#<init>(java.io.OutputStream)
         </dependency>
     </dependencies>
     <profiles>
-        <!-- WORK_ROOT: macOS default - activated when WORK_ROOT is not set -->
         <!--
           Survey mode: report every finding in one pass instead of failing on the first.
 
@@ -1628,38 +1618,6 @@ java.io.OutputStreamWriter#<init>(java.io.OutputStream)
             </build>
         </profile>
 
-        <profile>
-            <id>work-root-mac</id>
-            <activation>
-                <os>
-                    <family>mac</family>
-                </os>
-                <property>
-                    <name>!WORK_ROOT</name>
-                </property>
-            </activation>
-            <properties>
-                <WORK_ROOT>${user.home}/dev</WORK_ROOT>
-            </properties>
-        </profile>
-
-        <!-- WORK_ROOT: Linux default - activated when WORK_ROOT is not set -->
-        <profile>
-            <id>work-root-linux</id>
-            <activation>
-                <os>
-                    <family>unix</family>
-                    <name>Linux</name>
-                </os>
-                <property>
-                    <name>!WORK_ROOT</name>
-                </property>
-            </activation>
-            <properties>
-                <WORK_ROOT>/opt</WORK_ROOT>
-            </properties>
-        </profile>
-
         <!--
           Entity-meta annotation processing. ON by default for every module inheriting this parent.
           A module opts out by adding an empty `.no-entity-meta` file next to its pom.xml.
@@ -1723,7 +1681,7 @@ java.io.OutputStreamWriter#<init>(java.io.OutputStream)
                                     <path>
                                         <groupId>com.loudsight.meta</groupId>
                                         <artifactId>entity-meta-processor</artifactId>
-                                        <version>0.0.1-SNAPSHOT</version>
+                                        <version>${loudsight.meta.version}</version>
                                     </path>
                                 </annotationProcessorPaths>
                             </configuration>
@@ -1784,7 +1742,7 @@ java.io.OutputStreamWriter#<init>(java.io.OutputStream)
                                     <path>
                                         <groupId>com.loudsight.meta</groupId>
                                         <artifactId>codemap-processor</artifactId>
-                                        <version>0.0.1-SNAPSHOT</version>
+                                        <version>${loudsight.meta.version}</version>
                                     </path>
                                 </annotationProcessorPaths>
                             </configuration>
@@ -1793,141 +1751,28 @@ java.io.OutputStreamWriter#<init>(java.io.OutputStream)
                 </pluginManagement>
             </build>
         </profile>
+        <!--
+          Maven Central release. Replaces the old `ossrh` profile: oss.sonatype.org and the
+          nexus-staging-maven-plugin it drove were decommissioned by Sonatype on 2025-06-30, so
+          that path had been dead since. Publishing now goes through the Central Portal, which
+          needs no distributionManagement - central-publishing-maven-plugin uploads the bundle
+          itself, using the <id>central</id> server credentials from settings.xml.
 
-        <!-- Custom Build Profile - Activated by presence of build.sh -->
+          Activate explicitly:  mvn -Pcentral-release deploy
+        -->
         <profile>
-            <id>custom-build</id>
-            <activation>
-                <file>
-                    <exists>${project.basedir}/build.sh</exists>
-                </file>
-            </activation>
+            <id>central-release</id>
             <build>
                 <plugins>
+                    <!--
+                      Central rejects a release with no javadoc jar. The plugin is configured in
+                      pluginManagement but never bound there, so it has to be declared here to
+                      actually attach one.
+                    -->
                     <plugin>
-                        <groupId>org.codehaus.gmavenplus</groupId>
-                        <artifactId>gmavenplus-plugin</artifactId>
-                        <version>4.2.0</version>
-                        <dependencies>
-                            <dependency>
-                                <groupId>org.apache.groovy</groupId>
-                                <artifactId>groovy-all</artifactId>
-                                <version>5.0.2</version>
-                                <type>pom</type>
-                                <scope>runtime</scope>
-                            </dependency>
-                        </dependencies>
-                        <executions>
-                            <execution>
-                                <id>Execute docker</id>
-                                <phase>pre-integration-test</phase>
-                                <goals>
-                                    <goal>execute</goal>
-                                </goals>
-                                <configuration>
-                                    <scripts>
-                                        <script><![CDATA[
-                                            def baseDir = $/${project.basedir}/$.replace('\\','/')
-                                            def dockerRegistry = System.getProperty('docker.registry', 'localhost:5001')
-                                            def dockerImagePrefix = System.getProperty('docker.image.prefix', 'localhost:5001/loudsight')
-                                            def projectVersion = "${project.version}"
-                                            def projectArtifactId = "${project.artifactId}"
-                                            // Only attempt Docker build if build.sh exists and is executable
-                                            def buildScript = new File("${baseDir}/build.sh")
-                                            if (buildScript.exists()) {
-                                                // No swallow-and-continue here on purpose (2026-09-11): a caught
-                                                // exception or a WARNING-only push failure used to let this
-                                                // execution - and therefore 'mvn install' for the module - succeed
-                                                // anyway. BuildSignatureManager then cached that as a successful
-                                                // build and never retried, leaving the registry silently missing
-                                                // an image that DeployVisitor's pre-flight pull later required
-                                                // (happened to deployments/nginx: build succeeded locally, push
-                                                // failed, and the stale cached signature skipped every rebuild
-                                                // afterwards until a prod deploy refused to proceed). Any failure
-                                                // here must propagate and fail the build instead.
-                                                List args = [
-                                                    "-t", "${dockerImagePrefix}/${projectArtifactId}:${projectVersion}",
-                                                    "-t", "${dockerImagePrefix}/${projectArtifactId}:latest",
-                                                    "--version", "${projectVersion}",
-                                                    "--registry", "${dockerRegistry}"
-                                                ]
-                                                def cmd = ["sh", "${baseDir}/build.sh"] + args
-                                                def process = cmd.execute()
-                                                process.consumeProcessOutput(System.out, System.err)
-                                                process.waitFor()
-
-                                                if (process.exitValue() != 0) {
-                                                    throw new RuntimeException("Docker build failed for ${projectArtifactId} with exit code " + process.exitValue())
-                                                }
-
-                                                // Push images to registry after successful build
-                                                println("INFO: Pushing Docker images to registry...")
-                                                def versionTag = "${dockerImagePrefix}/${projectArtifactId}:${projectVersion}"
-                                                def latestTag = "${dockerImagePrefix}/${projectArtifactId}:latest"
-
-                                                def pushVersionCmd = ["docker", "push", versionTag]
-                                                def pushVersionProcess = pushVersionCmd.execute()
-                                                pushVersionProcess.consumeProcessOutput(System.out, System.err)
-                                                pushVersionProcess.waitFor()
-                                                if (pushVersionProcess.exitValue() != 0) {
-                                                    throw new RuntimeException("Failed to push " + versionTag)
-                                                }
-                                                println("INFO: Pushed " + versionTag)
-
-                                                def pushLatestCmd = ["docker", "push", latestTag]
-                                                def pushLatestProcess = pushLatestCmd.execute()
-                                                pushLatestProcess.consumeProcessOutput(System.out, System.err)
-                                                pushLatestProcess.waitFor()
-                                                if (pushLatestProcess.exitValue() != 0) {
-                                                    throw new RuntimeException("Failed to push " + latestTag)
-                                                }
-                                                println("INFO: Pushed " + latestTag)
-                                            } else {
-                                                println("INFO: build.sh not found - skipping Docker build")
-                                            }
-                                        ]]></script>
-                                    </scripts>
-                                </configuration>
-                            </execution>
-                        </executions>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
                     </plugin>
-                </plugins>
-            </build>
-        </profile>
-        <profile>
-            <id>cicd</id>
-            <!--
-              Deliberately NOT activeByDefault. Maven suppresses activeByDefault the moment any
-              other profile in the same POM activates, so with entity-meta-processing above this
-              would switch itself off almost everywhere. (It already did on every module with a
-              build.sh, via custom-build.) "!ossrh" activates whenever -Dossrh is absent, which is
-              the intent, and cannot be suppressed. The previous name "Loudsight !ossrh" was a
-              single property name with an embedded space and never matched anything.
-            -->
-            <activation>
-                <property>
-                    <name>!ossrh</name>
-                </property>
-            </activation>
-            <properties>
-                <skipNexusStagingDeployMojo>true</skipNexusStagingDeployMojo>
-            </properties>
-            <distributionManagement />
-        </profile>
-        <profile>
-            <id>ossrh</id>
-            <distributionManagement>
-                <snapshotRepository>
-                    <id>ossrh</id>
-                    <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-                </snapshotRepository>
-                <repository>
-                    <id>ossrh</id>
-                    <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-                </repository>
-            </distributionManagement>
-            <build>
-                <plugins>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>
@@ -1953,22 +1798,20 @@ java.io.OutputStreamWriter#<init>(java.io.OutputStream)
                             </execution>
                         </executions>
                     </plugin>
+                    <plugin>
+                        <groupId>org.sonatype.central</groupId>
+                        <artifactId>central-publishing-maven-plugin</artifactId>
+                        <version>0.7.0</version>
+                        <extensions>true</extensions>
+                        <configuration>
+                            <publishingServerId>central</publishingServerId>
+                            <!-- Upload the bundle but stop short of releasing it, so the staged
+                                 contents can be inspected in the Portal before going live. -->
+                            <autoPublish>false</autoPublish>
+                            <waitUntil>validated</waitUntil>
+                        </configuration>
+                    </plugin>
                 </plugins>
-                <pluginManagement>
-                    <plugins>
-                        <plugin>
-                            <groupId>org.sonatype.plugins</groupId>
-                            <artifactId>nexus-staging-maven-plugin</artifactId>
-                            <version>1.7.0</version>
-                            <extensions>true</extensions>
-                            <configuration>
-                                <serverId>ossrh</serverId>
-                                <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-                                <autoReleaseAfterClose>false</autoReleaseAfterClose>
-                            </configuration>
-                        </plugin>
-                    </plugins>
-                </pluginManagement>
             </build>
         </profile>
     </profiles>
