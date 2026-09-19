@@ -1305,6 +1305,47 @@ java.io.OutputStreamWriter#<init>(java.io.OutputStream)
                     </executions>
                 </plugin>
                 <plugin>
+                    <!--
+                      Not bound here - only useful/pom.xml and entity-meta-generator/pom.xml (the
+                      two aggregators actually published to Central) bind this live, so it runs for
+                      them and everything they parent, and nowhere else. flattenMode "ossrh"
+                      resolves the <parent> chain and property references (java.version,
+                      loudsight.useful.version, etc.) into literal values and keeps exactly the
+                      metadata Central requires (name, description, url, scm, developers) - a
+                      consumer resolving the published POM never has to fetch com.loudsight:parent
+                      to make sense of it, even though that parent is also on Central.
+
+                      This does NOT filter dependencies by scope - no flattenMode does (checked the
+                      plugin's own FlattenMode.java: "dependencies" is only ever resolved,
+                      interpolated, or removed as one whole block; "fatjar" removes all of them,
+                      which would break a real library). A test-scoped dependency on an unpublished
+                      module still ends up in the flattened POM as-is.
+                    -->
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>flatten-maven-plugin</artifactId>
+                    <version>1.8.0</version>
+                    <configuration>
+                        <flattenMode>ossrh</flattenMode>
+                        <updatePomFile>true</updatePomFile>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <id>flatten</id>
+                            <phase>process-resources</phase>
+                            <goals>
+                                <goal>flatten</goal>
+                            </goals>
+                        </execution>
+                        <execution>
+                            <id>flatten-clean</id>
+                            <phase>clean</phase>
+                            <goals>
+                                <goal>clean</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+                <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-failsafe-plugin</artifactId>
                     <version>3.5.3</version>
@@ -1772,6 +1813,20 @@ java.io.OutputStreamWriter#<init>(java.io.OutputStream)
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-javadoc-plugin</artifactId>
+                    </plugin>
+                    <!--
+                      Scoped to this profile, not bound in the aggregators' default build: a real
+                      environment issue (reproduced identically on flatten-maven-plugin 1.6.0, 1.7.0
+                      and 1.8.0, on this machine's Maven 3.9.11 + Java 25 - Guice/Sisu fails to
+                      inject FlattenMojo's CiInterpolator, "NullInjectedIntoNonNullable") makes it
+                      unusable here. Binding it unconditionally would have broken every ordinary
+                      `mvn install`/`test` on useful and entity-meta-generator. Scoped to
+                      -Pcentral-release, it only has to work wherever the actual release runs -
+                      which may need a different Maven/JDK combination than this checkout's default.
+                    -->
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>flatten-maven-plugin</artifactId>
                     </plugin>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
