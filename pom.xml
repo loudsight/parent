@@ -44,6 +44,15 @@
         <loudsight.useful.version>0.0.1-SNAPSHOT</loudsight.useful.version>
         <loudsight.meta.version>0.0.1-SNAPSHOT</loudsight.meta.version>
         <loudsight.buildtools.version>0.0.1-SNAPSHOT</loudsight.buildtools.version>
+        <!--
+          Public fingerprint of the Maven Central signing key (spam@loudsight.com), published on
+          keyserver.ubuntu.com and keys.openpgp.org. Deliberately NOT a secret and deliberately
+          not in settings.xml: anyone verifying a released artifact needs this value, and pinning
+          it here means a release signed with the wrong key fails visibly instead of silently
+          picking up whatever happens to be the local default key. The matching passphrase is the
+          only secret, and it arrives via MAVEN_GPG_PASSPHRASE - see build/secrets/release.env.
+        -->
+        <gpg.keyname>677E2B22209DCC677A5A291C0750537642CC507E</gpg.keyname>
         <springsecurity.version>7.0.2</springsecurity.version>
         <springframework.version>7.0.2</springframework.version>
         <spring.boot.version>4.0.1</spring.boot.version>
@@ -1847,8 +1856,17 @@ java.io.OutputStreamWriter#<init>(java.io.OutputStream)
                                     <goal>sign</goal>
                                 </goals>
                                 <configuration>
+                                    <!--
+                                      No <passphrase> or <passphraseServerId> here on purpose.
+                                      maven-gpg-plugin 3.x deprecates both ("it may leak
+                                      sensitive information") and reads the passphrase from the
+                                      MAVEN_GPG_PASSPHRASE environment variable instead, which is
+                                      what build/secrets/release.env resolves out of Proton Pass.
+                                      The keyname is only the public fingerprint - it is published
+                                      on the keyservers - so it belongs in version control, not in
+                                      a secret store.
+                                    -->
                                     <keyname>${gpg.keyname}</keyname>
-                                    <passphraseServerId>${gpg.keyname}</passphraseServerId>
                                 </configuration>
                             </execution>
                         </executions>
