@@ -41,9 +41,9 @@
         <!-- Build-tree root. internal-parent overrides this per-OS for the monorepo; the
              default keeps ${WORK_ROOT} resolvable for anyone building against this parent. -->
         <WORK_ROOT>${user.home}/dev</WORK_ROOT>
-        <loudsight.useful.version>0.1.0</loudsight.useful.version>
-        <loudsight.meta.version>0.1.0</loudsight.meta.version>
-        <loudsight.buildtools.version>0.1.0</loudsight.buildtools.version>
+        <loudsight.useful.version>0.1.1-SNAPSHOT</loudsight.useful.version>
+        <loudsight.meta.version>0.1.1-SNAPSHOT</loudsight.meta.version>
+        <loudsight.buildtools.version>0.1.1-SNAPSHOT</loudsight.buildtools.version>
         <!--
           Public fingerprint of the Maven Central signing key (spam@loudsight.com), published on
           keyserver.ubuntu.com and keys.openpgp.org. Deliberately NOT a secret and deliberately
@@ -199,7 +199,7 @@
 
     <groupId>com.loudsight</groupId>
     <artifactId>parent</artifactId>
-    <version>0.1.0</version>
+    <version>0.1.1-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <!--
