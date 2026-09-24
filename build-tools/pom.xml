@@ -13,9 +13,169 @@
 
     <groupId>com.loudsight</groupId>
     <artifactId>build-tools</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>Loudsight Build Tools</name>
     <description>Shared PMD rulesets, resolved from the plugin classpath by com.loudsight:parent</description>
+    <url>https://loudsight.com/</url>
+
+    <licenses>
+        <license>
+            <name>Apache License 2.0 (Apache-2.0)</name>
+            <url>https://www.apache.org/licenses/LICENSE-2.0.html</url>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <name>Loudsight loudsight</name>
+            <email>spam@loudsight.com</email>
+            <organization>Loudsight</organization>
+            <organizationUrl>https://www.loudsight.com</organizationUrl>
+        </developer>
+    </developers>
+
+    <!--
+      Lives inside the parent repo (parent/build-tools), not a separate repo - same remote as
+      com.loudsight:parent, since it has no <parent> of its own to inherit this from (see the
+      cycle-avoidance comment above).
+    -->
+    <scm>
+        <connection>scm:git:https://github.com/loudsight/parent.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com/loudsight/parent.git</developerConnection>
+        <url>https://github.com/loudsight/parent</url>
+    </scm>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <!--
+          Same key as com.loudsight:parent (spam@loudsight.com) - one signing identity for every
+          artifact this monorepo publishes. Not a secret; the fingerprint is published on the
+          keyservers. See parent/pom.xml's own gpg.keyname for the full rationale.
+        -->
+        <gpg.keyname>677E2B22209DCC677A5A291C0750537642CC507E</gpg.keyname>
+    </properties>
+
+    <!--
+      Standalone copy of parent/pom.xml's own central-release profile. Cannot be inherited or
+      shared via pluginManagement - this module deliberately has no <parent> (see above), so
+      every plugin here needs its own explicit version instead of drawing one from a shared
+      pluginManagement block. Activate explicitly: mvn -Pcentral-release deploy -f
+      parent/build-tools/pom.xml
+    -->
+    <profiles>
+        <profile>
+            <id>central-release</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-source-plugin</artifactId>
+                        <version>3.3.1</version>
+                        <executions>
+                            <execution>
+                                <id>attach-sources</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>jar-no-fork</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <!--
+                      No real Java API here (see package-info.java) - maven-javadoc-plugin's own
+                      javadoc:jar goal errors ("No public or protected classes found to document")
+                      on a package-info-only source tree and, with failOnError=false, silently
+                      produces an EMPTY -javadoc.jar (confirmed: unzip -l showed just
+                      META-INF/MANIFEST.MF, no content). Central Publishing's own documented
+                      fallback for exactly this case is a placeholder jar with a README pointing
+                      elsewhere (central.sonatype.org/publish/requirements) - maven-jar-plugin
+                      packages that README directly as the -javadoc classifier, sidestepping the
+                      javadoc tool entirely instead of relying on it failing gracefully.
+                    -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-jar-plugin</artifactId>
+                        <version>3.4.1</version>
+                        <executions>
+                            <execution>
+                                <id>javadoc-placeholder</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                                <configuration>
+                                    <classifier>javadoc</classifier>
+                                    <classesDirectory>${project.basedir}/src/main/javadoc-placeholder</classesDirectory>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>flatten-maven-plugin</artifactId>
+                        <version>1.8.0</version>
+                        <configuration>
+                            <flattenMode>ossrh</flattenMode>
+                            <updatePomFile>true</updatePomFile>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>flatten</id>
+                                <phase>process-resources</phase>
+                                <goals>
+                                    <goal>flatten</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>flatten-clean</id>
+                                <phase>clean</phase>
+                                <goals>
+                                    <goal>clean</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>3.2.7</version>
+                        <configuration>
+                            <gpgArguments>
+                                <arg>--yes</arg>
+                                <arg>--pinentry-mode</arg>
+                                <arg>loopback</arg>
+                            </gpgArguments>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                                <configuration>
+                                    <!-- No <passphrase>/<passphraseServerId> - see parent/pom.xml's
+                                         own sign-artifacts execution for why. -->
+                                    <keyname>${gpg.keyname}</keyname>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.sonatype.central</groupId>
+                        <artifactId>central-publishing-maven-plugin</artifactId>
+                        <version>0.7.0</version>
+                        <extensions>true</extensions>
+                        <configuration>
+                            <publishingServerId>central</publishingServerId>
+                            <autoPublish>false</autoPublish>
+                            <waitUntil>validated</waitUntil>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>

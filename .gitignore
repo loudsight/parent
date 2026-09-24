@@ -13,3 +13,6 @@ buildNumber.properties
 /.project
 /.idea
 
+
+# flatten-maven-plugin output (the central-release profile writes one per module)
+.flattened-pom.xml

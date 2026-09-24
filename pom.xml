@@ -41,9 +41,9 @@
         <!-- Build-tree root. internal-parent overrides this per-OS for the monorepo; the
              default keeps ${WORK_ROOT} resolvable for anyone building against this parent. -->
         <WORK_ROOT>${user.home}/dev</WORK_ROOT>
-        <loudsight.useful.version>0.0.1-SNAPSHOT</loudsight.useful.version>
-        <loudsight.meta.version>0.0.1-SNAPSHOT</loudsight.meta.version>
-        <loudsight.buildtools.version>0.0.1-SNAPSHOT</loudsight.buildtools.version>
+        <loudsight.useful.version>0.1.0-SNAPSHOT</loudsight.useful.version>
+        <loudsight.meta.version>0.1.0-SNAPSHOT</loudsight.meta.version>
+        <loudsight.buildtools.version>0.1.0-SNAPSHOT</loudsight.buildtools.version>
         <!--
           Public fingerprint of the Maven Central signing key (spam@loudsight.com), published on
           keyserver.ubuntu.com and keys.openpgp.org. Deliberately NOT a secret and deliberately
@@ -199,7 +199,7 @@
 
     <groupId>com.loudsight</groupId>
     <artifactId>parent</artifactId>
-    <version>0.0.19-SNAPSHOT</version>
+    <version>0.1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <!--
@@ -1315,20 +1315,20 @@ java.io.OutputStreamWriter#<init>(java.io.OutputStream)
                 </plugin>
                 <plugin>
                     <!--
-                      Not bound here - only useful/pom.xml and entity-meta-generator/pom.xml (the
-                      two aggregators actually published to Central) bind this live, so it runs for
-                      them and everything they parent, and nowhere else. flattenMode "ossrh"
+                      Not bound here - the central-release profile binds it, so it runs only for
+                      release builds, for every published module except the POMs used as a <parent>
+                      (they carry .no-flatten; see the no-flatten profile). flattenMode "ossrh"
                       resolves the <parent> chain and property references (java.version,
                       loudsight.useful.version, etc.) into literal values and keeps exactly the
                       metadata Central requires (name, description, url, scm, developers) - a
                       consumer resolving the published POM never has to fetch com.loudsight:parent
                       to make sense of it, even though that parent is also on Central.
 
-                      This does NOT filter dependencies by scope - no flattenMode does (checked the
-                      plugin's own FlattenMode.java: "dependencies" is only ever resolved,
-                      interpolated, or removed as one whole block; "fatjar" removes all of them,
-                      which would break a real library). A test-scoped dependency on an unpublished
-                      module still ends up in the flattened POM as-is.
+                      Test-scoped dependencies do NOT survive "ossrh" flattening - measured on
+                      useful/service with this 1.8.0: 2 test-scoped deps in the source POM (one the
+                      unpublished simple-pojo test-jar), 0 in .flattened-pom.xml. So an unpublished
+                      test fixture never leaks into a published POM. (An earlier note here claimed the
+                      opposite from reading FlattenMode.java; the measurement wins.)
                     -->
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>flatten-maven-plugin</artifactId>
@@ -1810,6 +1810,27 @@ java.io.OutputStreamWriter#<init>(java.io.OutputStream)
 
           Activate explicitly:  mvn -Pcentral-release deploy
         -->
+        <!--
+          Keeps flatten (bound in central-release below) off the POMs that are used as a <parent>:
+          com.loudsight:parent itself and the useful / entity-meta-generator aggregators each carry an
+          empty .no-flatten marker. flattenMode "ossrh" strips pluginManagement, properties and profiles,
+          so installing or publishing a flattened parent leaves every inheriting build with nothing - the
+          release rehearsal caught entity-meta-generator's modules compiling at Java 8 with unversioned
+          plugins, because they had inherited the flattened parent-0.1.0.pom. Jar modules stay flattened,
+          which is what spares consumers from resolving these parents at all. File activation is
+          evaluated per module, so a marker on an aggregator does not reach its children.
+        -->
+        <profile>
+            <id>no-flatten</id>
+            <activation>
+                <file>
+                    <exists>${project.basedir}/.no-flatten</exists>
+                </file>
+            </activation>
+            <properties>
+                <flatten.flatten.skip>true</flatten.flatten.skip>
+            </properties>
+        </profile>
         <profile>
             <id>central-release</id>
             <build>
