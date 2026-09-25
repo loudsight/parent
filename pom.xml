@@ -982,7 +982,8 @@
                                 <Implementation-Title>${project.artifactId}</Implementation-Title>
                                 <Implementation-Version>${project.version}</Implementation-Version>
                                 <Build-Timestamp>${maven.build.timestamp}</Build-Timestamp>
-                                <Build-User>${user.name}</Build-User>
+                                <!-- No Build-User: ${user.name} put the building machine's OS username into
+                                     every jar, including the ones published to Maven Central. Nothing read it. -->
                             </manifestEntries>
                         </archive>
                     </configuration>
@@ -1833,6 +1834,15 @@ java.io.OutputStreamWriter#<init>(java.io.OutputStream)
         </profile>
         <profile>
             <id>central-release</id>
+            <properties>
+                <!--
+                  No git.properties in published jars. It carried the build machine's hostname
+                  (git.build.host) and git identity, and it is always misleading for a release: the
+                  release builds before committing its version bump, so every jar claimed git.dirty=true
+                  and a commit that is not the tagged one. No library code reads it.
+                -->
+                <maven.gitcommitid.skip>true</maven.gitcommitid.skip>
+            </properties>
             <build>
                 <plugins>
                     <!--
