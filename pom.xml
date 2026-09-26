@@ -53,32 +53,32 @@
           only secret, and it arrives via MAVEN_GPG_PASSPHRASE - see build/secrets/release.env.
         -->
         <gpg.keyname>677E2B22209DCC677A5A291C0750537642CC507E</gpg.keyname>
-        <springsecurity.version>7.0.2</springsecurity.version>
-        <springframework.version>7.0.2</springframework.version>
-        <spring.boot.version>4.0.1</spring.boot.version>
-        <log4j.version>2.25.3</log4j.version>
-        <slf4j.version>2.0.17</slf4j.version>
-        <logback.version>1.5.22</logback.version>
+        <springsecurity.version>7.0.7</springsecurity.version>
+        <springframework.version>7.0.9</springframework.version>
+        <spring.boot.version>4.0.8</spring.boot.version>
+        <log4j.version>2.26.1</log4j.version>
+        <slf4j.version>2.0.20</slf4j.version>
+        <logback.version>1.5.38</logback.version>
         <aeron.version>1.50.0</aeron.version>
         <agrona.version>2.4.0</agrona.version>
         <junit-jupiter.version>6.0.3</junit-jupiter.version>
         <!-- Bolt driver for Memgraph; the embedded org.neo4j:neo4j and neo4j-browser
              coordinates were dropped from dependencyManagement (no consumers). -->
         <neo4j.driver.version>5.28.15</neo4j.driver.version>
-        <jackson.version>3.0.3</jackson.version>
-        <jackson-annotations.version>2.20</jackson-annotations.version>
+        <jackson.version>3.2.3</jackson.version>
+        <jackson-annotations.version>2.22</jackson-annotations.version>
         <!--
-          Track Spring Boot 4.0.1's managed versions, but override Netty to 4.2.15.Final
-          to satisfy requireUpperBoundDeps with Neo4j driver 5.28.15.
+          Spring Boot 4.0.8's managed version; neo4j-java-driver-parent 5.28.15 imports the same
+          netty-bom, so Boot and the driver agree and no override is needed.
         -->
-        <netty.version>4.2.15.Final</netty.version>
+        <netty.version>4.2.17.Final</netty.version>
         <reactor-bom.version>2025.0.1</reactor-bom.version>
-        <jetty.version>12.1.5</jetty.version>
+        <jetty.version>12.1.13</jetty.version>
         <jakarta.servlet.version>6.1.0</jakarta.servlet.version>
         <jakarta.json.version>2.1.3</jakarta.json.version>
         <parsson.version>1.1.7</parsson.version>
         <sbe.tool.version>1.36.0</sbe.tool.version>
-        <jspecify.version>1.0.0</jspecify.version>
+        <jspecify.version>1.0.1</jspecify.version>
         <error-prone.version>2.50.0</error-prone.version>
         <!--
           Error Prone's options, as one property so a module can quarantine the layer without
@@ -221,15 +221,6 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
-            <!--
-              Override netty-tcnative-classes to satisfy requireUpperBoundDeps with Neo4j driver.
-              The Netty BOM 4.2.15 provides 2.0.74.Final, but Neo4j driver 5.28.15 wants 2.0.77.Final.
-            -->
-            <dependency>
-                <groupId>io.netty</groupId>
-                <artifactId>netty-tcnative-classes</artifactId>
-                <version>2.0.77.Final</version>
-            </dependency>
             <dependency>
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-framework-bom</artifactId>
@@ -311,6 +302,16 @@
                 <artifactId>sbe-tool</artifactId>
                 <version>${sbe.tool.version}</version>
             </dependency>
+            <!--
+              Managed so transitive requirements converge: spring-core 7.0.9 declares 1.0.0 while
+              micrometer 1.16.7 declares 1.0.1 - without a managed pin dependencyConvergence fails
+              on the split. The direct <dependency> below keeps it on every module's classpath.
+            -->
+            <dependency>
+                <groupId>org.jspecify</groupId>
+                <artifactId>jspecify</artifactId>
+                <version>${jspecify.version}</version>
+            </dependency>
             <dependency>
                 <groupId>org.yaml</groupId>
                 <artifactId>snakeyaml</artifactId>
@@ -389,7 +390,11 @@
                 <version>${jackson.version}</version>
             </dependency>
             <dependency>
-                <groupId>tools.jackson.core</groupId>
+                <!-- Jackson 3 databind still consumes annotations from the Jackson 2.x
+                     group (see jackson-databind 3.x pom: "Annotations remain at Jackson
+                     2.x group id"). tools.jackson.core:jackson-annotations does not
+                     exist; jackson-bom 3.2.3 requires annotations 2.22. -->
+                <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-annotations</artifactId>
                 <version>${jackson-annotations.version}</version>
             </dependency>
@@ -449,7 +454,7 @@
             </dependency>
 
             <dependency><groupId>org.hamcrest</groupId><artifactId>hamcrest-core</artifactId><version>2.2</version></dependency>
-            <dependency><groupId>commons-beanutils</groupId><artifactId>commons-beanutils</artifactId><version>1.10.1</version></dependency>
+            <dependency><groupId>commons-beanutils</groupId><artifactId>commons-beanutils</artifactId><version>1.11.0</version></dependency>
             <dependency><groupId>org.apache.commons</groupId><artifactId>commons-lang3</artifactId><version>3.20.0</version></dependency>
             <!-- ASM version alignment for Jetty and json-smart -->
             <dependency><groupId>org.ow2.asm</groupId><artifactId>asm</artifactId><version>9.10.1</version></dependency>
@@ -629,8 +634,8 @@
                 <version>1.2.2</version>
             </dependency>
             <!--
-              Must track the version Spring Framework ships with (spring-context 7.0.2 declares
-              micrometer-observation 1.16.1). Pinning older silently breaks @Scheduled: Spring 7's
+              Must track the version Spring Framework ships with (spring-context 7.0.9 declares
+              micrometer-observation 1.16.7). Pinning older silently breaks @Scheduled: Spring 7's
               ScheduledMethodRunnable wraps every run in a Micrometer Observation, and against an
               incompatible micrometer the ObservationRegistry arrives null -> NPE in
               Observation.createNotStarted before the method body executes (FxHistoryRefreshJob never
@@ -639,12 +644,12 @@
             <dependency>
                 <groupId>io.micrometer</groupId>
                 <artifactId>micrometer-observation</artifactId>
-                <version>1.16.1</version>
+                <version>1.16.7</version>
             </dependency>
             <dependency>
                 <groupId>io.micrometer</groupId>
                 <artifactId>micrometer-commons</artifactId>
-                <version>1.16.1</version>
+                <version>1.16.7</version>
             </dependency>
             <dependency>
                 <groupId>jakarta.xml.bind</groupId>
