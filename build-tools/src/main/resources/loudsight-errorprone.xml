@@ -41,7 +41,7 @@
           DoNotTerminateVM, 13 findings. Every one is a System.exit in an auto-agent CLI command -
           DeployCommand, RollbackCommand, StatusCommand and MavenDependencyTreeCommand - where
           setting the process exit code is the required behaviour and the thing callers like
-          deploy.sh branch on. The rule exists for code running inside a container that must not
+          deploy-run.sh branch on. The rule exists for code running inside a container that must not
           kill its host JVM; nothing here does.
         -->
         <exclude name="DoNotTerminateVM"/>

@@ -914,7 +914,7 @@
                           fixture into target/generated-test-sources/test-annotations, and generated
                           Meta classes are near-identical by construction, so CPD reports them as
                           duplicates of each other. That failed the build in modules nobody had
-                          touched and blocked every deploy, since deploy.sh builds the auto-agent
+                          touched and blocked every deploy, since deploy-run.sh builds the auto-agent
                           before the pipeline runs.
 
                           Matched by FILE NAME, not by directory, because the alternatives do not
@@ -1481,7 +1481,7 @@ java.io.OutputStreamWriter#<init>(java.io.OutputStream)
 
           Usage: mvn -Pinventory clean test-compile pmd:check
           Per-module and in parallel across the tree, because the auto-agent's build-order visitor
-          stops at the first failing module and so cannot survey. See scripts/inventory-sweep.sh.
+          stops at the first failing module and so cannot survey. See scripts/analysis-sweep-inventory.sh.
         -->
         <profile>
             <id>inventory</id>
@@ -1518,7 +1518,7 @@ java.io.OutputStreamWriter#<init>(java.io.OutputStream)
           For a fast findings-only pass, invoke the goals directly instead. This never
           enters package or pre-integration-test, so it cannot trigger Docker or assembly by
           construction rather than by remembering a flag, and it runs no tests without
-          needing skipTests - the same pattern scripts/inventory-sweep.sh already uses:
+          needing skipTests - the same pattern scripts/analysis-sweep-inventory.sh already uses:
 
               mvn -Panalysis-only clean test-compile \
                   pmd:check pmd:cpd-check spotbugs:check \
