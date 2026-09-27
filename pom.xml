@@ -1606,6 +1606,18 @@ java.io.OutputStreamWriter#<init>(java.io.OutputStream)
                                 <configuration>
                                     <proc>only</proc>
                                     <!--
+                                      The default-compile execution above sets fork=true (plugin-wide,
+                                      not execution-scoped) so Error Prone's -J add-exports args reach
+                                      its forked javac. This execution doesn't set fork itself, so it
+                                      would otherwise inherit fork=true too - but its own compilerArgs
+                                      below (combine.self="override") drops those -J args, leaving the
+                                      forked javac with no jdk.compiler exports at all: checker 3.51.x
+                                      then fails with IllegalAccessError from AbstractTypeProcessor.
+                                      false restores in-process compilation, which reads .mvn/jvm.config
+                                      (or a project inheriting this parent's own jvm.config) instead.
+                                    -->
+                                    <fork>false</fork>
+                                    <!--
                                       The plugin's staleness check compares each source
                                       against its .class under outputDirectory; target/
                                       classes is always fresh right after default-compile,
@@ -1661,6 +1673,8 @@ java.io.OutputStreamWriter#<init>(java.io.OutputStream)
                                 </goals>
                                 <configuration>
                                     <proc>only</proc>
+                                    <!-- Same reasoning as the deep-nullness execution above. -->
+                                    <fork>false</fork>
                                     <outputDirectory>${project.build.directory}/deep-nullness-test</outputDirectory>
                                     <useIncrementalCompilation>false</useIncrementalCompilation>
                                     <annotationProcessorPaths combine.self="override">
