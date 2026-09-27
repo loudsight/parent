@@ -777,6 +777,8 @@
                           so a survey would silently miss every finding in test sources.
                         -->
                         <failOnWarning>${maven.compiler.failOnWarning}</failOnWarning>
+                        <!-- Required for the -J args below; costs ~0.3 s per compile invocation. -->
+                        <fork>true</fork>
                         <compilerArgs>
                             <!--
                               -Xlint:all turns on every javac lint category except processing. The
@@ -796,6 +798,24 @@
                               flow analysis into the plugin. The -Xplugin value is deliberately one
                               argument: javac parses the whole string itself.
                             -->
+                            <!--
+                              javac is forked (fork=true above) so these reach its JVM: Error Prone
+                              needs the javac internals exported/opened on JDK 16+. They used to live
+                              only in the superproject's .mvn/jvm.config (and myEnv.sh's MAVEN_OPTS),
+                              so a standalone clone - or any project inheriting the published parent -
+                              failed with IllegalAccessError. The POM is the only place that travels
+                              with the published parent.
+                            -->
+                            <arg>-J--add-exports=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED</arg>
+                            <arg>-J--add-exports=jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED</arg>
+                            <arg>-J--add-exports=jdk.compiler/com.sun.tools.javac.main=ALL-UNNAMED</arg>
+                            <arg>-J--add-exports=jdk.compiler/com.sun.tools.javac.model=ALL-UNNAMED</arg>
+                            <arg>-J--add-exports=jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED</arg>
+                            <arg>-J--add-exports=jdk.compiler/com.sun.tools.javac.processing=ALL-UNNAMED</arg>
+                            <arg>-J--add-exports=jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED</arg>
+                            <arg>-J--add-exports=jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED</arg>
+                            <arg>-J--add-opens=jdk.compiler/com.sun.tools.javac.code=ALL-UNNAMED</arg>
+                            <arg>-J--add-opens=jdk.compiler/com.sun.tools.javac.comp=ALL-UNNAMED</arg>
                             <arg>-XDcompilePolicy=simple</arg>
                             <arg>--should-stop=ifError=FLOW</arg>
                             <arg>-Xplugin:ErrorProne ${errorprone.args} ${nullaway.args}</arg>
