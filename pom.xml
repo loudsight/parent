@@ -170,7 +170,7 @@
           Seeded 2026-09-16 from a tree-wide survey (-Pinventory, clean test-compile,
           -Xep:NullAway:WARN): 1011 findings across 79 of 151 source-bearing packages,
           collapsed to this minimal prefix cover. Cleanup order follows the real Maven build
-          order - see notebook/plans/nullaway-opt-out-scoping-and-build-order-sequencing.md.
+          order - see kb/plans/nullaway-opt-out-scoping-and-build-order-sequencing.md.
         -->
         <!--
           Baseline list, covering only packages published from this parent (useful/* and
@@ -1775,7 +1775,7 @@ java.io.OutputStreamWriter#<init>(java.io.OutputStream)
           Flipped from opt-in (<exists>.codemap-enabled</exists>) to opt-out on 2026-09-17 after
           three pilot modules (automation-agent, entity-meta-generator-lib, notes-store) proved
           clean: no interaction with error-prone/nullaway/PMD/SpotBugs/forbidden-apis, and the
-          committed notebook/architecture/codemap output matched expectations. The old
+          committed kb/architecture/codemap output matched expectations. The old
           `.codemap-enabled` markers are gone - they are inert under this activation.
 
           Unlike entity-meta-processing, codemap-processor has no dependency of its own (only

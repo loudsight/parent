@@ -72,7 +72,7 @@
       Same rationale as the PMD rule exclusions in loudsight-*.xml: these fire on
       correct, idiomatic code and enforcing them would mean hundreds of low-value
       edits with real regression risk. Decision recorded in
-      notebook/plans/static-analysis-best-in-class-4c1a09.md, Step 5c.
+      kb/plans/static-analysis-best-in-class-4c1a09.md, Step 5c.
       Re-survey with scripts/inventory-sweep.sh if these need revisiting.
       ============================================================================
     -->
