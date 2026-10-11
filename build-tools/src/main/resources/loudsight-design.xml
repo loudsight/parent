@@ -28,6 +28,8 @@
         <exclude name="CognitiveComplexity"/>        <!-- 43 -->
         <exclude name="NPathComplexity"/>            <!-- 13 -->
         <exclude name="NcssCount"/>                  <!-- 5 -->
+        <!-- Needs a packages/classes property this project never supplies; PMD dropped it with a warning on every run. -->
+        <exclude name="LoosePackageCoupling"/>
         <exclude name="TooManyMethods"/>             <!-- 46 -->
         <exclude name="GodClass"/>                   <!-- 19 -->
         <exclude name="CouplingBetweenObjects"/>     <!-- 23 -->
