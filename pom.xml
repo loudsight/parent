@@ -1930,8 +1930,8 @@ java.io.OutputStreamWriter#<init>(java.io.OutputStream)
                                       No <passphrase> or <passphraseServerId> here on purpose.
                                       maven-gpg-plugin 3.x deprecates both ("it may leak
                                       sensitive information") and reads the passphrase from the
-                                      MAVEN_GPG_PASSPHRASE environment variable instead, which is
-                                      what build/secrets/release.env resolves out of Proton Pass.
+                                      MAVEN_GPG_PASSPHRASE environment variable instead, which the
+                                      release tooling supplies at run time.
                                       The keyname is only the public fingerprint - it is published
                                       on the keyservers - so it belongs in version control, not in
                                       a secret store.
