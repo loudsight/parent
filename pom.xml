@@ -1218,6 +1218,28 @@ java.io.OutputStreamWriter#<init>(java.io.OutputStream)
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-clean-plugin</artifactId>
                     <version>3.2.0</version>
+                    <executions>
+                        <!--
+                          Empties target/libs before copy-dependencies refills it (package phase). copy-dependencies only
+                          adds jars, so a library version bump leaves the old jars beside the new ones and the service
+                          bundles both. Modules opt in by listing this plugin, as they do for maven-dependency-plugin.
+                        -->
+                        <execution>
+                            <id>clean-libs</id>
+                            <phase>prepare-package</phase>
+                            <goals>
+                                <goal>clean</goal>
+                            </goals>
+                            <configuration>
+                                <excludeDefaultDirectories>true</excludeDefaultDirectories>
+                                <filesets>
+                                    <fileset>
+                                        <directory>${project.build.directory}/libs</directory>
+                                    </fileset>
+                                </filesets>
+                            </configuration>
+                        </execution>
+                    </executions>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
